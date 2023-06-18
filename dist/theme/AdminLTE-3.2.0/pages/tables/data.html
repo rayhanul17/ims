@@ -15,6 +15,9 @@
   <link rel="stylesheet" href="../../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+
+  <link rel="stylesheet" href="../../plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="../../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -1297,60 +1300,87 @@
 
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">All Users</h3>
+                <h3 class="card-title">All Products</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Categories</label>
+                    <select class="form-control select2" style="width: 100%;">
+                      <option selected="selected">Category 1</option>
+                      <option>Category 2</option>
+                      <option>Category 3</option>
+                      <option>Category 4</option>
+                      <option>Category 5</option>
+                      <option>Category 6</option>
+                      <option>Category 7</option>
+                    </select>
+                  </div>
+                </div>
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Email</th>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Details</th>                    
+                    <th>Price</th>                    
+                    <th>Sold</th>                    
+                    <th>In Stock</th>                    
+                    <th>Images</th>                    
                     <th>Actions</th>                    
                   </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>Admin1</td>
-                      <td>admin1@gmail.com</td>                      
+                      <td>Product 01</td>  
+                      <td>Category1</td>
+                      <td>Unknown</td>  
+                      <td>1526</td>  
+                      <td>12</td>  
+                      <td>25</td>  
+                      <td><img src="D:\ims\dist\theme\p1.png" style="width:150px;height:120px;"/></td>  
                       <td>
-                        <button class="btn btn-primary">Edit</button>
-                        <button class="btn btn-info">Manage</button>
+                        <button class="btn btn-primary">Edit</button>                        
                         <button class="btn btn-danger">Delete</button>
                       </td>                      
                     </tr>
                     <tr>
-                      <td>Admin2</td>
-                      <td>admin2@gmail.com</td>                      
+                      <td>Product 02</td>  
+                      <td>Category2</td>
+                      <td>Unknown</td>  
+                      <td>1526</td>  
+                      <td>102</td>  
+                      <td>35</td>  
+                      <td><img src="D:\ims\dist\theme\p2.png" style="width:150px;height:120px;"/></td>  
                       <td>
-                        <button class="btn btn-primary">Edit</button>
-                        <button class="btn btn-info">Manage</button>
+                        <button class="btn btn-primary">Edit</button>                        
                         <button class="btn btn-danger">Delete</button>
                       </td>                      
                     </tr>
                     <tr>
-                      <td>Admin3</td>
-                      <td>admin3@gmail.com</td>                      
+                      <td>Product 01</td>  
+                      <td>Category2</td>
+                      <td>Unknown</td>  
+                      <td>1526</td>  
+                      <td>19</td>  
+                      <td>25</td>  
+                      <td><img src="D:\ims\dist\theme\p3.png" style="width:150px;height:120px;"/></td>  
                       <td>
-                        <button class="btn btn-primary">Edit</button>
-                        <button class="btn btn-info">Manage</button>
-                        <button class="btn btn-danger">Delete</button>
-                      </td>                      
-                    </tr>
-                    <tr>
-                      <td>Admin4</td>
-                      <td>admin4@gmail.com</td>                      
-                      <td>
-                        <button class="btn btn-primary">Edit</button>
-                        <button class="btn btn-info">Manage</button>
+                        <button class="btn btn-primary">Edit</button>                        
                         <button class="btn btn-danger">Delete</button>
                       </td>                      
                     </tr>
                   </tbody>
                   <tfoot>
                   <tr>
-                    <th>Name</th>
-                    <th>Email</th>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Details</th>                    
+                    <th>Price</th>                    
+                    <th>Sold</th>                    
+                    <th>In Stock</th>                    
+                    <th>Images</th>                    
                     <th>Actions</th>  
                   </tr>
                   </tfoot>
@@ -1396,6 +1426,7 @@
 <script src="../../plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
 <script src="../../plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
 <script src="../../plugins/jszip/jszip.min.js"></script>
+<script src="../../plugins/select2/js/select2.full.min.js"></script>
 <!-- <script src="../../plugins/pdfmake/pdfmake.min.js"></script> -->
 <!-- <script src="../../plugins/pdfmake/vfs_fonts.js"></script> -->
 <!-- <script src="../../plugins/datatables-buttons/js/buttons.html5.min.js"></script> -->
@@ -1408,6 +1439,14 @@
 <!-- Page specific script -->
 <script>
   $(function () {
+    //Initialize Select2 Elements
+    $('.select2').select2()
+
+    //Initialize Select2 Elements
+    $('.select2bs4').select2({
+      theme: 'bootstrap4'
+    })
+
     $("#example1").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
