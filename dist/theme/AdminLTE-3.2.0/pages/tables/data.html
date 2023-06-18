@@ -18,6 +18,7 @@
 
   <link rel="stylesheet" href="../../plugins/select2/css/select2.min.css">
   <link rel="stylesheet" href="../../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+  <link rel="stylesheet" href="../../plugins/daterangepicker/daterangepicker.css">
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -1300,89 +1301,75 @@
 
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">All Products</h3>
+                <h3 class="card-title">All Purchase</h3>
+              </div>
+              <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="ProjectId">Select Company</label>
+                        <select asp-for="ProjectId" id="projectDropDownList" class="select2" style="width: 100%;">
+                            <option value="Select">All</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="DateRange">Date range</label>
+
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="far fa-clock"></i></span>
+                            </div>
+                            <input asp-for="DateRange" type="text" class="form-control float-right" id="reservationtime">
+                        </div>
+                        <!-- /.input group -->
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-group">
+                        <label>&nbsp;&nbsp;</label>
+                        <button id="searchbtn" type="submit" class="btn btn-primary" style="width: 100%;">Search</button>
+                    </div>
+                </div>
               </div>
               <!-- /.card-header -->
-              <div class="card-body">
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label>Categories</label>
-                    <select class="form-control select2" style="width: 100%;">
-                      <option selected="selected">Category 1</option>
-                      <option>Category 2</option>
-                      <option>Category 3</option>
-                      <option>Category 4</option>
-                      <option>Category 5</option>
-                      <option>Category 6</option>
-                      <option>Category 7</option>
-                    </select>
-                  </div>
-                </div>
+              <div class="card-body">                
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                   <tr>
-                    <th>Product</th>
-                    <th>Category</th>
-                    <th>Details</th>                    
-                    <th>Price</th>                    
-                    <th>Sold</th>                    
-                    <th>In Stock</th>                    
-                    <th>Images</th>                    
+                    <th>Company Name</th>
+                    <th>Time</th>
+                    <th>Total Tk</th>    
                     <th>Actions</th>                    
                   </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>Product 01</td>  
-                      <td>Category1</td>
-                      <td>Unknown</td>  
-                      <td>1526</td>  
-                      <td>12</td>  
-                      <td>25</td>  
-                      <td><img src="D:\ims\dist\theme\p1.png" style="width:150px;height:120px;"/></td>  
-                      <td>
-                        <button class="btn btn-primary">Edit</button>                        
-                        <button class="btn btn-danger">Delete</button>
-                      </td>                      
+                      <td>Company 01</td>  
+                      <td>10.00 AM</td>
+                      <td>120006</td>
+                      <td><button class="btn btn-primary">View</button></td>                      
                     </tr>
                     <tr>
-                      <td>Product 02</td>  
-                      <td>Category2</td>
-                      <td>Unknown</td>  
-                      <td>1526</td>  
-                      <td>102</td>  
-                      <td>35</td>  
-                      <td><img src="D:\ims\dist\theme\p2.png" style="width:150px;height:120px;"/></td>  
-                      <td>
-                        <button class="btn btn-primary">Edit</button>                        
-                        <button class="btn btn-danger">Delete</button>
-                      </td>                      
+                      <td>Company 02</td>  
+                      <td>11.00 AM</td>
+                      <td>89652</td>
+                      <td><button class="btn btn-primary">View</button></td>                      
                     </tr>
                     <tr>
-                      <td>Product 01</td>  
-                      <td>Category2</td>
-                      <td>Unknown</td>  
-                      <td>1526</td>  
-                      <td>19</td>  
-                      <td>25</td>  
-                      <td><img src="D:\ims\dist\theme\p3.png" style="width:150px;height:120px;"/></td>  
-                      <td>
-                        <button class="btn btn-primary">Edit</button>                        
-                        <button class="btn btn-danger">Delete</button>
-                      </td>                      
+                      <td>Company 03</td>  
+                      <td>3.00 AM</td>
+                      <td>125606</td>
+                      <td><button class="btn btn-primary">View</button></td>                      
                     </tr>
                   </tbody>
                   <tfoot>
-                  <tr>
-                    <th>Product</th>
-                    <th>Category</th>
-                    <th>Details</th>                    
-                    <th>Price</th>                    
-                    <th>Sold</th>                    
-                    <th>In Stock</th>                    
-                    <th>Images</th>                    
-                    <th>Actions</th>  
-                  </tr>
+                    <tr>
+                      <th>Company Name</th>
+                      <th>Time</th>
+                      <th>Total Tk</th>    
+                      <th>Actions</th>                    
+                    </tr>
                   </tfoot>
                 </table>
               </div>
@@ -1427,6 +1414,7 @@
 <script src="../../plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
 <script src="../../plugins/jszip/jszip.min.js"></script>
 <script src="../../plugins/select2/js/select2.full.min.js"></script>
+<script src="../../plugins/daterangepicker/daterangepicker.js"></script>
 <!-- <script src="../../plugins/pdfmake/pdfmake.min.js"></script> -->
 <!-- <script src="../../plugins/pdfmake/vfs_fonts.js"></script> -->
 <!-- <script src="../../plugins/datatables-buttons/js/buttons.html5.min.js"></script> -->
