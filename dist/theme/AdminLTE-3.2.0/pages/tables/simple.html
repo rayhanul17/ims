@@ -11,6 +11,19 @@
   <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <style>
+    @media print {
+  body {
+    visibility: hidden;
+  }
+  #section-to-print {
+    visibility: visible;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
+  </style>
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -1127,67 +1140,51 @@
           <!-- /.col -->
         </div>
         <!-- /.row -->
-        <div class="row">
+        <div class="row" id="section-to-print">
           <div class="col-12">
-            <div class="card">
+            <div class="card text-center">
               <div class="card-header">
-                <h3 class="card-title">Responsive Hover Table</h3>
-
-                <div class="card-tools">
-                  <div class="input-group input-group-sm" style="width: 150px;">
-                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-
-                    <div class="input-group-append">
-                      <button type="submit" class="btn btn-default">
-                        <i class="fas fa-search"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <h3>Purchase Report</h3><hr/>
+                <h3>Supplier: Company Name</h3>
+                <h5>Date Time: 2023-06-01 10.00 AM</h5><input type="button" value="Print"
+                onclick="printDiv()">
+                <!-- <input type="button" id="btnPrint" value="Print" /> -->
               </div>
               <!-- /.card-header -->
               <div class="card-body table-responsive p-0">
                 <table class="table table-hover text-nowrap">
                   <thead>
                     <tr>
-                      <th>ID</th>
-                      <th>User</th>
-                      <th>Date</th>
-                      <th>Status</th>
-                      <th>Reason</th>
+                      <th>Sl</th>
+                      <th>Product</th>
+                      <th>Details</th>    
+                      <th>Unit Price</th>                    
+                      <th>Quantity</th>   
+                      <th>Total</th>                 
                     </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>183</td>
-                      <td>John Doe</td>
-                      <td>11-7-2014</td>
-                      <td><span class="tag tag-success">Approved</span></td>
-                      <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                    </tr>
-                    <tr>
-                      <td>219</td>
-                      <td>Alexander Pierce</td>
-                      <td>11-7-2014</td>
-                      <td><span class="tag tag-warning">Pending</span></td>
-                      <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                    </tr>
-                    <tr>
-                      <td>657</td>
-                      <td>Bob Doe</td>
-                      <td>11-7-2014</td>
-                      <td><span class="tag tag-primary">Approved</span></td>
-                      <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                    </tr>
-                    <tr>
-                      <td>175</td>
-                      <td>Mike Doe</td>
-                      <td>11-7-2014</td>
-                      <td><span class="tag tag-danger">Denied</span></td>
-                      <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                    </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>001</td>  
+                        <td>Product 01</td>
+                        <td>Unknown</td>
+                        <td>150</td>
+                        <td>2</td>                     
+                        <td>300</td>                     
+                      </tr>
+                      <tr>
+                        <td>002</td>  
+                        <td>Product 02</td>
+                        <td>Unknown</td>
+                        <td>450</td>
+                        <td>2</td>                     
+                        <td>900</td>                     
+                      </tr>
                   </tbody>
                 </table>
+              </div>
+              <div class="card-footer text-center">                
+                <h3 class="card-title text-center">Grand Total: 1200.00 Tk</h3>             
               </div>
               <!-- /.card-body -->
             </div>
@@ -1561,7 +1558,46 @@
   <!-- /.control-sidebar -->
 </div>
 <!-- ./wrapper -->
-
+<script>
+  function printDiv() {
+      var divContents = document.getElementById("section-to-print").innerHTML;
+      var a = window.open('', '', 'height=500, width=500');
+      a.document.write('<html>');
+      a.document.write('<body > <h1>Div contents are <br>');
+      a.document.write(divContents);
+      a.document.write('</body></html>');
+      a.document.close();
+      a.print();
+  }
+</script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript">
+$(function () {
+    $("#btnPrint").click(function () {
+        var contents = $("#section-to-print").html();
+        var frame1 = $('<iframe />');
+        frame1[0].name = "frame1";
+        frame1.css({ "position": "absolute", "top": "-1000000px" });
+        $("body").append(frame1);
+        var frameDoc = frame1[0].contentWindow ? frame1[0].contentWindow : frame1[0].contentDocument.document ? frame1[0].contentDocument.document : frame1[0].contentDocument;
+        frameDoc.document.open();
+        //Create a new HTML document.
+        frameDoc.document.write('<html><head><title>DIV Contents</title>');
+        frameDoc.document.write('</head><body>');
+        //Append the external CSS file.
+        frameDoc.document.write('<link href="style.css" rel="stylesheet" type="text/css" />');
+        //Append the DIV contents.
+        frameDoc.document.write(contents);
+        frameDoc.document.write('</body></html>');
+        frameDoc.document.close();
+        setTimeout(function () {
+            window.frames["frame1"].focus();
+            window.frames["frame1"].print();
+            frame1.remove();
+        }, 500);
+    });
+});
+</script>
 <!-- jQuery -->
 <script src="../../plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
