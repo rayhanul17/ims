@@ -990,7 +990,72 @@
           </div>
         </div>
         <!-- /.card -->
-
+        <div class="card card-default">
+          <div class="card-header">
+            <h3 class="card-title">New Purchase</h3>
+          </div>
+          <div class="card-body">
+            <form method="post">
+              <div class="row">
+                <div class="col-md-12 form-group">
+                  <label>Supplier</label> 
+                  <select class="form-control" name="add_cmp">
+                    <option selected="selected">ABC Company</option>
+                    <option value="Alaska2">Alaska</option>
+                    <option>California</option>
+                    <option>Delaware</option>
+                    <option>Tennessee</option>
+                    <option>Texas</option>
+                    <option>Washington</option>
+                  </select>  
+                </div> 
+              </div>
+              <div id="itemRows"> 
+                <div class="row"> 
+                  <div class="col-md-4 form-group">
+                    <label>Category</label> 
+                    <select class="form-control" name="add_ctg">
+                      <option selected="selected">Alabama</option>
+                      <option value="Alaska2">Alaska</option>
+                      <option>California</option>
+                      <option>Delaware</option>
+                      <option>Tennessee</option>
+                      <option>Texas</option>
+                      <option>Washington</option>
+                    </select>  
+                </div> 
+                <div class="col-md-4 form-group">            
+                  <label>Product</label> 
+                  <select class="form-control" name="add_prd">
+                    <option selected="selected">Alabama</option>
+                    <option value="Alaska">Alaska</option>
+                    <option>California</option>
+                    <option>Delaware</option>
+                    <option>Tennessee</option>
+                    <option>Texas</option>
+                    <option>Washington</option>
+                  </select>  
+                </div>
+                <div class="col-md-2 form-group">
+                  <label>Quantity</label>
+                  <input class="form-control" type="number" name="add_qty"/>
+                </div>
+               <div class="col-md-1 form-group">
+                <!-- Item name: <input type="text" name="add_name" />  -->
+                  <label>Action</label>
+                  <input class="btn btn-success form-control" onclick="addRow(this.form);" type="button" value= "Add Row" />
+                </div> 
+                <div class="col-md-1 form-group">
+                  <!-- Item name: <input type="text" name="add_name" />  -->
+                    <label>Action</label>
+                    <input type="submit" class="btn btn-primary form-control" value="Submit"/>
+                  </div> 
+              </div>              
+            </form>
+           <hr>
+          </div>    
+        </div>
+      </div>
         <!-- SELECT2 EXAMPLE -->
         <div class="card card-default">
           <div class="card-header">
@@ -1680,6 +1745,23 @@
 <!-- AdminLTE for demo purposes -->
 <script src="../../dist/js/demo.js"></script>
 <!-- Page specific script -->
+<script>
+  var rowNum = 0;
+
+  function addRow(frm) {
+  rowNum ++;
+  var row = '<div class="row pb-1" id="rowNum'+rowNum+'"><div class="col-md-4"><input readonly type="text" class="form-control" name="ctg[]" value="'+frm.add_ctg.value+'"></div><div class="col-md-4"><input readonly class="form-control" type="text" name="prd[]" value="'+frm.add_prd.value+'"></div><div class="col-md-2"><input readonly class="form-control" type="text" name="qty[]" value="'+frm.add_qty.value+'"></div><div class="col-md-2"><input class="form-control btn btn-danger" type="button" value="Remove" onclick="removeRow('+rowNum+');"></div></div>';
+  jQuery('#itemRows').append(row);
+  frm.add_qty.value = '';
+  frm.add_name.value = '';
+  frm.add_prd.value = '';
+  frm.add_ctg.value = '';
+  } 
+
+  function removeRow(rnum) {
+  jQuery('#rowNum'+rnum).remove();
+  }
+</script>
 <script>
   $(function () {
     //Initialize Select2 Elements
