@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Test.Models;
 
 namespace Test.Controllers
 {
@@ -10,6 +11,11 @@ namespace Test.Controllers
     {
         public ActionResult Index()
         {
+            using (var session = NHibernateHelper.GetSession())
+            {
+                var product = new ProductModel { Id = 11, Name = "Product01", Price = 120.65m };
+                session.Save(product);
+            }
             return View();
         }
 
