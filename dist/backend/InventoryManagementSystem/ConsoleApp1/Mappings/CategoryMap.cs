@@ -10,9 +10,9 @@ public class CategoryMap : ClassMap<Category>
         Id(x => x.Id).GeneratedBy.Identity();
         Map(x => x.Name);
         HasMany(x => x.Products)
+            .KeyColumn("CategoryId")
             .Inverse()
             .LazyLoad()
-            .Cascade.SaveUpdate()
-            .KeyColumn("CategoryId");
+            .Cascade.All();
     }
 }

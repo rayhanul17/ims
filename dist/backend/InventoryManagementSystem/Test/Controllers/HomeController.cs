@@ -18,7 +18,7 @@ namespace Test.Controllers
 
                     var p1 = new ProductModel { Name = "P1", Price = 120.65m };
                     var p2 = new ProductModel { Name = "P2", Price = 120.65m };
-                    var c1 = new CategoryModel { Name = "C1"};
+                    var c1 = new CategoryModel { Name = "C10"};
                     p1.Category = c1;
                     p2.Category = c1;
                     c1.Products = new List<ProductModel> { p1, p2 };

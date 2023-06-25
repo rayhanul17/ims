@@ -11,6 +11,7 @@ public class ProductMap : ClassMap<Product>
         Map(i => i.Name);
         Map(i => i.Price);
         References(i => i.Category)
-            .Column("CategoryId");
+            .Column("CategoryId")
+            .Cascade.All();
     }
 }
