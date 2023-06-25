@@ -1,5 +1,4 @@
 ﻿using FluentNHibernate.Mapping;
-using System.Web.UI.WebControls;
 using Test.Models;
 
 namespace Test.Mappings
@@ -9,9 +8,11 @@ namespace Test.Mappings
         public ProductMap()
         {
             Table("Products");
-            Map(i => i.Id);
+            Id(i => i.Id);
             Map(i => i.Name);
             Map(i => i.Price);
+            References(i => i.Category)
+                .Column("CategoryId");                
         }
     }
 }

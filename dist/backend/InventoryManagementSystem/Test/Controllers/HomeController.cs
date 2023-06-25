@@ -13,8 +13,21 @@ namespace Test.Controllers
         {
             using (var session = NHibernateHelper.GetSession())
             {
-                var product = new ProductModel { Id = 11, Name = "Product01", Price = 120.65m };
-                session.Save(product);
+                using (var tx = session.BeginTransaction())
+                {
+
+                    var p1 = new ProductModel { Name = "P1", Price = 120.65m };
+                    var p2 = new ProductModel { Name = "P2", Price = 120.65m };
+                    var c1 = new CategoryModel { Name = "C1"};
+                    p1.Category = c1;
+                    p2.Category = c1;
+                    c1.Products = new List<ProductModel> { p1, p2 };
+                    
+
+                    session.Save(c1);
+                    tx.Commit();
+                }
+
             }
             return View();
         }
@@ -22,6 +35,7 @@ namespace Test.Controllers
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
+
 
             return View();
         }
