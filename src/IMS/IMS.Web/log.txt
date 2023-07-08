@@ -1,3 +1,0 @@
-2023-07-08 16:26:34,730 [1] DEBUG IMS.Web.MvcApplication [(null)] - Log from log4net
-2023-07-08 16:27:46,195 [1] DEBUG IMS.Web.MvcApplication [(null)] - Log from log4net
-2023-07-08 16:35:17,521 [1] DEBUG IMS.Web.MvcApplication [(null)] - Log from log4net
