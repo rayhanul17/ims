@@ -1,4 +1,7 @@
-﻿using System.Web.Mvc;
+﻿using Autofac;
+using Autofac.Integration.Mvc;
+using log4net;
+using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 
@@ -8,6 +11,19 @@ namespace IMS.Web
     {
         protected void Application_Start()
         {
+            #region Autofac
+            var builder = new ContainerBuilder();
+
+            builder.RegisterControllers(typeof(MvcApplication).Assembly);
+            builder.RegisterModelBinders(typeof(MvcApplication).Assembly);
+            builder.RegisterModelBinderProvider();
+
+            builder.RegisterModule(new WebModule());
+            
+            var container = builder.Build();
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+            #endregion
+
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
