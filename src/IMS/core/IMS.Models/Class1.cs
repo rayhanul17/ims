@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IMS.BusinessModels
+namespace IMS.Models
 {
     public class Class1
     {

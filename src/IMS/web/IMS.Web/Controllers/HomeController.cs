@@ -14,7 +14,7 @@ namespace IMS.Web.Controllers
 
         public ActionResult Index()
         {
-            _logger.Info("Log from Home/Index page");
+            _logger.Info("Log from home/index");
             return View();
         }
 

@@ -9,8 +9,7 @@ namespace IMS.Web
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.Register(l => _logger).As<ILog>()
-                .SingleInstance();            
+            builder.Register(l => _logger).As<ILog>().SingleInstance();
 
             base.Load(builder);
         }
