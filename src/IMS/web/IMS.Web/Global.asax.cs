@@ -1,5 +1,6 @@
 using Autofac;
 using Autofac.Integration.Mvc;
+using IMS.Services;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -30,6 +31,7 @@ namespace IMS.Web
 
             //Add extra Module class
             builder.RegisterModule(new WebModule());
+            builder.RegisterModule(new ServiceModule("Data Source = DESKTOP-L0GNHBL\\SQLEXPRESS;Database=IMS;Trusted_Connection=True;"));
 
             var container = builder.Build();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));

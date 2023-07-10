@@ -315,6 +315,16 @@
     <Content Include="Scripts\jquery-3.7.0.slim.min.map" />
     <Content Include="Scripts\jquery-3.7.0.min.map" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\IMS.Models\IMS.Models.csproj">
+      <Project>{3092c6f5-fca3-40a6-b709-0746afbcf4ba}</Project>
+      <Name>IMS.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\IMS.Services\IMS.Services.csproj">
+      <Project>{45501277-c346-4135-9d39-4eda3bffc925}</Project>
+      <Name>IMS.Services</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
