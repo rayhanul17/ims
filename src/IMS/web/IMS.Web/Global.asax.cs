@@ -1,8 +1,5 @@
-using Autofac.Integration.Mvc;
 using Autofac;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Autofac.Integration.Mvc;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -10,7 +7,7 @@ using System.Web.Routing;
 
 namespace IMS.Web
 {
-    public class MvcApplication : System.Web.HttpApplication
+    public class MvcApplication : HttpApplication
     {
         protected void Application_Start()
         {

@@ -1,4 +1,6 @@
-﻿using log4net;
+﻿using Autofac;
+using log4net;
+using log4net.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +11,21 @@ namespace IMS.Web.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly ILifetimeScope _scope; 
         private readonly ILog _logger;
+        private readonly ILog _serviceLogger;
 
-        public HomeController(ILog logger)
+        public HomeController(ILifetimeScope scope)
         {
-            _logger = logger;
+            _scope = scope;
+            _logger = _scope.Resolve<ILog>();
+            _serviceLogger = _scope.ResolveNamed<ILog>("Service");
         }
 
         public ActionResult Index()
         {
             _logger.Info("Log from home/index");
+            _serviceLogger.Info("From Service Logger");
             return View();
         }
 
