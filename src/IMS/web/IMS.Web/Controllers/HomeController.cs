@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using IMS.Models.Entities;
 using IMS.Services;
 using log4net;
 using System.Threading.Tasks;
@@ -21,8 +22,9 @@ namespace IMS.Web.Controllers
             _categoryService = categoryService;
         }
 
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(Category obj)
         {
+            var ob = obj as Category;
             _logger.Info("Log from home/index");
             _serviceLogger.Info("From Service Logger");
             _categoryService.Add();
