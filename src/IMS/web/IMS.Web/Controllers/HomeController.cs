@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using IMS.Services;
 using log4net;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace IMS.Web.Controllers
@@ -20,12 +21,12 @@ namespace IMS.Web.Controllers
             _categoryService = categoryService;
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             _logger.Info("Log from home/index");
             _serviceLogger.Info("From Service Logger");
             _categoryService.Add();
-            var o = _categoryService.GetByIdAsync(4);
+            var o = await _categoryService.GetByIdAsync(4);
             return View();
         }
 

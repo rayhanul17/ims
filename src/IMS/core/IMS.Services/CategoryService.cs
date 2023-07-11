@@ -17,8 +17,14 @@ namespace IMS.Services
         }
         public void Add()
         {
-            var cat = new Category { Name = "Category-1", Description = "*", BusinessId = "Nothing" };
-            _categoryRepository.Add(cat);
+            var p1 = new Product { Name = "P1", Description = "None" };
+            var p2 = new Product { Name = "P2", Description ="None" };
+            var c1 = new Category { Name = "C1" };
+            p1.Category = c1;
+            p2.Category = c1;
+            c1.Products = new List<Product> { p1, p2 };
+
+            _categoryRepository.Add(c1);
         }
 
         public async Task<Category> GetByIdAsync(long id)

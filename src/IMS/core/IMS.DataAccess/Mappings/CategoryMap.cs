@@ -19,6 +19,11 @@ namespace IMS.DataAccess.Mappings
             Map(x => x.Rank);
             Map(x => x.VersionNumber);
             Map(x => x.BusinessId);
+            HasMany(x => x.Products)
+                .KeyColumn("CategoryId")
+                .Inverse()
+                .LazyLoad()
+                .Cascade.All();
         }
     }
 }
