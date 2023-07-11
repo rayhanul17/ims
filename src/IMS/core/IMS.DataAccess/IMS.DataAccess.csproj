@@ -72,12 +72,10 @@
     <Compile Include="Repositories\ICategoryRepository.cs" />
     <Compile Include="Repositories\IRepository.cs" />
     <Compile Include="Repositories\Repository.cs" />
-    <Compile Include="Utilities\IDataSessionFactory.cs" />
-    <Compile Include="Utilities\MsSqlSessionFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IMS.Infrastructure\IMS.Infrastructure.csproj">
-      <Project>{271500b1-010d-4184-8d18-cae7a5422675}</Project>
+      <Project>{b0a78485-4005-4721-a8cd-967fef044961}</Project>
       <Name>IMS.Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\IMS.Models\IMS.Models.csproj">

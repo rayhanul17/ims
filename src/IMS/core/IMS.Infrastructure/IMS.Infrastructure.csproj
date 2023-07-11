@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{271500B1-010D-4184-8D18-CAE7A5422675}</ProjectGuid>
+    <ProjectGuid>{B0A78485-4005-4721-A8CD-967FEF044961}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>IMS.Infrastructure</RootNamespace>
@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
     <Compile Include="Enums\Status.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
