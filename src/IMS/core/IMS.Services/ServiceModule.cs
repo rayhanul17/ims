@@ -21,7 +21,7 @@ namespace IMS.Services
         {
             builder.RegisterType<MsSqlSessionFactory>().As<IDataSessionFactory>()
                .WithParameter("connectionString", _connectionString)
-               .InstancePerLifetimeScope();
+               .SingleInstance();
 
             builder.RegisterType<CategoryService>().AsSelf()
                 .InstancePerLifetimeScope();

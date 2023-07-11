@@ -1,5 +1,6 @@
 using Autofac;
 using Autofac.Integration.Mvc;
+using IMS.DataAccess.Utilities;
 using IMS.Services;
 using System.Web;
 using System.Web.Mvc;
@@ -33,6 +34,9 @@ namespace IMS.Web
             builder.RegisterModule(new WebModule());
             builder.RegisterModule(new ServiceModule("Data Source = DESKTOP-L0GNHBL\\SQLEXPRESS;Database=IMS;Trusted_Connection=True;"));
 
+            builder.Register(x => new MsSqlSessionFactory("Data Source = DESKTOP-L0GNHBL\\SQLEXPRESS;Database=IMS;Trusted_Connection=True;").OpenSession()).SingleInstance();
+
+            
             var container = builder.Build();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
             #endregion
