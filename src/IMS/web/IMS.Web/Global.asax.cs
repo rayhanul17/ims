@@ -2,6 +2,7 @@ using Autofac;
 using Autofac.Integration.Mvc;
 using IMS.Services;
 using IMS.Services.SessionFactories;
+using System.Configuration;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -13,6 +14,8 @@ namespace IMS.Web
     {
         protected void Application_Start()
         {
+            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+
             #region Autofac
             var builder = new ContainerBuilder();
 

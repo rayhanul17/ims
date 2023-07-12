@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using IMS.Web.Models.Categories;
 using log4net;
 
 namespace IMS.Web
@@ -12,6 +13,9 @@ namespace IMS.Web
         {
             builder.Register(l => _logger).As<ILog>().SingleInstance();
             builder.Register(l => _serviceLogger).Named<ILog>("Service").SingleInstance();
+
+            builder.RegisterType<CategoryCreateModel>().AsSelf()
+                .InstancePerLifetimeScope();
 
             base.Load(builder);
         }

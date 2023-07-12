@@ -44,6 +44,8 @@
     <Compile Include="Class1.cs" />
     <Compile Include="Enums\Status.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\ITimeService.cs" />
+    <Compile Include="Utility\TimeService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

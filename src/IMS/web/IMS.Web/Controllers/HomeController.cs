@@ -11,25 +11,19 @@ namespace IMS.Web.Controllers
     {
         private readonly ILifetimeScope _scope;
         private readonly ILog _logger;
-        private readonly ILog _serviceLogger;
-        private readonly CategoryService _categoryService;
+        private readonly ILog _serviceLogger;       
 
-        public HomeController(ILifetimeScope scope, CategoryService categoryService)
+        public HomeController(ILifetimeScope scope)
         {
             _scope = scope;
             _logger = _scope.Resolve<ILog>();
-            _serviceLogger = _scope.ResolveNamed<ILog>("Service");
-            _categoryService = categoryService;
+            _serviceLogger = _scope.ResolveNamed<ILog>("Service");            
         }
 
-        [Authorize]
+       
         public async Task<ActionResult> Index(Category obj)
         {
-            var ob = obj as Category;
-            _logger.Info("Log from home/index");
-            _serviceLogger.Info("From Service Logger");
-            _categoryService.Add();
-            //var o = await _categoryService.GetByIdAsync(4);
+            
             return View();
         }
 

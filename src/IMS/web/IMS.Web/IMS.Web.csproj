@@ -212,12 +212,14 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Categories\CategoryCreateModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -2313,6 +2315,8 @@
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Menus.cshtml" />
+    <Content Include="Views\Category\Create.cshtml" />
+    <Content Include="Views\Category\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -2346,9 +2350,9 @@
     <Content Include="Scripts\jquery-3.7.0.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\IMS.DataAccess\IMS.DataAccess.csproj">
-      <Project>{AB44C8B9-E764-489D-A85C-D15AEF026083}</Project>
-      <Name>IMS.DataAccess</Name>
+    <ProjectReference Include="..\..\core\IMS.Infrastructure\IMS.Infrastructure.csproj">
+      <Project>{B0A78485-4005-4721-A8CD-967FEF044961}</Project>
+      <Name>IMS.Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\core\IMS.Models\IMS.Models.csproj">
       <Project>{3092c6f5-fca3-40a6-b709-0746afbcf4ba}</Project>
