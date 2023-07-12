@@ -35,9 +35,9 @@ namespace IMS.Web
 
             //Add extra Module class
             builder.RegisterModule(new WebModule());
-            builder.RegisterModule(new ServiceModule("Data Source = DESKTOP-L0GNHBL\\SQLEXPRESS;Database=IMS;Trusted_Connection=True;"));
+            builder.RegisterModule(new ServiceModule(connectionString));
 
-            builder.Register(x => new MsSqlSessionFactory("Data Source = DESKTOP-L0GNHBL\\SQLEXPRESS;Database=IMS;Trusted_Connection=True;").OpenSession()).SingleInstance();
+            builder.Register(x => new MsSqlSessionFactory(connectionString).OpenSession()).SingleInstance();
 
 
             var container = builder.Build();
