@@ -22,6 +22,7 @@ namespace IMS.Web.Controllers
             _categoryService = categoryService;
         }
 
+        [Authorize]
         public async Task<ActionResult> Index(Category obj)
         {
             var ob = obj as Category;
