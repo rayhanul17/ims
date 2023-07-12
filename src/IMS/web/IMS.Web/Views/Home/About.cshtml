@@ -31,9 +31,8 @@
                     <div class="card-body">
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                         <div class="form-group">
-                            <label> @Html.LabelFor(m => m.Name)</label>
-                            <input type="text" class="form-control" placeholder="Category Name" /> 
-                            @Html.EditorFor(m => m.Name,  new { @class = "form-control", @placeholder = "Category Name" } )/>
+                            <label> @Html.LabelFor(m => m.Name)</label>                            
+                            @Html.TextBoxFor(m => m.Name,  new { @class = "form-control", @placeholder = "Category Name" } )
                             <span>@Html.ValidationMessageFor(model => model.Name)</span>
                         </div>
                     </div>
@@ -49,7 +48,4 @@
     <!-- /.row -->
 </div><!-- /.container-fluid -->
 
-@*@section Scripts{
 
-    <partial name="_ValidationScriptsPartial" />
-}*@

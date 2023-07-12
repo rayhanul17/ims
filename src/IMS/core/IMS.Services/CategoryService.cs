@@ -24,7 +24,7 @@ namespace IMS.Services
             p2.Category = c1;
             c1.Products = new List<Product> { p1, p2 };
 
-            _categoryRepository.Add(c1);
+            _categoryRepository.AddAsync(c1);
         }
 
         public async Task<Category> GetByIdAsync(long id)

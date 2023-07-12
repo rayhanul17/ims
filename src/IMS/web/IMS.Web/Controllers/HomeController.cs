@@ -28,7 +28,7 @@ namespace IMS.Web.Controllers
             _logger.Info("Log from home/index");
             _serviceLogger.Info("From Service Logger");
             _categoryService.Add();
-            var o = await _categoryService.GetByIdAsync(4);
+            //var o = await _categoryService.GetByIdAsync(4);
             return View();
         }
 

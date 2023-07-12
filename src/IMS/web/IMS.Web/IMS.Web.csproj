@@ -239,6 +239,7 @@
     <Content Include="assets\css\alt\adminlte.pages.min.css" />
     <Content Include="assets\css\alt\adminlte.plugins.css" />
     <Content Include="assets\css\alt\adminlte.plugins.min.css" />
+    <Content Include="assets\images\IMSLogo.png" />
     <Content Include="assets\js\adminlte.js" />
     <Content Include="assets\js\adminlte.min.js" />
     <Content Include="assets\js\demo.js" />
@@ -2311,6 +2312,7 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Shared\_Menus.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
