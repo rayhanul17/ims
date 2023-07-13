@@ -2,8 +2,8 @@
 {
     public enum Status
     {
-        Active,
-        Inactive,
-        Delete
+        Active = 1,
+        Inactive = 0,
+        Delete = 404
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using IMS.DataAccess.Repositories;
 using IMS.Infrastructure.Utility;
+using IMS.Models.Dtos.Categories;
 using IMS.Models.Entities;
 using log4net;
 using NHibernate;
@@ -26,12 +27,18 @@ namespace IMS.AllServices
             _serviceLogger = _scope.ResolveNamed<ILog>("Service");
         }
 
-        public async Task AddAsync(Category category, string aspUser)
+        public async Task AddAsync(CategoryAdd categoryadd)
         {
             using (var tx = _session.BeginTransaction())
             {
                 try
                 {
+                    #region Mapping
+                    Category category = new Category();
+                    category.Name = categoryadd.Name;
+                    category.Description = categoryadd.Description;
+                    category.Status = (int)categoryadd.Status;
+                    #endregion
                     category.CreationDate = _timeService.Now;
                     //Add Real User Id----------
                     category.CreateBy = 10;

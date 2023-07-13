@@ -6,7 +6,7 @@ namespace IMS.Models.Entities
     public abstract class BaseEntity : IEntity<long>
     {
         public virtual long Id { get; set; }
-        public virtual Status Status { get; set; }
+        public virtual long Status { get; set; }
         public virtual long CreateBy { get; set; }
         public virtual DateTime CreationDate { get; set; }
         public virtual long ModifyBy { get; set; }

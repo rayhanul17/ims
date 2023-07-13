@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using IMS.AllServices;
 using IMS.Infrastructure.Enums;
+using IMS.Models.Dtos.Categories;
 using IMS.Models.Entities;
 using System.Threading.Tasks;
 
@@ -11,8 +12,7 @@ namespace IMS.Web.Models.Categories
         public string Name { get; set; }
         public string Description { get; set; }
         public int Rank { get; set; }
-        public Status Status { get; set; }
-        public long CreateBy { get; set; }
+        public Status Status { get; set; }        
 
         private ILifetimeScope _scope;
         private ICategoryService _categoryService;
@@ -33,10 +33,10 @@ namespace IMS.Web.Models.Categories
             _categoryService = _scope.Resolve<ICategoryService>();
         }
 
-        internal async Task AddAsync(string aspUser)
+        internal async Task AddAsync()
         {
-            var category = new Category { Name = Name, Description = Description, Rank = Rank, Status = Status };
-            await _categoryService.AddAsync(category, aspUser);
+            var category = new CategoryAdd { Name = Name, Description = Description, Rank = Rank, Status = Status };
+            await _categoryService.AddAsync(category);
         }
     }
 }

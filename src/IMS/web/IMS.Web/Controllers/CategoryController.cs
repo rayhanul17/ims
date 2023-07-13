@@ -40,7 +40,7 @@ namespace IMS.Web.Controllers
         {
             model.ResolveDependency(_scope);
             string aspUser = User.Identity.GetUserId();
-            await model.AddAsync(aspUser);
+            await model.AddAsync();
             return View();
         }
 
