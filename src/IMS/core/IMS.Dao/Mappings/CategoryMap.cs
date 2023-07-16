@@ -14,7 +14,6 @@ namespace IMS.Dao.Mappings
         {
             Table("Category");
             Id(x => x.Id);
-            Map(x => x.CreateBy);
             Map(x => x.Name);
             Map(x => x.Description);
             Map(x => x.CreateBy);

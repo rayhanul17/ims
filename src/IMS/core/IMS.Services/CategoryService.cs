@@ -1,6 +1,7 @@
 ﻿using IMS.BusinessModel.Entity;
 using IMS.BusinessModel.ViewModel;
 using IMS.Dao;
+using log4net;
 using NHibernate;
 using System;
 using System.Collections.Generic;
@@ -18,9 +19,10 @@ namespace IMS.Services
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryDao _categoryDao;
+        private readonly ILog _serviceLogger = LogManager.GetLogger("ServiceLogger");
 
         public CategoryService(ISession session)
-        {
+        {            
             _categoryDao = new CategoryDao(session);
         }
 
@@ -34,6 +36,7 @@ namespace IMS.Services
             };
 
             await _categoryDao.AddAsync(category);
+            _serviceLogger.Info("Data Saved!");
         }
     }
 

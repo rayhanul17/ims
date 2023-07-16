@@ -3,6 +3,7 @@ using FluentNHibernate.Cfg.Db;
 using IMS.Dao.Mappings;
 using NHibernate;
 using NHibernate.Tool.hbm2ddl;
+using System.Data.SqlClient;
 
 namespace IMS.Services.SessionFactories
 {

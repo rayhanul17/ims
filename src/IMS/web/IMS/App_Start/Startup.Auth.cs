@@ -34,7 +34,7 @@ namespace IMS
                         (
                              validateInterval: TimeSpan.FromMinutes(30),
                              regenerateIdentityCallback: (manager, user) => user.GenerateUserIdentityAsync(manager),
-                             getUserIdCallback: (id) => (long.Parse(id.GetUserId()))
+                             getUserIdCallback: (id) => id.GetUserId<long>()
                         )
                 }
             });            
