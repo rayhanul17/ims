@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Web;
+﻿using IMS.Models;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
-using IMS.Models;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace IMS
 {
@@ -41,7 +35,7 @@ namespace IMS
         }
 
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options,
-           IOwinContext context)
+            IOwinContext context)
         {
             var manager = new ApplicationUserManager(new UserStoreIntPk(context.Get<ApplicationDbContext>()));
             // Configure validation logic for usernames
@@ -74,7 +68,7 @@ namespace IMS
             if (dataProtectionProvider != null)
             {
                 manager.UserTokenProvider = new DataProtectorTokenProvider<ApplicationUser, long>
-                                           (dataProtectionProvider.Create("ASP.NET Identity"));
+                                            (dataProtectionProvider.Create("ASP.NET Identity"));
             }
             return manager;
         }

@@ -13,7 +13,7 @@ namespace IMS.Models
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {
             var userIdentity = await manager.CreateIdentityAsync(this,
-                              DefaultAuthenticationTypes.ApplicationCookie);
+                               DefaultAuthenticationTypes.ApplicationCookie);
 
             // Add custom user claims here
             return userIdentity;
