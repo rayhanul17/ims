@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using IMS.BusinessRules;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Configuration;
 using System.Security.Claims;
@@ -20,13 +21,17 @@ namespace IMS.Models
         }
     }
 
+    //string connectionString = DbConnectionString.ConnectionString;
+    //public ApplicationDbContext()
+    //    : base("Data Source = DESKTOP-L0GNHBL\\SQLEXPRESS;Database=IMS;Trusted_Connection=True;")
+
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, RoleIntPk, long,
         UserLoginIntPk, UserRoleIntPk, UserClaimIntPk>
-    {
-        string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+    {        
         public ApplicationDbContext()
-            : base("Data Source = DESKTOP-L0GNHBL\\SQLEXPRESS;Database=IMS;Trusted_Connection=True;")
+            : base(DbConnectionString.ConnectionString)
         {
+
         }
 
         public static ApplicationDbContext Create()

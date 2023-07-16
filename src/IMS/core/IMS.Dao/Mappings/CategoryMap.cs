@@ -14,16 +14,16 @@ namespace IMS.Dao.Mappings
         {
             Table("Category");
             Id(x => x.Id);
-            Map(x => x.Name);
+            Map(x => x.Name).Not.Nullable();
             Map(x => x.Description);
-            Map(x => x.CreateBy);
-            Map(x => x.CreationDate);
-            Map(x => x.ModifyBy).Nullable();
-            Map(x => x.ModificationDate).Nullable();
-            Map(x => x.Status);
+            Map(x => x.CreateBy).Not.Nullable();
+            Map(x => x.CreationDate).Not.Nullable();
+            Map(x => x.ModifyBy);
+            Map(x => x.ModificationDate);
+            Map(x => x.Status).Not.Nullable();
             Map(x => x.Rank);
             Map(x => x.VersionNumber);
-            Map(x => x.BusinessId).Nullable();
+            Map(x => x.BusinessId);
             //HasMany(x => x.Products)
             //    .KeyColumn("CategoryId")
             //    .Inverse()

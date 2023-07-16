@@ -3,25 +3,20 @@ using IMS.BusinessRules;
 using IMS.Services;
 using IMS.Services.SessionFactories;
 using log4net;
-using Microsoft.AspNet.Identity;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 
 namespace IMS.Controllers
 {
     [Authorize]
     public class CategoryController : Controller
-    {        
+    {
         private readonly ICategoryService _categoryService;
         private static readonly ILog _logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public CategoryController()
-        {             
+        {
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
             _categoryService = new CategoryService(session);
 
@@ -44,7 +39,7 @@ namespace IMS.Controllers
         {
             try
             {
-                if(ModelState.IsValid)
+                if (ModelState.IsValid)
                 {
                     await _categoryService.Add(model);
                 }
