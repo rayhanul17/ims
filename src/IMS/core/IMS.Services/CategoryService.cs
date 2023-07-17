@@ -1,10 +1,9 @@
 ﻿using IMS.BusinessModel.Dto;
 using IMS.BusinessModel.Entity;
 using IMS.BusinessModel.ViewModel;
+using IMS.BusinessRules.Enum;
 using IMS.Dao;
-using log4net.Repository.Hierarchy;
 using NHibernate;
-using NHibernate.Mapping.ByCode.Impl;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -15,7 +14,8 @@ namespace IMS.Services
     public interface ICategoryService
     {
         Task AddAsync(CategoryAddModel model, long userId);
-        Task EditAsync(CategoryEditModel model, long userId);
+        Task<CategoryEditModel> GetByIdAsync(long id);
+        Task UpdateAsync(CategoryEditModel model, long userId);
         #region Load instances
         IList<CategoryDto> LoadAllCategories();
         (int total, int totalDisplay, IList<CategoryDto> records) LoadAllCategories(string searchBy, int length, int start, string sortBy, string sortDir);
@@ -60,7 +60,7 @@ namespace IMS.Services
             }
         }
 
-        public Task EditAsync(CategoryEditModel model, long userId)
+        public Task UpdateAsync(CategoryEditModel model, long userId)
         {
             throw new NotImplementedException();
         }
@@ -80,7 +80,8 @@ namespace IMS.Services
                 foreach (Category category in result.data)
                 {
                     categories.Add(
-                        new CategoryDto {
+                        new CategoryDto
+                        {
                             Id = category.Id,
                             Name = category.Name,
                             Description = category.Description,
@@ -88,7 +89,7 @@ namespace IMS.Services
                             CreationDate = category.CreationDate,
                             ModifyBy = category.ModifyBy,
                             ModificationDate = category.ModificationDate,
-                            Status = category.Status,
+                            Status = (Status)category.Status,
                             Rank = category.Rank,
                             VersionNumber = category.VersionNumber,
                             BusinessId = category.BusinessId,
@@ -107,6 +108,26 @@ namespace IMS.Services
         public IList<CategoryDto> LoadAllCategories()
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<CategoryEditModel> GetByIdAsync(long id)
+        {
+            var category = await _categoryDao.GetByIdAsync(id);
+
+            return new CategoryEditModel
+            {
+                Id = category.Id,
+                Name = category.Name,
+                Description = category.Description,
+                CreateBy = category.CreateBy,
+                CreationDate = category.CreationDate,
+                ModifyBy = category.ModifyBy,
+                ModificationDate = category.ModificationDate,
+                Status = (Status)category.Status,
+                Rank = category.Rank,
+                VersionNumber = category.VersionNumber,
+                BusinessId = category.BusinessId,
+            };
         }
     }
 

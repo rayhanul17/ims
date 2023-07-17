@@ -2286,6 +2286,7 @@
     <Content Include="Views\Shared\_AllMenusPartial.cshtml" />
     <Content Include="Views\Category\Create.cshtml" />
     <Content Include="Views\Shared\_ModalPartial.cshtml" />
+    <Content Include="Views\Category\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -10,7 +10,7 @@ namespace IMS.BusinessModel.ViewModel
         public long Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public virtual int Status { get; set; }
+        public virtual Status Status { get; set; }
         public virtual long CreateBy { get; set; }
         public virtual DateTime CreationDate { get; set; }
         public virtual long ModifyBy { get; set; }

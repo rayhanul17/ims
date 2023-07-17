@@ -57,6 +57,13 @@ namespace IMS.Controllers
             return View();
         }
 
+        [HttpGet]
+        public async Task<ActionResult> Edit(long id)
+        {
+            var model = await _categoryService.GetByIdAsync(id);
+            
+            return View(model);
+        }
         
         public JsonResult GetCategories()
         {
