@@ -1,15 +1,25 @@
-﻿using IMS.BusinessModel.Entity;
+﻿using IMS.BusinessModel.Dto;
+using IMS.BusinessModel.Entity;
 using IMS.BusinessModel.ViewModel;
 using IMS.Dao;
+using log4net.Repository.Hierarchy;
 using NHibernate;
+using NHibernate.Mapping.ByCode.Impl;
 using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace IMS.Services
 {
     public interface ICategoryService
     {
-        Task Add(CategoryAddModel model);
+        Task AddAsync(CategoryAddModel model, long userId);
+        Task EditAsync(CategoryEditModel model, long userId);
+        #region Load instances
+        IList<CategoryDto> LoadAllCategories();
+        (int total, int totalDisplay, IList<CategoryDto> records) LoadAllCategories(string searchBy, int length, int start, string sortBy, string sortDir);
+        #endregion
     }
 
     public class CategoryService : BaseService, ICategoryService
@@ -21,7 +31,7 @@ namespace IMS.Services
             _categoryDao = new CategoryDao(session);
         }
 
-        public async Task Add(CategoryAddModel model)
+        public async Task AddAsync(CategoryAddModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -32,6 +42,9 @@ namespace IMS.Services
                         Name = model.Name,
                         Description = model.Description,
                         Status = (int)model.Status,
+                        CreateBy = userId,
+                        CreationDate = _timeService.Now,
+
                     };
 
                     await _categoryDao.AddAsync(category);
@@ -45,6 +58,55 @@ namespace IMS.Services
                     _serviceLogger.Error(ex.Message, ex);
                 }
             }
+        }
+
+        public Task EditAsync(CategoryEditModel model, long userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public (int total, int totalDisplay, IList<CategoryDto> records) LoadAllCategories(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
+        {
+            try
+            {
+                Expression<Func<BaseEntity<long>, bool>> filter = null;
+                if (searchBy != null)
+                {
+                    filter = x => x.Name.Contains(searchBy);
+                }
+                var result = _categoryDao.LoadAll(filter, null, start, length, sortBy, sortDir);
+
+                List<CategoryDto> categories = new List<CategoryDto>();
+                foreach (Category category in result.data)
+                {
+                    categories.Add(
+                        new CategoryDto {
+                            Id = category.Id,
+                            Name = category.Name,
+                            Description = category.Description,
+                            CreateBy = category.CreateBy,
+                            CreationDate = category.CreationDate,
+                            ModifyBy = category.ModifyBy,
+                            ModificationDate = category.ModificationDate,
+                            Status = category.Status,
+                            Rank = category.Rank,
+                            VersionNumber = category.VersionNumber,
+                            BusinessId = category.BusinessId,
+                        });
+                }
+
+                return (result.total, result.totalDisplay, categories);
+            }
+            catch (Exception ex)
+            {
+                _serviceLogger.Error(ex.Message, ex);
+                throw;
+            }
+        }
+
+        public IList<CategoryDto> LoadAllCategories()
+        {
+            throw new NotImplementedException();
         }
     }
 

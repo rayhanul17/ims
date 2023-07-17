@@ -6,6 +6,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using System.Runtime.Remoting.Contexts;
+using IMS.BusinessRules.Enum;
 
 namespace IMS.Dao
 {
@@ -35,6 +37,10 @@ namespace IMS.Dao
 
         IList<TEntity> GetDynamic(Expression<Func<TEntity, bool>> filter = null,
             string orderBy = null);
+
+        //For BaseEntity
+        (IList<BaseEntity<TKey>> data, int total, int totalDisplay) LoadAll(Expression<Func<BaseEntity<TKey>, bool>> filter = null,
+            string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
     }
     #endregion
 
@@ -210,6 +216,42 @@ namespace IMS.Dao
             {
                 return query.ToList();
             }
+        }
+
+        //For BaseEntity
+        public (IList<BaseEntity<TKey>> data, int total, int totalDisplay) LoadAll(Expression<Func<BaseEntity<TKey>, bool>> filter = null,
+            string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
+        {
+            IQueryable<BaseEntity<TKey>> query = _session.Query<BaseEntity<TKey>>();
+
+            query = query.Where(x => x.Status == (int)Status.Active);
+
+            var total = query.Count();
+            var totalDisplay = query.Count();
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+                totalDisplay = query.Count();
+            }
+
+            //sorting
+            switch (sortBy)
+            {
+                case "Name":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.Name) : query.OrderByDescending(c => c.Name);
+                    break;
+                case "Created By":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.CreateBy) : query.OrderByDescending(c => c.CreateBy);
+                    break;
+                case "Modified By":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.ModifyBy) : query.OrderByDescending(c => c.ModifyBy);
+                    break;
+            }
+
+            var result = query.Skip(pageIndex).Take(pageSize);
+
+            return (result.ToList(), total, totalDisplay);
         }
     }
 #endregion

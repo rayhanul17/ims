@@ -158,7 +158,7 @@ namespace IMS.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+                    //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
 
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
@@ -168,7 +168,7 @@ namespace IMS.Controllers
                     
                     var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
                     IAccountService accountService = new AccountService(session);
-                    await accountService.CreateUserAsync(model.Name, user.Id);
+                    await accountService.CreateUserAsync(model.Name, user.Id, User.Identity.GetUserId<long>());
 
                     return RedirectToAction("Index", "Home");
                 }

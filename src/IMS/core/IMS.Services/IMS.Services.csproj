@@ -74,6 +74,7 @@
     <Compile Include="CategoryService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SessionFactories\MsSqlSessionFactory.cs" />
+    <Compile Include="TimeService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IMS.BusinessModel\IMS.BusinessModel.csproj">

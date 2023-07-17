@@ -1,19 +1,14 @@
-﻿using IMS.BusinessModel.Dto;
-using IMS.BusinessModel.Entity;
+﻿using IMS.BusinessModel.Entity;
 using IMS.Dao;
 using NHibernate;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace IMS.Services
 {
     public interface IAccountService
     {
-        Task CreateUserAsync(string name, long id);
+        Task CreateUserAsync(string name, long id, long creatorId);
     }
     public class AccountService : BaseService, IAccountService
     {
@@ -24,7 +19,7 @@ namespace IMS.Services
             _userDao = new ApplicationUserDao(session);
         }
 
-        public async Task CreateUserAsync(string name, long id)
+        public async Task CreateUserAsync(string name, long id, long creatorId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -33,7 +28,9 @@ namespace IMS.Services
                     var user = new ApplicationUser()
                     {
                         AspNetUsersId = id,
-                        Name = name                        
+                        Name = name,
+                        CreateBy = creatorId,
+                        CreationDate = _timeService.Now,
                     };
 
                     await _userDao.AddAsync(user);
@@ -49,6 +46,4 @@ namespace IMS.Services
             }
         }
     }
-
-
 }
