@@ -2,6 +2,7 @@
 using IMS.BusinessModel.ViewModel;
 using IMS.Dao;
 using NHibernate;
+using System;
 using System.Threading.Tasks;
 
 namespace IMS.Services
@@ -22,15 +23,28 @@ namespace IMS.Services
 
         public async Task Add(CategoryAddModel model)
         {
-            var category = new Category()
+            using (var transaction = _session.BeginTransaction())
             {
-                Name = model.Name,
-                Description = model.Description,
-                Status = (int)model.Status,
-            };
+                try
+                {
+                    var category = new Category()
+                    {
+                        Name = model.Name,
+                        Description = model.Description,
+                        Status = (int)model.Status,
+                    };
 
-            await _categoryDao.AddAsync(category);
-            _serviceLogger.Info("Data Saved!");
+                    await _categoryDao.AddAsync(category);
+                    transaction.Commit();
+
+                    _serviceLogger.Info("Data Saved!");
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    _serviceLogger.Error(ex.Message, ex);
+                }
+            }
         }
     }
 

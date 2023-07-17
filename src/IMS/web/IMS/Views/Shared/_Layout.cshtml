@@ -17,6 +17,9 @@
     <link rel="stylesheet" href="~/assets/css/adminlte.min.css">
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="~/assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+
+    @*@Styles.Render("~/Content/css")*@
+    @Scripts.Render("~/bundles/modernizr")
     @RenderSection("Styles", false)
 
 </head>
@@ -83,15 +86,17 @@
                     <div class="row mb-2">
                         <div class="col-sm-6">
                             <h1 class="m-0">Dashboard</h1>
-                        </div>--><!-- /.col -->
-                        <!--<div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                <li class="breadcrumb-item active">Dashboard v1</li>
-                            </ol>
-                        </div>--><!-- /.col -->
-                    <!--</div>--><!-- /.row -->
-                <!--</div>--><!-- /.container-fluid -->
+                        </div>-->
+            <!-- /.col -->
+            <!--<div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard v1</li>
+                </ol>
+            </div>-->
+            <!-- /.col -->
+            <!--</div>--><!-- /.row -->
+            <!--</div>--><!-- /.container-fluid -->
             <!--</div>-->
             <!-- /.content-header -->
             <!-- Main content -->
@@ -137,6 +142,10 @@
     <script src="~/assets/js/demo.js"></script>
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="~/assets/js/pages/dashboard.js"></script>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @*@Scripts.Render("~/bundles/bootstrap")*@
 
     @RenderSection("Scripts", false)
 </body>

@@ -5,6 +5,7 @@ namespace IMS.BusinessModel.Entity
     public abstract class BaseEntity<T> : IEntity<T>
     {
         public virtual T Id { get; set; }
+        public virtual string Name { get; set; }
         public virtual long Status { get; set; }
         public virtual T CreateBy { get; set; }
         public virtual DateTime CreationDate { get; set; }

@@ -67,6 +67,8 @@
   <ItemGroup>
     <Compile Include="BaseDao.cs" />
     <Compile Include="CategoryDao.cs" />
+    <Compile Include="Mappings\ApplicationUserMap.cs" />
+    <Compile Include="Mappings\BaseMapping.cs" />
     <Compile Include="Mappings\CategoryMap.cs" />
     <Compile Include="Mappings\MappingRefference.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

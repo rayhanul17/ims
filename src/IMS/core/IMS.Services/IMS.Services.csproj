@@ -69,6 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountService.cs" />
     <Compile Include="BaseService.cs" />
     <Compile Include="CategoryService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
