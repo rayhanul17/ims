@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplicationUserDao.cs" />
     <Compile Include="BaseDao.cs" />
     <Compile Include="CategoryDao.cs" />
     <Compile Include="Mappings\ApplicationUserMap.cs" />
