@@ -34,10 +34,12 @@ namespace IMS
                         (
                              validateInterval: TimeSpan.FromMinutes(30),
                              regenerateIdentityCallback: (manager, user) => user.GenerateUserIdentityAsync(manager),
-                             getUserIdCallback: (id) => id.GetUserId<long>()
+                             getUserIdCallback: (id) => GrabUserId(id)
                         )
+
                 }
-            });            
+            });    
+            
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
             // Enables the application to temporarily store user information when they are verifying the second factor in the two-factor authentication process.
@@ -66,6 +68,16 @@ namespace IMS
             //    ClientId = "",
             //    ClientSecret = ""
             //});
+        }
+
+        private static long GrabUserId(System.Security.Claims.ClaimsIdentity claim)
+        {
+            long id;
+
+            if (!long.TryParse(claim.GetUserId(), out id))
+                return 0;
+            else
+                return id;
         }
     }
 }
