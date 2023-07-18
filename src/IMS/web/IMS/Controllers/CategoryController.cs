@@ -3,22 +3,19 @@ using IMS.BusinessRules;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
-using log4net;
-using log4net.Repository.Hierarchy;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Web.Security;
 
 namespace IMS.Controllers
 {
-   
-    public class CategoryController : Controller
+
+    public class CategoryController : AllBaseController
     {
+        #region Initialization
         private readonly ICategoryService _categoryService;
-        private static readonly ILog _logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public CategoryController()
         {
@@ -26,12 +23,17 @@ namespace IMS.Controllers
             _categoryService = new CategoryService(session);
 
         }
+
+        #endregion
+
+        #region Index
         public ActionResult Index()
         {
-            
             return View();
         }
+        #endregion
 
+        #region Operational Function
         [HttpGet]
         public ActionResult Create()
         {
@@ -48,6 +50,7 @@ namespace IMS.Controllers
                 if (ModelState.IsValid)
                 {
                     await _categoryService.AddAsync(model, User.Identity.GetUserId<long>());
+                    ViewResponse("Successfully added a new category.", ResponseTypes.Success);
                 }
             }
             catch (Exception ex)
@@ -61,7 +64,7 @@ namespace IMS.Controllers
         public async Task<ActionResult> Edit(long id)
         {
             var model = await _categoryService.GetByIdAsync(id);
-            
+
             return View(model);
         }
 
@@ -84,6 +87,24 @@ namespace IMS.Controllers
             return RedirectToAction("Index", "Category");
         }
         
+        [HttpPost]
+        public async Task<ActionResult> Delete(long id)
+        {
+            try
+            {
+                var userId = User.Identity.GetUserId<long>();
+                await _categoryService.RemoveByIdAsync(id, userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+
+            }
+            return RedirectToAction("Index", "Category");
+        }
+        #endregion
+
+        #region Ajax Call
         public JsonResult GetCategories()
         {
             try
@@ -123,21 +144,6 @@ namespace IMS.Controllers
 
             return default(JsonResult);
         }
-
-        [HttpPost]
-        public async Task<ActionResult> Delete(long id)
-        {
-            try
-            {
-                var userId = User.Identity.GetUserId<long>();
-                await _categoryService.RemoveByIdAsync(id, userId);                
-            }            
-            catch (Exception ex)
-            {
-                _logger.Error(ex.Message, ex);
-                
-            }
-            return RedirectToAction("Index", "Category");
-        }
+        #endregion
     }
 }
