@@ -39,8 +39,8 @@ namespace IMS.Dao
             string orderBy = null);
 
         //For BaseEntity
-        (IList<TEntity> data, int total, int totalDisplay) LoadAll(Expression<Func<TEntity, bool>> filter = null,
-            string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
+        (IList<Entity> data, int total, int totalDisplay) LoadAll<Entity>(Expression<Func<Entity, bool>> filter = null,
+           string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null) where Entity : BaseEntity<TKey>;
     }
     #endregion
 
@@ -219,12 +219,12 @@ namespace IMS.Dao
         }
 
         //For BaseEntity
-        public (IList<TEntity> data, int total, int totalDisplay) LoadAll(Expression<Func<TEntity, bool>> filter = null,
-            string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
+        public (IList<Entity> data, int total, int totalDisplay) LoadAll<Entity>(Expression<Func<Entity, bool>> filter = null,
+            string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null) where Entity: BaseEntity<TKey>
         {
-            IQueryable<TEntity> query = _session.Query<TEntity>();
+            IQueryable<Entity> query = _session.Query<Entity>();
 
-            //query = query.Where(x => x.Status != (int)Status.Active);
+            query = query.Where(x => x.Status != (int)Status.Delete);
             
 
             var total = query.Count();
@@ -237,18 +237,18 @@ namespace IMS.Dao
             }
 
             //sorting
-            //switch (sortBy)
-            //{
-            //    case "Name":
-            //        query = sortDir == "asc" ? query.OrderBy(c => c.Name) : query.OrderByDescending(c => c.Name);
-            //        break;
-            //    case "Created By":
-            //        query = sortDir == "asc" ? query.OrderBy(c => c.CreateBy) : query.OrderByDescending(c => c.CreateBy);
-            //        break;
-            //    case "Modified By":
-            //        query = sortDir == "asc" ? query.OrderBy(c => c.ModifyBy) : query.OrderByDescending(c => c.ModifyBy);
-            //        break;
-            //}
+            switch (sortBy)
+            {
+                case "Name":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.Name) : query.OrderByDescending(c => c.Name);
+                    break;
+                case "Created By":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.CreateBy) : query.OrderByDescending(c => c.CreateBy);
+                    break;
+                case "Modified By":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.ModifyBy) : query.OrderByDescending(c => c.ModifyBy);
+                    break;
+            }
 
             var result = query.Skip(pageIndex).Take(pageSize);
 
