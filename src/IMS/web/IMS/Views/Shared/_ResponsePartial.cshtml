@@ -1,0 +1,12 @@
+﻿@using IMS.Models
+
+@if (TempData.Peek<ResponseModel>("ResponseMessage") != null)
+{
+    var response = TempData.Get<ResponseModel>("ResponseMessage");
+    <div id="alertMessage" class="alert alert-@(response.Type.ToString().ToLower()) alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+            &times;
+        </button>
+        @response.Message
+    </div>
+}

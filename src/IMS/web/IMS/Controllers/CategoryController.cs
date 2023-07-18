@@ -54,7 +54,7 @@ namespace IMS.Controllers
             {
                 _logger.Error(ex);
             }
-            return View();
+            return RedirectToAction("Index", "Category");
         }
 
         [HttpGet]
@@ -63,6 +63,25 @@ namespace IMS.Controllers
             var model = await _categoryService.GetByIdAsync(id);
             
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Edit(CategoryEditModel model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var userId = User.Identity.GetUserId<long>();
+                    await _categoryService.UpdateAsync(model, userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+
+            return RedirectToAction("Index", "Category");
         }
         
         public JsonResult GetCategories()
@@ -85,6 +104,7 @@ namespace IMS.Controllers
                             {
                                 count++.ToString(),
                                 record.Name,
+                                record.Description,
                                 record.Status.ToString(),
                                 record.ModifyBy.ToString(),
                                 record.ModificationDate.ToString(),
@@ -102,6 +122,22 @@ namespace IMS.Controllers
             }
 
             return default(JsonResult);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Delete(long id)
+        {
+            try
+            {
+                var userId = User.Identity.GetUserId<long>();
+                await _categoryService.RemoveByIdAsync(id, userId);                
+            }            
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+                
+            }
+            return RedirectToAction("Index", "Category");
         }
     }
 }

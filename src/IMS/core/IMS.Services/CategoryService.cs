@@ -5,6 +5,7 @@ using IMS.BusinessRules.Enum;
 using IMS.Dao;
 using NHibernate;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace IMS.Services
         Task AddAsync(CategoryAddModel model, long userId);
         Task<CategoryEditModel> GetByIdAsync(long id);
         Task UpdateAsync(CategoryEditModel model, long userId);
+        Task RemoveByIdAsync(long id, long userId);
         #region Load instances
         IList<CategoryDto> LoadAllCategories();
         (int total, int totalDisplay, IList<CategoryDto> records) LoadAllCategories(string searchBy, int length, int start, string sortBy, string sortDir);
@@ -42,6 +44,7 @@ namespace IMS.Services
                         Name = model.Name,
                         Description = model.Description,
                         Status = (int)model.Status,
+                        Rank = model.Rank,
                         CreateBy = userId,
                         CreationDate = _timeService.Now,
 
@@ -60,22 +63,48 @@ namespace IMS.Services
             }
         }
 
-        public Task UpdateAsync(CategoryEditModel model, long userId)
+        public async Task UpdateAsync(CategoryEditModel model, long userId)
         {
-            throw new NotImplementedException();
+            using (var transaction = _session.BeginTransaction())
+            {
+                try
+                {
+                    var category = new Category()
+                    {
+                        Id = model.Id,
+                        Name = model.Name,
+                        Description = model.Description,
+                        Status = (int)model.Status,
+                        CreateBy = model.CreateBy,
+                        CreationDate = DateTime.Parse(model.CreationDate),
+                        ModifyBy = userId,
+                        ModificationDate = _timeService.Now
+                    };
+
+                    await _categoryDao.EditAsync(category);
+                    transaction.Commit();
+
+                    _serviceLogger.Info("Data Saved!");
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    _serviceLogger.Error(ex.Message, ex);
+                }
+            }
         }
 
         public (int total, int totalDisplay, IList<CategoryDto> records) LoadAllCategories(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
         {
             try
             {
-                Expression<Func<BaseEntity<long>, bool>> filter = null;
+                Expression<Func<Category, bool>> filter = null;
                 if (searchBy != null)
                 {
-                    filter = x => x.Name.Contains(searchBy);
+                    filter = x => x.Name.Contains(searchBy) && x.Status != (int)Status.Delete;
                 }
                 var result = _categoryDao.LoadAll(filter, null, start, length, sortBy, sortDir);
-
+                
                 List<CategoryDto> categories = new List<CategoryDto>();
                 foreach (Category category in result.data)
                 {
@@ -120,7 +149,7 @@ namespace IMS.Services
                 Name = category.Name,
                 Description = category.Description,
                 CreateBy = category.CreateBy,
-                CreationDate = category.CreationDate,
+                CreationDate = (category.CreationDate).ToString(),
                 ModifyBy = category.ModifyBy,
                 ModificationDate = category.ModificationDate,
                 Status = (Status)category.Status,
@@ -129,6 +158,28 @@ namespace IMS.Services
                 BusinessId = category.BusinessId,
             };
         }
-    }
 
+        public async Task RemoveByIdAsync(long id, long userId)
+        {
+            using (var transaction = _session.BeginTransaction())
+            {
+                try
+                {
+                    //await _categoryDao.RemoveByIdAsync(id);
+                    var category = await _categoryDao.GetByIdAsync(id);
+                    category.Status = (int)Status.Delete;
+                    category.ModifyBy = userId;
+                    category.ModificationDate = _timeService.Now;
+                    await _categoryDao.EditAsync(category);
+                    transaction.Commit();
+
+                }
+                catch (Exception ex)
+                {
+                    _serviceLogger.Error(ex);
+                    transaction.Rollback();
+                }
+            }
+        }        
+    }
 }
