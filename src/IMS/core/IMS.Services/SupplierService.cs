@@ -43,8 +43,8 @@ namespace IMS.Services
             {
                 try
                 {
-                    var count = _supplierDao.GetCount(x => x.Name == model.Name);
-                    if(count > 0)
+                    var count = _supplierDao.GetCount(x => x.Email == model.Email && x.ContactNumber == model.ContactNumber);
+                    if (count > 0)
                     {
                         throw new NameDuplicateException("Found another supplier with this name");
                     }
