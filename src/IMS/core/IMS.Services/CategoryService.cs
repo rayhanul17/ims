@@ -80,7 +80,7 @@ namespace IMS.Services
                     var objectcount = _categoryDao.GetCount(x => x.Id == model.Id);
                     var namecount = _categoryDao.GetCount(x => x.Name == model.Name);
 
-                    if (namecount < 1)
+                    if (objectcount < 1)
                     {
                         throw new InvalidOperationException("No record found with this id!");
                     }

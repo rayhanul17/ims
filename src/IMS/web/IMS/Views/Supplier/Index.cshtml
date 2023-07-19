@@ -126,8 +126,7 @@
             m.find('.modal-body p').text('Are you sure you want to delete this supplier?');
             $("#deleteId").val(id);
             $("#deleteForm").attr("action", "/supplier/delete");
-            console.log(m);
-            m.modal('show');
+            console.log(m);            
             m[0].style.display = "block";
         });
 
