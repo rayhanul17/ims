@@ -56,6 +56,7 @@ namespace IMS.Controllers
             }
             catch (Exception ex)
             {
+                ViewResponse(ex.Message, ResponseTypes.Danger);
                 _logger.Error(ex);
             }
             return RedirectToAction("Index", "Category");
@@ -82,6 +83,7 @@ namespace IMS.Controllers
             }
             catch (Exception ex)
             {
+                ViewResponse(ex.Message, ResponseTypes.Danger);
                 _logger.Error(ex);
             }
 

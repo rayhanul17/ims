@@ -2,6 +2,7 @@
 using IMS.BusinessModel.Entity;
 using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules.Enum;
+using IMS.BusinessRules.Exceptions;
 using IMS.Dao;
 using NHibernate;
 using System;
@@ -41,6 +42,12 @@ namespace IMS.Services
             {
                 try
                 {
+                    var count = _categoryDao.GetCount(x => x.Name == model.Name);
+                    if(count > 0)
+                    {
+                        throw new NameDuplicateException("Found another category with this name");
+                    }
+
                     var category = new Category()
                     {
                         Name = model.Name,
@@ -70,6 +77,18 @@ namespace IMS.Services
             {
                 try
                 {
+                    var objectcount = _categoryDao.GetCount(x => x.Id == model.Id);
+                    var namecount = _categoryDao.GetCount(x => x.Name == model.Name);
+
+                    if (namecount > 0)
+                    {
+                        throw new InvalidOperationException("No record found with this id!");
+                    }
+                    if (namecount > 0)
+                    {
+                        throw new NameDuplicateException("Already exist category with this name");
+                    }
+
                     var category = new Category()
                     {
                         Id = model.Id,
