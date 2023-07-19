@@ -27,7 +27,8 @@ namespace IMS.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, RoleIntPk, long,
         UserLoginIntPk, UserRoleIntPk, UserClaimIntPk>
-    {        
+    {     
+        //"Data Source = DESKTOP-L0GNHBL\SQLEXPRESS;Database=IMS;Trusted_Connection=True;"
         public ApplicationDbContext()
             : base(DbConnectionString.ConnectionString)
         {

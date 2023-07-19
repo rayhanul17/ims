@@ -154,7 +154,8 @@ namespace IMS.Services
                 {
                     filter = x => x.Name.Contains(searchBy) && x.Status != (int)Status.Delete;
                 }
-                var result = _categoryDao.LoadAll<Category>(filter, null, start, length, sortBy, sortDir);
+
+                var result = _categoryDao.LoadAllCategories(filter, null, start, length, sortBy, sortDir);
 
                 List<CategoryDto> categories = new List<CategoryDto>();
                 foreach (Category category in result.data)
@@ -166,9 +167,7 @@ namespace IMS.Services
                             Name = category.Name,
                             Description = category.Description,
                             CreateBy = category.CreateBy,
-                            CreationDate = category.CreationDate,
-                            ModifyBy = category.ModifyBy,
-                            ModificationDate = category.ModificationDate,
+                            CreationDate = category.CreationDate,                            
                             Status = (Status)category.Status,
                             Rank = category.Rank,
                             VersionNumber = category.VersionNumber,

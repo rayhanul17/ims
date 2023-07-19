@@ -2,6 +2,7 @@
 using IMS.Dao;
 using NHibernate;
 using System;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace IMS.Services
@@ -9,6 +10,7 @@ namespace IMS.Services
     public interface IAccountService
     {
         Task CreateUserAsync(string name, long id, long creatorId);
+        string GetUserName(long userId);
     }
     public class AccountService : BaseService, IAccountService
     {
@@ -44,6 +46,16 @@ namespace IMS.Services
                     _serviceLogger.Error(ex.Message, ex);
                 }
             }
+        }
+
+        public string GetUserName(long userId)
+        {
+            Expression<Func<ApplicationUser, bool>> filter = null;
+            filter = x => x.AspNetUsersId.Equals(userId);
+
+            var user =  _userDao.GetUser(filter);
+
+            return user.Name + $"<{user.Id}>";
         }
     }
 }

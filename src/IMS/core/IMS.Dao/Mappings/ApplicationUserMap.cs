@@ -13,6 +13,7 @@ namespace IMS.Dao.Mappings
         public ApplicationUserMap() : base()
         {
             Table("ApplicationUser");
+            Map(x => x.AspNetUsersId);
         }
     }
 }

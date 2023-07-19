@@ -16,12 +16,13 @@ namespace IMS.Controllers
     {
         #region Initialization
         private readonly ICategoryService _categoryService;
+        private readonly IAccountService _accountService;
 
         public CategoryController()
         {
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
             _categoryService = new CategoryService(session);
-
+            _accountService = new AccountService(session);
         }
 
         #endregion
@@ -126,11 +127,8 @@ namespace IMS.Controllers
                                 count++.ToString(),
                                 record.Name,
                                 record.Description,
-                                record.Status.ToString(),
-                                record.ModifyBy.ToString(),
-                                record.ModificationDate.ToString(),
-                                //_accountAdapter.FindById(record.CreateBy).Email,
-                                record.CreateBy.ToString(),
+                                record.Status.ToString(),                                
+                                _accountService.GetUserName(record.CreateBy),
                                 record.CreationDate.ToString(),
                                 record.Id.ToString()
                             }
