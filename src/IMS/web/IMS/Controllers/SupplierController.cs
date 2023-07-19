@@ -11,16 +11,16 @@ using System.Web.Mvc;
 
 namespace IMS.Controllers
 {
-    public class CategoryController : AllBaseController
+    public class SupplierController : AllBaseController
     {
         #region Initialization
-        private readonly ICategoryService _categoryService;
+        private readonly ISupplierService _supplierService;
         private readonly IAccountService _accountService;
 
-        public CategoryController()
+        public SupplierController()
         {
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
-            _categoryService = new CategoryService(session);
+            _supplierService = new SupplierService(session);
             _accountService = new AccountService(session);
         }
 
@@ -37,25 +37,25 @@ namespace IMS.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            var model = new CategoryAddModel();
-            _logger.Info("Category Creation Page");
+            var model = new SupplierAddModel();
+
             return View(model);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(CategoryAddModel model)
+        public async Task<ActionResult> Create(SupplierAddModel model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    await _categoryService.AddAsync(model, User.Identity.GetUserId<long>());
+                    await _supplierService.AddAsync(model, User.Identity.GetUserId<long>());
                     ViewResponse("Successfully added a new category.", ResponseTypes.Success);
                 }
                 else
                 {
                     ViewResponse("Provide data properly", ResponseTypes.Danger);
+                    return View(model);
                 }
             }
             catch (Exception ex)
@@ -63,7 +63,7 @@ namespace IMS.Controllers
                 ViewResponse(ex.Message, ResponseTypes.Danger);
                 _logger.Error(ex);
             }
-            return RedirectToAction("Index", "Category");
+            return RedirectToAction("Index", "Supplier");
         }
 
         [HttpGet]
@@ -73,7 +73,7 @@ namespace IMS.Controllers
                 return View();
             try
             {
-                var model = await _categoryService.GetByIdAsync(id);
+                var model = await _supplierService.GetByIdAsync(id);
                 return View(model);
             }
             catch (Exception ex)
@@ -81,18 +81,18 @@ namespace IMS.Controllers
                 ViewResponse("Invalid object id", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
-            return RedirectToAction("Index", "Category");
+            return RedirectToAction("Index", "Supplier");
         }
 
         [HttpPost]
-        public async Task<ActionResult> Edit(CategoryEditModel model)
+        public async Task<ActionResult> Edit(SupplierEditModel model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
                     var userId = User.Identity.GetUserId<long>();
-                    await _categoryService.UpdateAsync(model, userId);
+                    await _supplierService.UpdateAsync(model, userId);
                 }
                 else
                 {
@@ -105,7 +105,7 @@ namespace IMS.Controllers
                 _logger.Error(ex);
             }
 
-            return RedirectToAction("Index", "Category");
+            return RedirectToAction("Index", "Supplier");
         }
 
         [HttpPost]
@@ -114,24 +114,24 @@ namespace IMS.Controllers
             try
             {
                 var userId = User.Identity.GetUserId<long>();
-                await _categoryService.RemoveByIdAsync(id, userId);
+                await _supplierService.RemoveByIdAsync(id, userId);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex.Message, ex);
 
             }
-            return RedirectToAction("Index", "Category");
+            return RedirectToAction("Index", "Supplier");
         }
         #endregion
 
         #region Ajax Call
-        public JsonResult GetCategories()
+        public JsonResult GetSuppliers()
         {
             try
             {
                 var model = new DataTablesAjaxRequestModel(Request);
-                var data = _categoryService.LoadAllCategories(model.SearchText, model.Length, model.Start, model.SortColumn,
+                var data = _supplierService.LoadAllSuppliers(model.SearchText, model.Length, model.Start, model.SortColumn,
                     model.SortDirection);
 
                 var count = 1;
@@ -146,7 +146,9 @@ namespace IMS.Controllers
                             {
                                 count++.ToString(),
                                 record.Name,
-                                record.Description,
+                                record.Address,
+                                record.ContactNumber,
+                                record.Email,
                                 record.Status.ToString(),
                                 _accountService.GetUserName(record.CreateBy),
                                 record.CreationDate.ToString(),

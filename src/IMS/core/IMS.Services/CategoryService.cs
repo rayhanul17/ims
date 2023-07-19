@@ -80,11 +80,11 @@ namespace IMS.Services
                     var objectcount = _categoryDao.GetCount(x => x.Id == model.Id);
                     var namecount = _categoryDao.GetCount(x => x.Name == model.Name);
 
-                    if (namecount > 0)
+                    if (namecount < 1)
                     {
                         throw new InvalidOperationException("No record found with this id!");
                     }
-                    if (namecount > 0)
+                    if (namecount > 1)
                     {
                         throw new NameDuplicateException("Already exist category with this name");
                     }
@@ -141,22 +141,33 @@ namespace IMS.Services
 
         public async Task<CategoryEditModel> GetByIdAsync(long id)
         {
-            var category = await _categoryDao.GetByIdAsync(id);
-
-            return new CategoryEditModel
+            try
             {
-                Id = category.Id,
-                Name = category.Name,
-                Description = category.Description,
-                CreateBy = category.CreateBy,
-                CreationDate = (category.CreationDate).ToString(),
-                ModifyBy = category.ModifyBy,
-                ModificationDate = category.ModificationDate,
-                Status = (Status)category.Status,
-                Rank = category.Rank,
-                VersionNumber = category.VersionNumber,
-                BusinessId = category.BusinessId,
-            };
+                var category = await _categoryDao.GetByIdAsync(id);
+                if (category == null)
+                {
+                    throw new ArgumentNullException(nameof(category));
+                }
+                return new CategoryEditModel
+                {
+                    Id = category.Id,
+                    Name = category.Name,
+                    Description = category.Description,
+                    CreateBy = category.CreateBy,
+                    CreationDate = (category.CreationDate).ToString(),
+                    ModifyBy = category.ModifyBy,
+                    ModificationDate = category.ModificationDate,
+                    Status = (Status)category.Status,
+                    Rank = category.Rank,
+                    VersionNumber = category.VersionNumber,
+                    BusinessId = category.BusinessId,
+                };
+            }
+            catch(Exception ex)
+            {
+                _serviceLogger.Error(ex.Message, ex);
+                throw;
+            }
         }
         #endregion
 

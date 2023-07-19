@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Manage Category";
+    ViewData["Title"] = "Manage Supplier";
     ViewBag.PageNav = "Category";
 }
 
@@ -14,12 +14,12 @@
         <div class="row">
             <div class="col-6">
                 <div class="float-left">
-                    <h3 class="card-title">Currently Available Categories</h3>
+                    <h3 class="card-title">Currently Available Suppliers</h3>
                 </div>
             </div>
             <div class="col-6">
                 <div class="float-right">
-                    <a href="/Category/Create" class="btn btn-success">Add Category</a>
+                    <a href="/Supplier/Create" class="btn btn-success">Add Supplier</a>
                 </div>
             </div>
         </div>
@@ -35,11 +35,17 @@
                         Name
                     </th>
                     <th>
-                        Description
+                        Address
+                    </th>
+                    <th>
+                        Contact Number
+                    </th>
+                    <th>
+                        Email
                     </th>
                     <th>
                         Status
-                    </th>                    
+                    </th>
                     <th>
                         Created By
                     </th>
@@ -69,30 +75,33 @@
     <script src="~/Assets/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
     <script src="~/Assets/plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script src="~/Assets/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
-    <script>        
+    <script>
+
         $(document).ready(function () {
             $('#table').DataTable({
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": "/Category/GetCategories",
+                    "url": "/Supplier/GetSuppliers",
                     "type": "POST",
                     "datatype": "json",
                 },
                 "columns": [
                     { "name": "SL" },
                     { "name": "Name" },
-                    { "name": "Description" },
-                    { "name": "Status" },                    
+                    { "name": "Address" },
+                    { "name": "ContactNumber" },
+                    { "name": "Email" },
+                    { "name": "Status" },
                     { "name": "Created By" },
                     { "name": "Created Date" }
                 ],
                 "columnDefs": [
                     {
                         "orderable": false,
-                        "targets": 6,
+                        "targets": 8,
                         "render": function (data, type, row) {
-                            return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/category/edit/${data}'">
+                            return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/supplier/edit/${data}'">
                                                         <i class="fas fa-pencil-alt">
                                                         </i>
                                                         Edit
@@ -104,7 +113,7 @@
                                                     </button>`;
                         }
                     },
-                    { "orderable": false, "targets": [0, 3, 5, 6] }                    
+                    { "orderable": false, "targets": [0, 2, 3, 4, 5, 7, 8] }
                 ],
                 "order": [1, 'asc']
             });
@@ -114,11 +123,11 @@
             var id = $(this).data("id");
             console.log(id);
             var m = $("#modal-default");
-            m.find('.modal-body p').text('Are you sure you want to delete this category?');
+            m.find('.modal-body p').text('Are you sure you want to delete this supplier?');
             $("#deleteId").val(id);
-            $("#deleteForm").attr("action", "/category/delete");
+            $("#deleteForm").attr("action", "/supplier/delete");
             console.log(m);
-            /*m.modal('show');*/
+            m.modal('show');
             m[0].style.display = "block";
         });
 
@@ -128,7 +137,6 @@
             m[0].style.display = "hidden";
 
         });
-       
+
     </script>
 }
-
