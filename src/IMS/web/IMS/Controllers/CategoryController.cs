@@ -1,5 +1,6 @@
 ﻿using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
+using IMS.BusinessRules.Enum;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
@@ -39,6 +40,11 @@ namespace IMS.Controllers
         public ActionResult Create()
         {
             var model = new CategoryAddModel();
+            var selectList = Enum.GetValues(typeof(Status))
+                       .Cast<Status>()
+                       .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
+            ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
+                       
             _logger.Info("Category Creation Page");
             return View(model);
         }
@@ -75,6 +81,11 @@ namespace IMS.Controllers
                 return View();
             try
             {
+                var selectList = Enum.GetValues(typeof(IMS.BusinessRules.Enum.Status))
+                       .Cast<IMS.BusinessRules.Enum.Status>()
+                       .Where(e => e != IMS.BusinessRules.Enum.Status.Delete).ToDictionary(key => (int)key);
+                ViewBag.StatusList = new SelectList(selectList, "Key", "Value");
+
                 var model = await _categoryService.GetByIdAsync(id);
                 return View(model);
             }
@@ -178,6 +189,10 @@ namespace IMS.Controllers
             {
                 ModelState.AddModelError("Rank", "Rank Invalid");
             }
+            if (!(model.Status == Status.Active || model.Status == Status.Inactive))
+            {
+                ModelState.AddModelError("Status", "Status must active or inactive");
+            }
         }
 
         private void ValidateCategoryEditModel(CategoryEditModel model)
@@ -201,6 +216,10 @@ namespace IMS.Controllers
             if (model.Rank == 0)
             {
                 ModelState.AddModelError("Rank", "Rank Invalid");
+            }
+            if (!(model.Status == Status.Active || model.Status == Status.Inactive))
+            {
+                ModelState.AddModelError("Status", "Status must active or inactive");
             }
         }
         #endregion

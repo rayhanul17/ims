@@ -3,7 +3,13 @@
 @{
     ViewData["Title"] = "Customer Edit";
 }
-
+@section Styles{
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
+}
 <div class="container-fluid">
     <div class="row">
         <!-- left column -->
@@ -16,7 +22,7 @@
                 </div>
                 <!-- /.card-header -->
                 <!-- form start -->
-                @using (Html.BeginForm("Edit", "Customer", FormMethod.Post))
+                @using (Html.BeginForm("Edit", "Customer", FormMethod.Post, htmlAttributes: new { @id = "myform", @class = "nav-link cmxform" }))
                 {
                     @Html.AntiForgeryToken()
                     <div class="card-body">
@@ -48,8 +54,7 @@
                         </div>
                         <div class="form-group">
                             <label> @Html.LabelFor(m => m.Status)</label>
-                            @Html.EnumDropDownListFor(m => m.Status, "Select Status", new { @class = "form-control" })
-                            <span>@Html.ValidationMessageFor(model => model.Status)</span>
+                            @Html.DropDownListFor(m => m.Status, (SelectList)ViewBag.StatusList, new { @class = "form-control" })
                         </div>
                         @Html.HiddenFor(model => model.Id)
                         @Html.HiddenFor(model => model.CreateBy)
@@ -66,3 +71,66 @@
     </div>
     <!-- /.row -->
 </div><!-- /.container-fluid -->
+
+@section Scripts
+{
+    <script src="~/Assets/js/validation/jquery.min.js"></script>
+    <script src="~/Assets/js/validation/jquery.validate.min.js"></script>
+    <script src="~/Assets/js/validation/additional-methods.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            console.log("hello");
+            $("#myform").validate({
+
+                // In 'rules' user have to specify all the
+                // constraints for respective fields
+                rules: {
+                    Name: {
+                        required: true,
+                        minlength: 3,
+                        maxlength: 100
+                    },
+                    Address: {
+                        required: true,
+                        minlength: 10,
+                        maxlength: 200
+                    },
+                    Email: {
+                        required: true,
+                        email: true
+                    },
+                    ContactNumber: {
+                        required: true,
+                        minlength: 10,
+                        maxlength: 200
+                    },
+                    Rank: {
+                        required: true,
+                        min: 1
+                    }
+                },
+                // In 'messages' user have to specify message as per rules
+                messages: {
+                    Name: {
+                        required: " Please enter category name",
+                        minlength: "At least 3 characters required",
+                        maxlength: "At most 100 characters requird",
+                    },
+                    Address: {
+                        required: " Please enter category name",
+                        minlength: "At least 3 characters required",
+                        maxlength: "At most 100 characters requird",
+                    },
+                    Email: {
+                        required: " Please enter category name",
+                        email: " Enter valid email"
+                    },
+                    Rank: {
+                        required: "Please enter rank",
+                        min: "Minimum value 1"
+                    }
+                }
+            });
+        });
+    </script>
+}

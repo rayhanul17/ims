@@ -1,11 +1,6 @@
 ﻿@using IMS.Models
 @model IMS.BusinessModel.ViewModel.CategoryAddModel
-@{
-    ViewData["Title"] = "Category Create";
-    var status = Enum.GetValues(typeof(IMS.BusinessRules.Enum.Status))
-                                .Cast<IMS.BusinessRules.Enum.Status>()
-                                .Where(s => s != IMS.BusinessRules.Enum.Status.Delete);
-}
+
 
 @section Styles{
     <style>       
@@ -13,9 +8,8 @@
             color:red;
         }
     </style>
-    
+}
 
-    }
 <div class="container-fluid">
     <div class="row">
         <!-- left column -->
@@ -32,7 +26,7 @@
                 {
                     @Html.AntiForgeryToken()
                     <div class="card-body">
-                        @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "color:red;" })
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger"})
                         <div class="form-group">
                             <label> @Html.LabelFor(m => m.Name)</label>
                             @Html.TextBoxFor(m => m.Name, new { @class = "form-control", @placeholder = "Name", @type = "text" })
@@ -49,7 +43,7 @@
                         </div>
                         <div class="form-group">
                             <label> @Html.LabelFor(m => m.Status)</label>
-                            @Html.EnumDropDownListFor(m => m.Status, new { @class = "form-control" })                            
+                            @Html.DropDownListFor(m => m.Status, (SelectList)ViewBag.StatusList, new {@class="form-control"})               
                         </div>
                     </div>
                     <!-- /.card-body -->
@@ -79,17 +73,12 @@
                     Name: {
                         required: true,
                         minlength: 3,
-                        maxlength: 5
+                        maxlength: 100
                     },
                     Rank: {
                         required: true,
                         min: 1
                     }
-, 
-                    Status: {
-                        equalTo: "Delete"
-                    }
-                    
                 },
                 // In 'messages' user have to specify message as per rules
                 messages: {
@@ -101,8 +90,7 @@
                     Rank: {
                         required: "Please enter rank",
                         min: "Minimum value 1"
-                    },
-                    Status: "Please enter active or inactive status",                    
+                    }                   
                 }
             });
         });

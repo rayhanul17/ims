@@ -1,5 +1,6 @@
 ﻿using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
+using IMS.BusinessRules.Enum;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
@@ -38,7 +39,10 @@ namespace IMS.Controllers
         public ActionResult Create()
         {
             var model = new CustomerAddModel();
-
+            var selectList = Enum.GetValues(typeof(Status))
+                       .Cast<Status>()
+                       .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
+            ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
             return View(model);
         }
 
@@ -73,6 +77,11 @@ namespace IMS.Controllers
                 return View();
             try
             {
+                var selectList = Enum.GetValues(typeof(Status))
+                       .Cast<Status>()
+                       .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
+                ViewBag.StatusList = new SelectList(selectList, "Key", "Value");
+
                 var model = await _customerService.GetByIdAsync(id);
                 return View(model);
             }
