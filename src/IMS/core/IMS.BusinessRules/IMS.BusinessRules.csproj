@@ -43,7 +43,7 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="Enum\Status.cs" />
-    <Compile Include="Exception\NameDuplicateException.cs" />
+    <Compile Include="Exception\DuplicateException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="AccountService.cs" />
     <Compile Include="BaseService.cs" />
+    <Compile Include="BrandService.cs" />
     <Compile Include="CustomerService.cs" />
     <Compile Include="SupplierService.cs" />
     <Compile Include="CategoryService.cs" />

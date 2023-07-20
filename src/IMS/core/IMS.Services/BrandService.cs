@@ -13,42 +13,42 @@ using System.Threading.Tasks;
 namespace IMS.Services
 {
     #region Interface
-    public interface ICategoryService
+    public interface IBrandService
     {
-        Task AddAsync(CategoryAddModel model, long userId);
-        Task UpdateAsync(CategoryEditModel model, long userId);
+        Task AddAsync(BrandAddModel model, long userId);
+        Task UpdateAsync(BrandEditModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
-        Task<CategoryEditModel> GetByIdAsync(long id);
-        IList<CategoryDto> LoadAllCategories();
-        (int total, int totalDisplay, IList<CategoryDto> records) LoadAllCategories(string searchBy, int length, int start, string sortBy, string sortDir);
+        Task<BrandEditModel> GetByIdAsync(long id);
+        IList<BrandDto> LoadAllBrands();
+        (int total, int totalDisplay, IList<BrandDto> records) LoadAllBrands(string searchBy, int length, int start, string sortBy, string sortDir);
     }
     #endregion
 
-    public class CategoryService : BaseService, ICategoryService
+    public class BrandService : BaseService, IBrandService
     {
         #region Initializtion
-        private readonly ICategoryDao _categoryDao;
+        private readonly IBrandDao _brandDao;
 
-        public CategoryService(ISession session) : base(session)
+        public BrandService(ISession session) : base(session)
         {
-            _categoryDao = new CategoryDao(session);
+            _brandDao = new BrandDao(session);
         }
         #endregion
 
         #region Operational Function
-        public async Task AddAsync(CategoryAddModel model, long userId)
+        public async Task AddAsync(BrandAddModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
                 try
                 {
-                    var count = _categoryDao.GetCount(x => x.Name == model.Name);
+                    var count = _brandDao.GetCount(x => x.Name == model.Name);
                     if(count > 0)
                     {
-                        throw new DuplicateException("Found another category with this name");
+                        throw new DuplicateException("Found another Brand with this name");
                     }
 
-                    var category = new Category()
+                    var brand = new Brand()
                     {
                         Name = model.Name,
                         Description = model.Description,
@@ -58,7 +58,7 @@ namespace IMS.Services
                         CreationDate = _timeService.Now,
                     };
 
-                    await _categoryDao.AddAsync(category);
+                    await _brandDao.AddAsync(brand);
                     transaction.Commit();
                 }
                 catch (Exception ex)
@@ -71,14 +71,14 @@ namespace IMS.Services
             }
         }
 
-        public async Task UpdateAsync(CategoryEditModel model, long userId)
+        public async Task UpdateAsync(BrandEditModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
                 try
                 {
-                    var objectcount = _categoryDao.GetCount(x => x.Id == model.Id);
-                    var namecount = _categoryDao.GetCount(x => x.Name == model.Name);
+                    var objectcount = _brandDao.GetCount(x => x.Id == model.Id);
+                    var namecount = _brandDao.GetCount(x => x.Name == model.Name);
 
                     if (objectcount < 1)
                     {
@@ -86,10 +86,10 @@ namespace IMS.Services
                     }
                     if (namecount > 1)
                     {
-                        throw new DuplicateException("Already exist category with this name");
+                        throw new DuplicateException("Already exist brand with this name");
                     }
 
-                    var category = new Category()
+                    var brand = new Brand()
                     {
                         Id = model.Id,
                         Name = model.Name,
@@ -101,7 +101,7 @@ namespace IMS.Services
                         ModificationDate = _timeService.Now
                     };
 
-                    await _categoryDao.EditAsync(category);
+                    await _brandDao.EditAsync(brand);
                     transaction.Commit();
 
                     _serviceLogger.Info("Data Saved!");
@@ -122,12 +122,12 @@ namespace IMS.Services
             {
                 try
                 {
-                    //await _categoryDao.RemoveByIdAsync(id);
-                    var category = await _categoryDao.GetByIdAsync(id);
-                    category.Status = (int)Status.Delete;
-                    category.ModifyBy = userId;
-                    category.ModificationDate = _timeService.Now;
-                    await _categoryDao.EditAsync(category);
+                    //await _brandDao.RemoveByIdAsync(id);
+                    var brand = await _brandDao.GetByIdAsync(id);
+                    brand.Status = (int)Status.Delete;
+                    brand.ModifyBy = userId;
+                    brand.ModificationDate = _timeService.Now;
+                    await _brandDao.EditAsync(brand);
                     transaction.Commit();
 
                 }
@@ -139,28 +139,28 @@ namespace IMS.Services
             }
         }
 
-        public async Task<CategoryEditModel> GetByIdAsync(long id)
+        public async Task<BrandEditModel> GetByIdAsync(long id)
         {
             try
             {
-                var category = await _categoryDao.GetByIdAsync(id);
-                if (category == null)
+                var brand = await _brandDao.GetByIdAsync(id);
+                if (brand == null)
                 {
-                    throw new ArgumentNullException(nameof(category));
+                    throw new ArgumentNullException(nameof(brand));
                 }
-                return new CategoryEditModel
+                return new BrandEditModel
                 {
-                    Id = category.Id,
-                    Name = category.Name,
-                    Description = category.Description,
-                    CreateBy = category.CreateBy,
-                    CreationDate = (category.CreationDate).ToString(),
-                    ModifyBy = category.ModifyBy,
-                    ModificationDate = category.ModificationDate,
-                    Status = (Status)category.Status,
-                    Rank = category.Rank,
-                    VersionNumber = category.VersionNumber,
-                    BusinessId = category.BusinessId,
+                    Id = brand.Id,
+                    Name = brand.Name,
+                    Description = brand.Description,
+                    CreateBy = brand.CreateBy,
+                    CreationDate = (brand.CreationDate).ToString(),
+                    ModifyBy = brand.ModifyBy,
+                    ModificationDate = brand.ModificationDate,
+                    Status = (Status)brand.Status,
+                    Rank = brand.Rank,
+                    VersionNumber = brand.VersionNumber,
+                    BusinessId = brand.BusinessId,
                 };
             }
             catch(Exception ex)
@@ -175,33 +175,33 @@ namespace IMS.Services
         #endregion
 
         #region List Loading Function
-        public (int total, int totalDisplay, IList<CategoryDto> records) LoadAllCategories(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
+        public (int total, int totalDisplay, IList<BrandDto> records) LoadAllBrands(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
         {
             try
             {
-                Expression<Func<Category, bool>> filter = null;
+                Expression<Func<Brand, bool>> filter = null;
                 if (searchBy != null)
                 {
                     filter = x => x.Name.Contains(searchBy) && x.Status != (int)Status.Delete;
                 }
 
-                var result = _categoryDao.LoadAllCategories(filter, null, start, length, sortBy, sortDir);
+                var result = _brandDao.LoadAllBrands(filter, null, start, length, sortBy, sortDir);
 
-                List<CategoryDto> categories = new List<CategoryDto>();
-                foreach (Category category in result.data)
+                List<BrandDto> categories = new List<BrandDto>();
+                foreach (Brand brand in result.data)
                 {
                     categories.Add(
-                        new CategoryDto
+                        new BrandDto
                         {
-                            Id = category.Id,
-                            Name = category.Name,
-                            Description = category.Description,
-                            CreateBy = category.CreateBy,
-                            CreationDate = category.CreationDate,                            
-                            Status = (Status)category.Status,
-                            Rank = category.Rank,
-                            VersionNumber = category.VersionNumber,
-                            BusinessId = category.BusinessId,
+                            Id = brand.Id,
+                            Name = brand.Name,
+                            Description = brand.Description,
+                            CreateBy = brand.CreateBy,
+                            CreationDate = brand.CreationDate,                            
+                            Status = (Status)brand.Status,
+                            Rank = brand.Rank,
+                            VersionNumber = brand.VersionNumber,
+                            BusinessId = brand.BusinessId,
                         });
                 }
 
@@ -214,7 +214,7 @@ namespace IMS.Services
             }
         }
         
-        public IList<CategoryDto> LoadAllCategories()
+        public IList<BrandDto> LoadAllBrands()
         {
             throw new NotImplementedException();
         }

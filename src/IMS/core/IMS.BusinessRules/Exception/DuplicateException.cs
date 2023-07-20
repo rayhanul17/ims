@@ -2,9 +2,9 @@
 
 namespace IMS.BusinessRules.Exceptions
 {
-    public class NameDuplicateException : Exception
+    public class DuplicateException : Exception
     {
-        public NameDuplicateException(string message)
+        public DuplicateException(string message)
            : base(message)
         {
 
