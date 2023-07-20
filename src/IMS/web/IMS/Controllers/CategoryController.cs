@@ -3,6 +3,7 @@ using IMS.BusinessRules;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Linq;
@@ -48,6 +49,7 @@ namespace IMS.Controllers
         {
             try
             {
+                ValidateCategoryAddModel(model);
                 if (ModelState.IsValid)
                 {
                     await _categoryService.AddAsync(model, User.Identity.GetUserId<long>());
@@ -89,6 +91,7 @@ namespace IMS.Controllers
         {
             try
             {
+                ValidateCategoryEditModel(model);
                 if (ModelState.IsValid)
                 {
                     var userId = User.Identity.GetUserId<long>();
@@ -96,7 +99,7 @@ namespace IMS.Controllers
                 }
                 else
                 {
-                    ViewResponse("Something went wrong", ResponseTypes.Danger);
+                    ViewResponse("Fillup form properly", ResponseTypes.Danger);
                 }
             }
             catch (Exception ex)
@@ -161,6 +164,44 @@ namespace IMS.Controllers
             }
 
             return default(JsonResult);
+        }
+        #endregion
+
+        #region Helper Function
+        private void ValidateCategoryAddModel(CategoryAddModel model)
+        {            
+            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length<3 || model.Name.Length >100)
+            {
+                ModelState.AddModelError("Name", "Name Invalid");
+            }
+            if (model.Rank == 0)
+            {
+                ModelState.AddModelError("Rank", "Rank Invalid");
+            }
+        }
+
+        private void ValidateCategoryEditModel(CategoryEditModel model)
+        {
+            if(model.Id == 0)
+            {
+                ModelState.AddModelError("Id", "Object id not found");
+            }
+            if(model.CreateBy == 0)
+            {
+                ModelState.AddModelError("CreateBy", "CreateBy id not found");
+            }
+            if(model.CreationDate.GetType() != typeof(DateTime))
+            {
+                ModelState.AddModelError("CreationDate", "CreationDate not found");
+            }
+            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 100)
+            {
+                ModelState.AddModelError("Name", "Name Invalid");
+            }
+            if (model.Rank == 0)
+            {
+                ModelState.AddModelError("Rank", "Rank Invalid");
+            }
         }
         #endregion
     }

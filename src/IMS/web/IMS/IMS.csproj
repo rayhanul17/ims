@@ -234,6 +234,9 @@
     <Content Include="Assets\js\pages\dashboard.js" />
     <Content Include="Assets\js\pages\dashboard2.js" />
     <Content Include="Assets\js\pages\dashboard3.js" />
+    <Content Include="Assets\js\validation\additional-methods.min.js" />
+    <Content Include="Assets\js\validation\jquery.min.js" />
+    <Content Include="Assets\js\validation\jquery.validate.min.js" />
     <Content Include="Assets\plugins\bootstrap-colorpicker\css\bootstrap-colorpicker.css" />
     <Content Include="Assets\plugins\bootstrap-colorpicker\css\bootstrap-colorpicker.min.css" />
     <Content Include="Assets\plugins\bootstrap-colorpicker\js\bootstrap-colorpicker.js" />

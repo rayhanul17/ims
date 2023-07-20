@@ -2,8 +2,20 @@
 @model IMS.BusinessModel.ViewModel.CategoryAddModel
 @{
     ViewData["Title"] = "Category Create";
+    var status = Enum.GetValues(typeof(IMS.BusinessRules.Enum.Status))
+                                .Cast<IMS.BusinessRules.Enum.Status>()
+                                .Where(s => s != IMS.BusinessRules.Enum.Status.Delete);
 }
 
+@section Styles{
+    <style>       
+        .error{
+            color:red;
+        }
+    </style>
+    
+
+    }
 <div class="container-fluid">
     <div class="row">
         <!-- left column -->
@@ -16,7 +28,7 @@
                 </div>
                 <!-- /.card-header -->
                 <!-- form start -->
-                @using (Html.BeginForm("Create", "Category", FormMethod.Post))
+                @using (Html.BeginForm("Create", "Category", FormMethod.Post, htmlAttributes: new { @id = "myform", @class = "nav-link cmxform" }))
                 {
                     @Html.AntiForgeryToken()
                     <div class="card-body">
@@ -24,22 +36,20 @@
                         <div class="form-group">
                             <label> @Html.LabelFor(m => m.Name)</label>
                             @Html.TextBoxFor(m => m.Name, new { @class = "form-control", @placeholder = "Name", @type = "text" })
-                            @Html.ValidationMessageFor(model => model.Name, "", new { style = "color:red" })
+                            
                         </div>
                         <div class="form-group">
                             <label> @Html.LabelFor(m => m.Description)</label>
                             @Html.TextBoxFor(m => m.Description, new { @class = "form-control", @placeholder = "Description", @type = "text" })
-                            <span>@Html.ValidationMessageFor(model => model.Description)</span>
+                            @*<span>@Html.ValidationMessageFor(model => model.Description)</span>*@
                         </div>
                         <div class="form-group">
                             <label> @Html.LabelFor(m => m.Rank)</label>
-                            @Html.TextBoxFor(m => m.Rank, new { @class = "form-control", @placeholder = "Rank", @type = "number" })
-                            <span>@Html.ValidationMessageFor(model => model.Rank)</span>
+                            @Html.TextBoxFor(m => m.Rank, new { @class = "form-control", @placeholder = "Rank", @type = "number" })                            
                         </div>
                         <div class="form-group">
                             <label> @Html.LabelFor(m => m.Status)</label>
-                            @Html.EnumDropDownListFor(m => m.Status, "Select Status", new { @class = "form-control" })
-                            <span>@Html.ValidationMessageFor(model => model.Status)</span>
+                            @Html.EnumDropDownListFor(m => m.Status, new { @class = "form-control" })                            
                         </div>
                     </div>
                     <!-- /.card-body -->
@@ -53,3 +63,48 @@
     </div>
     <!-- /.row -->
 </div><!-- /.container-fluid -->
+@section Scripts
+{
+    <script src="~/Assets/js/validation/jquery.min.js"></script>
+    <script src="~/Assets/js/validation/jquery.validate.min.js"></script>
+    <script src="~/Assets/js/validation/additional-methods.min.js"></script>    
+    <script>
+        $(document).ready(function () {
+            console.log("hello");
+            $("#myform").validate({
+
+                // In 'rules' user have to specify all the
+                // constraints for respective fields
+                rules: {
+                    Name: {
+                        required: true,
+                        minlength: 3,
+                        maxlength: 5
+                    },
+                    Rank: {
+                        required: true,
+                        min: 1
+                    }
+, 
+                    Status: {
+                        equalTo: "Delete"
+                    }
+                    
+                },
+                // In 'messages' user have to specify message as per rules
+                messages: {
+                    Name: {
+                        required: " Please enter category name",
+                        minlength: "At least 3 characters required",
+                        maxlength: "At most 100 characters requird",
+                    },
+                    Rank: {
+                        required: "Please enter rank",
+                        min: "Minimum value 1"
+                    },
+                    Status: "Please enter active or inactive status",                    
+                }
+            });
+        });
+    </script>
+}
