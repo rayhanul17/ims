@@ -95,6 +95,7 @@ namespace IMS.Services
                         Name = model.Name,
                         Description = model.Description,
                         Status = (int)model.Status,
+                        Rank = model.Rank,
                         CreateBy = model.CreateBy,
                         CreationDate = DateTime.Parse(model.CreationDate),
                         ModifyBy = userId,

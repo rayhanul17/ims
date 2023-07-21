@@ -13,16 +13,16 @@ using System.Web.Mvc;
 
 namespace IMS.Controllers
 {
-    public class CategoryController : AllBaseController
+    public class BrandController : AllBaseController
     {
         #region Initialization
-        private readonly ICategoryService _categoryService;
+        private readonly IBrandService _brandService;
         private readonly IAccountService _accountService;
 
-        public CategoryController()
+        public BrandController()
         {
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
-            _categoryService = new CategoryService(session);
+            _brandService = new BrandService(session);
             _accountService = new AccountService(session);
         }
 
@@ -39,27 +39,27 @@ namespace IMS.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            var model = new CategoryAddModel();
+            var model = new BrandAddModel();
             var selectList = Enum.GetValues(typeof(Status))
                        .Cast<Status>()
                        .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
             ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
                        
-            _logger.Info("Category Creation Page");
+            
             return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(CategoryAddModel model)
+        public async Task<ActionResult> Create(BrandAddModel model)
         {
             try
             {
-                ValidateCategoryAddModel(model);
+                ValidateBrandAddModel(model);
                 if (ModelState.IsValid)
                 {
-                    await _categoryService.AddAsync(model, User.Identity.GetUserId<long>());
-                    ViewResponse("Successfully added a new category.", ResponseTypes.Success);
+                    await _brandService.AddAsync(model, User.Identity.GetUserId<long>());
+                    ViewResponse("Successfully added a new Brand.", ResponseTypes.Success);
                 }
                 else
                 {
@@ -71,7 +71,7 @@ namespace IMS.Controllers
                 ViewResponse(ex.Message, ResponseTypes.Danger);
                 _logger.Error(ex);
             }
-            return RedirectToAction("Index", "Category");
+            return RedirectToAction("Index", "Brand");
         }
 
         [HttpGet]
@@ -86,7 +86,7 @@ namespace IMS.Controllers
                        .Where(e => e != IMS.BusinessRules.Enum.Status.Delete).ToDictionary(key => (int)key);
                 ViewBag.StatusList = new SelectList(selectList, "Key", "Value");
 
-                var model = await _categoryService.GetByIdAsync(id);
+                var model = await _brandService.GetByIdAsync(id);
                 return View(model);
             }
             catch (Exception ex)
@@ -94,19 +94,19 @@ namespace IMS.Controllers
                 ViewResponse("Invalid object id", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
-            return RedirectToAction("Index", "Category");
+            return RedirectToAction("Index", "Brand");
         }
 
         [HttpPost]
-        public async Task<ActionResult> Edit(CategoryEditModel model)
+        public async Task<ActionResult> Edit(BrandEditModel model)
         {
             try
             {
-                ValidateCategoryEditModel(model);
+                ValidateBrandEditModel(model);
                 if (ModelState.IsValid)
                 {
                     var userId = User.Identity.GetUserId<long>();
-                    await _categoryService.UpdateAsync(model, userId);
+                    await _brandService.UpdateAsync(model, userId);
                 }
                 else
                 {
@@ -119,7 +119,7 @@ namespace IMS.Controllers
                 _logger.Error(ex);
             }
 
-            return RedirectToAction("Index", "Category");
+            return RedirectToAction("Index", "Brand");
         }
 
         [HttpPost]
@@ -128,24 +128,24 @@ namespace IMS.Controllers
             try
             {
                 var userId = User.Identity.GetUserId<long>();
-                await _categoryService.RemoveByIdAsync(id, userId);
+                await _brandService.RemoveByIdAsync(id, userId);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex.Message, ex);
 
             }
-            return RedirectToAction("Index", "Category");
+            return RedirectToAction("Index", "Brand");
         }
         #endregion
 
         #region Ajax Call
-        public JsonResult GetCategories()
+        public JsonResult GetBrands()
         {
             try
             {
                 var model = new DataTablesAjaxRequestModel(Request);
-                var data = _categoryService.LoadAllCategories(model.SearchText, model.Length, model.Start, model.SortColumn,
+                var data = _brandService.LoadAllBrands(model.SearchText, model.Length, model.Start, model.SortColumn,
                     model.SortDirection);
 
                 var count = 1;
@@ -179,7 +179,7 @@ namespace IMS.Controllers
         #endregion
 
         #region Helper Function
-        private void ValidateCategoryAddModel(CategoryAddModel model)
+        private void ValidateBrandAddModel(BrandAddModel model)
         {            
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length<3 || model.Name.Length >100)
             {
@@ -195,7 +195,7 @@ namespace IMS.Controllers
             }
         }
 
-        private void ValidateCategoryEditModel(CategoryEditModel model)
+        private void ValidateBrandEditModel(BrandEditModel model)
         {
             if(model.Id == 0)
             {
