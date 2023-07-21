@@ -1,0 +1,108 @@
+﻿@using IMS.Models
+@model IMS.BusinessModel.ViewModel.ProductAddModel
+
+
+@section Styles{
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- left column -->
+        <div class="col">
+            @*<partial name="_ResponsePartial" />*@
+            <!-- general form elements -->
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">@ViewData["Title"]</h3>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                @using (Html.BeginForm("Create", "Product", FormMethod.Post, htmlAttributes: new { @id = "myform", @class = "nav-link cmxform" }))
+                {
+                    @Html.AntiForgeryToken()
+            <div class="card-body">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    <label> @Html.LabelFor(m => m.Name)</label>
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", @placeholder = "Name", @type = "text" })
+
+                </div>
+                <div class="form-group">
+                    <label> @Html.LabelFor(m => m.CategoryId)</label>
+                    @Html.TextBoxFor(m => m.CategoryId, new { @class = "form-control", @placeholder = "Price", @type = "number" })
+                    @*<span>@Html.ValidationMessageFor(model => model.Description)</span>*@
+                </div>
+                <div class="form-group">
+                    <label> @Html.LabelFor(m => m.Price)</label>
+                    @Html.TextBoxFor(m => m.Price, new { @class = "form-control", @placeholder = "Price", @type = "number" })
+                    @*<span>@Html.ValidationMessageFor(model => model.Description)</span>*@
+                </div>
+                <div class="form-group">
+                    <label> @Html.LabelFor(m => m.Description)</label>
+                    @Html.TextBoxFor(m => m.Description, new { @class = "form-control", @placeholder = "Description", @type = "text" })
+                    @*<span>@Html.ValidationMessageFor(model => model.Description)</span>*@
+                </div>
+                <div class="form-group">
+                    <label> @Html.LabelFor(m => m.Rank)</label>
+                    @Html.TextBoxFor(m => m.Rank, new { @class = "form-control", @placeholder = "Rank", @type = "number" })
+                </div>
+                <div class="form-group">
+                    <label> @Html.LabelFor(m => m.Status)</label>
+                    @Html.DropDownListFor(m => m.Status, (SelectList)ViewBag.StatusList, new { @class = "form-control" })
+                </div>
+            </div>
+                    <!-- /.card-body -->
+
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+</div><!-- /.container-fluid -->
+@section Scripts
+{
+    <script src="~/Assets/js/validation/jquery.min.js"></script>
+    <script src="~/Assets/js/validation/jquery.validate.min.js"></script>
+    <script src="~/Assets/js/validation/additional-methods.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            console.log("hello");
+            $("#myform").validate({
+
+                // In 'rules' user have to specify all the
+                // constraints for respective fields
+                rules: {
+                    Name: {
+                        required: true,
+                        minlength: 3,
+                        maxlength: 100
+                    },
+                    Rank: {
+                        required: true,
+                        min: 1
+                    }
+                },
+                // In 'messages' user have to specify message as per rules
+                messages: {
+                    Name: {
+                        required: " Please enter Product name",
+                        minlength: "At least 3 characters required",
+                        maxlength: "At most 100 characters requird",
+                    },
+                    Rank: {
+                        required: "Please enter rank",
+                        min: "Minimum value 1"
+                    }
+                }
+            });
+        });
+    </script>
+}

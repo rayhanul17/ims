@@ -9,11 +9,11 @@ namespace IMS.Dao.Mappings
             Table("Category");
             Map(x => x.Description);
 
-            //HasMany(x => x.Products)
-            //    .KeyColumn("CategoryId")
-            //    .Inverse()
-            //    .LazyLoad()
-            //    .Cascade.All();
+            HasMany(x => x.Products)
+                .KeyColumn("CategoryId")
+                .Inverse()
+                .LazyLoad()
+                .Cascade.All();
         }
     }
 }
