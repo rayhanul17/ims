@@ -101,7 +101,7 @@ namespace IMS.Services
                         Email = model.Email,
                         Status = (int)model.Status,
                         CreateBy = model.CreateBy,
-                        CreationDate = DateTime.Parse(model.CreationDate),
+                        CreationDate = model.CreationDate,
                         ModifyBy = userId,
                         ModificationDate = _timeService.Now
                     };
@@ -161,7 +161,7 @@ namespace IMS.Services
                     ContactNumber = customer.ContactNumber,
                     Email = customer.Email,
                     CreateBy = customer.CreateBy,
-                    CreationDate = (customer.CreationDate).ToString(),
+                    CreationDate = customer.CreationDate,
                     ModifyBy = customer.ModifyBy,
                     ModificationDate = customer.ModificationDate,
                     Status = (Status)customer.Status,

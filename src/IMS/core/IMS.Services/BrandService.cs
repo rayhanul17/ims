@@ -97,7 +97,7 @@ namespace IMS.Services
                         Status = (int)model.Status,
                         Rank = model.Rank,
                         CreateBy = model.CreateBy,
-                        CreationDate = DateTime.Parse(model.CreationDate),
+                        CreationDate = model.CreationDate,
                         ModifyBy = userId,
                         ModificationDate = _timeService.Now
                     };
@@ -155,7 +155,7 @@ namespace IMS.Services
                     Name = brand.Name,
                     Description = brand.Description,
                     CreateBy = brand.CreateBy,
-                    CreationDate = (brand.CreationDate).ToString(),
+                    CreationDate = brand.CreationDate,
                     ModifyBy = brand.ModifyBy,
                     ModificationDate = brand.ModificationDate,
                     Status = (Status)brand.Status,

@@ -102,10 +102,16 @@ namespace IMS.Services
                     {
                         Id = model.Id,
                         Name = model.Name,
+                        CategoryId = model.CategoryId,
+                        Category = await _categoryDao.GetByIdAsync(model.CategoryId),
                         Description = model.Description,
                         Status = (int)model.Status,
+                        ProfitMargin = model.ProfitMargin,
+                        DiscountPrice = model.DiscountPrice,
+                        Rank = model.Rank,
                         CreateBy = model.CreateBy,
-                        CreationDate = DateTime.Parse(model.CreationDate),
+                        CreationDate = model.CreationDate,
+                        Image = model.Image,
                         ModifyBy = userId,
                         ModificationDate = _timeService.Now
                     };
@@ -152,24 +158,30 @@ namespace IMS.Services
         {
             try
             {
-                var Product = await _productDao.GetByIdAsync(id);
-                if (Product == null)
+                var product = await _productDao.GetByIdAsync(id);
+                if (product == null)
                 {
-                    throw new ArgumentNullException(nameof(Product));
+                    throw new ArgumentNullException(nameof(product));
                 }
                 return new ProductEditModel
                 {
-                    Id = Product.Id,
-                    Name = Product.Name,
-                    Description = Product.Description,
-                    CreateBy = Product.CreateBy,
-                    CreationDate = (Product.CreationDate).ToString(),
-                    ModifyBy = Product.ModifyBy,
-                    ModificationDate = Product.ModificationDate,
-                    Status = (Status)Product.Status,
-                    Rank = Product.Rank,
-                    VersionNumber = Product.VersionNumber,
-                    BusinessId = Product.BusinessId,
+                    Id = product.Id,
+                    Name = product.Name,
+                    CategoryId = product.Category.Id,                    
+                    Description = product.Description,
+                    BuyingPrice = product.BuyingPrice,
+                    SellingPrice = product.SellingPrice,
+                    DiscountPrice = product.DiscountPrice,
+                    ProfitMargin = product.ProfitMargin,
+                    Image = product.Image,
+                    CreateBy = product.CreateBy,
+                    CreationDate = product.CreationDate,
+                    ModifyBy = product.ModifyBy,
+                    ModificationDate = product.ModificationDate,
+                    Status = (Status)product.Status,
+                    Rank = product.Rank,
+                    VersionNumber = product.VersionNumber,
+                    BusinessId = product.BusinessId,
                 };
             }
             catch(Exception ex)

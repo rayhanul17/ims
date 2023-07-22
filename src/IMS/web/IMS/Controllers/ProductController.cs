@@ -104,7 +104,17 @@ namespace IMS.Controllers
                        .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
                 ViewBag.StatusList = new SelectList(selectList, "Key", "Value");
 
+                var categoryList = _categoryService.LoadAllCategories();
+                ViewBag.CategoryList = categoryList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
+                
+
                 var model = await _productService.GetByIdAsync(id);
+
+                model.Image = "~/UploadedFiles/" + model.Image;
                 return View(model);
             }
             catch (Exception ex)
@@ -116,13 +126,17 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Edit(ProductEditModel model)
+        public async Task<ActionResult> Edit(ProductEditModel model, HttpPostedFileBase image)
         {
             try
             {
                 ValidateProductEditModel(model);
-                if (ModelState.IsValid)
+                if (ModelState.IsValid && image != null )
                 {
+                    string path = Server.MapPath("~/UploadedFiles/");
+
+                    model.Image = await _imageService.SaveImage(image, path);
+
                     var userId = User.Identity.GetUserId<long>();
                     await _productService.UpdateAsync(model, userId);
                 }
@@ -163,7 +177,7 @@ namespace IMS.Controllers
             try
             {
                 //string path = Server.MapPath("~/UploadedFiles/");
-                string path = "/UploadedFiles/";
+                string path = "~/UploadedFiles/";
                 var model = new DataTablesAjaxRequestModel(Request);
                 var data = _productService.LoadAllProducts(model.SearchText, model.Length, model.Start, model.SortColumn,
                     model.SortDirection);
@@ -227,6 +241,10 @@ namespace IMS.Controllers
             if(model.CreateBy == 0)
             {
                 ModelState.AddModelError("CreateBy", "CreateBy id not found");
+            }
+            if (model.CreationDate.GetType() == typeof(DateTime).GetType())
+            {
+                ModelState.AddModelError("CreationDate", "CreationDate invalid");
             }
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 100)
             {
