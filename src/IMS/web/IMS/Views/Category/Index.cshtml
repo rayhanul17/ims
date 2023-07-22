@@ -118,14 +118,14 @@
             $("#deleteId").val(id);
             $("#deleteForm").attr("action", "/category/delete");
             console.log(m);
-            /*m.modal('show');*/
-            m[0].style.display = "block";
+            m.modal('show');
+            //m[0].style.display = "block";
         });
 
         $("#deleteButton").click(function () {
             $("#deleteForm").submit();
-            var m = $("#modal-default");
-            m[0].style.display = "hidden";
+            //var m = $("#modal-default");
+            //m[0].style.display = "hidden";
 
         });
        

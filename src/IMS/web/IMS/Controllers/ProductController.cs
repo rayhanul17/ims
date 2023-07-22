@@ -162,7 +162,8 @@ namespace IMS.Controllers
         {
             try
             {
-                string path = Server.MapPath("~/UploadedFiles/");
+                //string path = Server.MapPath("~/UploadedFiles/");
+                string path = "/UploadedFiles/";
                 var model = new DataTablesAjaxRequestModel(Request);
                 var data = _productService.LoadAllProducts(model.SearchText, model.Length, model.Start, model.SortColumn,
                     model.SortDirection);

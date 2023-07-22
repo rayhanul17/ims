@@ -119,15 +119,12 @@
             $("#deleteId").val(id);
             $("#deleteForm").attr("action", "/brand/delete");
             console.log(m);
-            /*m.modal('show');*/
-            m[0].style.display = "block";
+            m.modal('show');
+            
         });
 
-        $("#deleteButton").click(function () {
-            var m = $("#modal-default");
-            m[0].style.display = "hidden";
+        $("#deleteButton").click(function () {            
             $("#deleteForm").submit();
-
         });
 
     </script>
