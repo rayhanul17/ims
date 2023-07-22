@@ -25,7 +25,10 @@ namespace IMS.Services
         }
 
         public async Task<string> SaveImage(HttpPostedFileBase file, string path)
-        {            
+        {
+            if (file == null)
+                return null;
+
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 

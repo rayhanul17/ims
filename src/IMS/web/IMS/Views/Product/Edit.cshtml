@@ -4,6 +4,16 @@
 }
 @section Styles{
     <style>
+        #myform {
+            background-image: url( @Model.Image );
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity:0.5;
+        }
+        
+        img{
+            opacity:0.4;
+        }
         .error {
             color: red;
         }
@@ -22,6 +32,7 @@
                 </div>
                 <!-- /.card-header -->
                 <!-- form start -->
+                @*<img src="@Model.Image"/>*@
                 @using (Html.BeginForm("Edit", "Product", FormMethod.Post, htmlAttributes: new { enctype = "multipart/form-data", @id = "myform", @class = "nav-link cmxform" }))
                 {
                     var d = Model;

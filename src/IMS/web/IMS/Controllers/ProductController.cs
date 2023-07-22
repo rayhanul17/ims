@@ -113,8 +113,8 @@ namespace IMS.Controllers
                 
 
                 var model = await _productService.GetByIdAsync(id);
-
-                model.Image = "~/UploadedFiles/" + model.Image;
+                string path = Server.MapPath("~/UploadedFiles/");
+                model.Image = "/UploadedFiles/" + model.Image;
                 return View(model);
             }
             catch (Exception ex)
@@ -131,7 +131,7 @@ namespace IMS.Controllers
             try
             {
                 ValidateProductEditModel(model);
-                if (ModelState.IsValid && image != null )
+                if (ModelState.IsValid)
                 {
                     string path = Server.MapPath("~/UploadedFiles/");
 

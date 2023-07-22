@@ -86,37 +86,30 @@ namespace IMS.Services
             {
                 try
                 {
-                    var objectcount = _productDao.GetCount(x => x.Id == model.Id);
+                    var product = await _productDao.GetByIdAsync(model.Id);
                     var namecount = _productDao.GetCount(x => x.Name == model.Name);
 
-                    if (objectcount < 1)
+                    if (product == null)
                     {
                         throw new InvalidOperationException("No record found with this id!");
                     }
                     if (namecount > 1)
                     {
                         throw new DuplicateException("Already exist Product with this name");
-                    }
+                    }                    
+                    
+                    product.Name = model.Name;
+                    product.CategoryId = model.CategoryId;
+                    product.Category = await _categoryDao.GetByIdAsync(model.CategoryId);
+                    product.Description = model.Description;
+                    product.Status = (int)model.Status;
+                    product.ProfitMargin = model.ProfitMargin;
+                    product.DiscountPrice = model.DiscountPrice;
 
-                    var Product = new Product()
-                    {
-                        Id = model.Id,
-                        Name = model.Name,
-                        CategoryId = model.CategoryId,
-                        Category = await _categoryDao.GetByIdAsync(model.CategoryId),
-                        Description = model.Description,
-                        Status = (int)model.Status,
-                        ProfitMargin = model.ProfitMargin,
-                        DiscountPrice = model.DiscountPrice,
-                        Rank = model.Rank,
-                        CreateBy = model.CreateBy,
-                        CreationDate = model.CreationDate,
-                        Image = model.Image,
-                        ModifyBy = userId,
-                        ModificationDate = _timeService.Now
-                    };
+                    if (!string.IsNullOrWhiteSpace(model.Image))
+                        product.Image = model.Image;
 
-                    await _productDao.EditAsync(Product);
+                    await _productDao.EditAsync(product);
                     transaction.Commit();
 
                     _serviceLogger.Info("Data Saved!");
