@@ -19,7 +19,7 @@ namespace IMS.Services
         Task UpdateAsync(CategoryEditModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
         Task<CategoryEditModel> GetByIdAsync(long id);
-        IList<CategoryDto> LoadAllCategories();
+        IList<(long, string)> LoadAllCategories();
         (int total, int totalDisplay, IList<CategoryDto> records) LoadAllCategories(string searchBy, int length, int start, string sortBy, string sortDir);
     }
     #endregion
@@ -214,9 +214,15 @@ namespace IMS.Services
             }
         }
         
-        public IList<CategoryDto> LoadAllCategories()
+        public IList<(long,string)> LoadAllCategories()
         {
-            throw new NotImplementedException();
+            List<(long, string)> categories = new List<(long, string)> ();
+            var allcategories = _categoryDao.GetCategory(x => x.Status != (int)Status.Delete);
+            foreach (var category in allcategories)
+            {
+                categories.Add((category.Id, category.Name));
+            }
+            return categories;
         }
         #endregion
 

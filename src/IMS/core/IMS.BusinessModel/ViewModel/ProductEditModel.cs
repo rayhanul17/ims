@@ -7,7 +7,12 @@ namespace IMS.BusinessModel.ViewModel
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public decimal Price { get; set; }  
+        public virtual string Image { get; set; }
+        public virtual decimal BuyingPrice { get; set; }
+        public virtual decimal SellingPrice { get; set; }
+        public virtual decimal DiscountPrice { get; set; }
+        public virtual decimal ProfitMargin { get; set; }
+        public virtual int InStockQuantity { get; set; }
         public long CategoryId { get; set; }
         public string Description { get; set; }
         public virtual Status Status { get; set; }

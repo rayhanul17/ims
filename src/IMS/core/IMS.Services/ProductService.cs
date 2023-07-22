@@ -57,7 +57,8 @@ namespace IMS.Services
                         Category = await _categoryDao.GetByIdAsync(model.CategoryId),
                         Description = model.Description,
                         Status = (int)model.Status,
-                        Price = model.Price,
+                        ProfitMargin = model.ProfitMargin,
+                        DiscountPrice = model.DiscountPrice,
                         Rank = model.Rank,
                         CreateBy = userId,
                         CreationDate = _timeService.Now,
@@ -200,14 +201,14 @@ namespace IMS.Services
                         {
                             Id = product.Id,
                             Name = product.Name,
-                            Description = product.Description,
-                            CreateBy = product.CreateBy,
-                            CreationDate = product.CreationDate,                            
+                            Category = product.Category.Name,
+                            Description = product.Description,                                                       
                             Status = (Status)product.Status,
-                            Rank = product.Rank,
-                            VersionNumber = product.VersionNumber,
-                            BusinessId = product.BusinessId,
-                        });
+                            ProfitMargin = product.ProfitMargin,
+                            DiscountPrice = product.DiscountPrice,
+                            SellingPrice = product.SellingPrice,
+                            Image = product.Image == null ? "ImageNotFound":  "Found"                          
+                        });;
                 }
 
                 return (result.total, result.totalDisplay, products);

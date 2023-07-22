@@ -1,5 +1,4 @@
-﻿using FluentNHibernate.Data;
-using IMS.BusinessModel.Entity;
+﻿using IMS.BusinessModel.Entity;
 using IMS.BusinessRules.Enum;
 using NHibernate;
 using System;
@@ -25,7 +24,7 @@ namespace IMS.Dao
         public (IList<Product> data, int total, int totalDisplay) LoadAllProducts(Expression<Func<Product, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
         {
             IQueryable<Product> query = _session.Query<Product>();
-            
+
             query = query.Where(x => x.Status != (int)Status.Delete);
 
             var total = query.Count();
@@ -45,9 +44,9 @@ namespace IMS.Dao
                 case "Created By":
                     query = sortDir == "asc" ? query.OrderBy(c => c.CreateBy) : query.OrderByDescending(c => c.CreateBy);
                     break;
-                //case "Modified By":
-                //    query = sortDir == "asc" ? query.OrderBy(c => c.ModifyBy) : query.OrderByDescending(c => c.ModifyBy);
-                //    break;
+                case "Category":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.Category) : query.OrderByDescending(c => c.Category);
+                    break;
             }
 
             var result = query.Skip(pageIndex).Take(pageSize);
@@ -55,5 +54,5 @@ namespace IMS.Dao
             return (result.ToList(), total, totalDisplay);
         }
     }
-    
+
 }

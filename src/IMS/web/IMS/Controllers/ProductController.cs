@@ -17,12 +17,14 @@ namespace IMS.Controllers
     {
         #region Initialization
         private readonly IProductService _productService;
+        private readonly ICategoryService _categoryService;
         private readonly IAccountService _accountService;
 
         public ProductController()
         {
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
             _productService = new ProductService(session);
+            _categoryService = new CategoryService(session);
             _accountService = new AccountService(session);
         }
 
@@ -40,11 +42,19 @@ namespace IMS.Controllers
         public ActionResult Create()
         {
             var model = new ProductAddModel();
-            var selectList = Enum.GetValues(typeof(Status))
+            var enumList = Enum.GetValues(typeof(Status))
                        .Cast<Status>()
                        .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
-            ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
-                       
+            ViewBag.StatusList = new SelectList(enumList, "Key", "Value", (int)Status.Active);
+
+            var categoryList = _categoryService.LoadAllCategories();
+            ViewBag.CategoryList = categoryList.Select(x => new SelectListItem
+            {
+                Text = x.Item2,
+                Value = x.Item1.ToString()
+            }).ToList();
+
+
             _logger.Info("Product Creation Page");
             return View(model);
         }
@@ -160,10 +170,13 @@ namespace IMS.Controllers
                             {
                                 count++.ToString(),
                                 record.Name,
+                                record.Category,
                                 record.Description,
                                 record.Status.ToString(),
-                                _accountService.GetUserName(record.CreateBy),
-                                record.CreationDate.ToString(),
+                                record.ProfitMargin.ToString(),
+                                record.DiscountPrice.ToString(),
+                                record.SellingPrice.ToString(),
+                                record.Image.ToString(),
                                 record.Id.ToString()
                             }
                         ).ToArray()

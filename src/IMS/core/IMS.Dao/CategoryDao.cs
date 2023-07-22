@@ -11,6 +11,7 @@ namespace IMS.Dao
 {
     public interface ICategoryDao : IBaseDao<Category, long>
     {
+        IList<Category> GetCategory(Expression<Func<Category, bool>> filter);
         (IList<Category> data, int total, int totalDisplay) LoadAllCategories(Expression<Func<Category, bool>> filter = null,
            string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
     }
@@ -53,6 +54,18 @@ namespace IMS.Dao
             var result = query.Skip(pageIndex).Take(pageSize);
 
             return (result.ToList(), total, totalDisplay);
+        }
+
+        public IList<Category> GetCategory(Expression<Func<Category, bool>> filter)
+        {
+            IQueryable<Category> query = _session.Query<Category>();
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            return query.ToList();
         }
     }
     

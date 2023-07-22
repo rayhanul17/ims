@@ -35,16 +35,25 @@
                         Name
                     </th>
                     <th>
+                        Category
+                    </th>
+                    <th>
                         Description
                     </th>
                     <th>
                         Status
                     </th>
                     <th>
-                        Created By
+                        Profit Margin
                     </th>
                     <th>
-                        Created Date
+                        Discount Price
+                    </th>
+                    <th>
+                        Selling Price
+                    </th>
+                    <th>
+                        Image
                     </th>
                     <th>
                         Actions
@@ -76,22 +85,25 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": "/Product/GetCategories",
+                    "url": "/Product/GetProducts",
                     "type": "POST",
                     "datatype": "json",
                 },
                 "columns": [
                     { "name": "SL" },
                     { "name": "Name" },
+                    { "name": "Category" },
                     { "name": "Description" },
                     { "name": "Status" },
-                    { "name": "Created By" },
-                    { "name": "Created Date" }
+                    { "name": "Profit Margin" },
+                    { "name": "Discount Price" },
+                    { "name": "Selling Price" },
+                    { "name": "Image" }
                 ],
                 "columnDefs": [
                     {
                         "orderable": false,
-                        "targets": 6,
+                        "targets": 9,
                         "render": function (data, type, row) {
                             return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/product/edit/${data}'">
                                                         <i class="fas fa-pencil-alt">
@@ -105,7 +117,7 @@
                                                     </button>`;
                         }
                     },
-                    { "orderable": false, "targets": [0, 3, 5, 6] }
+                    { "orderable": false, "targets": [0, 4, 5, 6, 7, 8 ] }
                 ],
                 "order": [1, 'asc']
             });
