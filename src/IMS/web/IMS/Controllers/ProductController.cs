@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 
 namespace IMS.Controllers
@@ -19,6 +20,7 @@ namespace IMS.Controllers
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly IAccountService _accountService;
+        private readonly IImageService _imageService;
 
         public ProductController()
         {
@@ -26,6 +28,7 @@ namespace IMS.Controllers
             _productService = new ProductService(session);
             _categoryService = new CategoryService(session);
             _accountService = new AccountService(session);
+            _imageService = new ImageService();
         }
 
         #endregion
@@ -61,13 +64,18 @@ namespace IMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(ProductAddModel model)
+        public async Task<ActionResult> Create(ProductAddModel model, HttpPostedFileBase image)
         {
+
             try
             {
                 ValidateProductAddModel(model);
-                if (ModelState.IsValid)
+                if (ModelState.IsValid && image != null)
                 {
+                    string path = Server.MapPath("~/UploadedFiles/");                  
+
+                    model.Image = await _imageService.SaveImage(image, path);
+
                     await _productService.AddAsync(model, User.Identity.GetUserId<long>());
                     ViewResponse("Successfully added a new Product.", ResponseTypes.Success);
                 }
@@ -154,6 +162,7 @@ namespace IMS.Controllers
         {
             try
             {
+                string path = Server.MapPath("~/UploadedFiles/");
                 var model = new DataTablesAjaxRequestModel(Request);
                 var data = _productService.LoadAllProducts(model.SearchText, model.Length, model.Start, model.SortColumn,
                     model.SortDirection);
@@ -176,7 +185,7 @@ namespace IMS.Controllers
                                 record.ProfitMargin.ToString(),
                                 record.DiscountPrice.ToString(),
                                 record.SellingPrice.ToString(),
-                                record.Image.ToString(),
+                                _imageService.GetImage(path, record.Image),
                                 record.Id.ToString()
                             }
                         ).ToArray()

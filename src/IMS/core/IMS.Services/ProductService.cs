@@ -29,11 +29,13 @@ namespace IMS.Services
         #region Initializtion
         private readonly IProductDao _productDao;
         private readonly ICategoryDao _categoryDao;
+        private readonly IImageService _imageService;
 
         public ProductService(ISession session) : base(session)
         {
             _productDao = new ProductDao(session);
             _categoryDao = new CategoryDao(session);
+            _imageService = new ImageService();
         }
         #endregion
 
@@ -62,6 +64,7 @@ namespace IMS.Services
                         Rank = model.Rank,
                         CreateBy = userId,
                         CreationDate = _timeService.Now,
+                        Image = model.Image,
                     };
 
                     await _productDao.AddAsync(product);
@@ -207,7 +210,7 @@ namespace IMS.Services
                             ProfitMargin = product.ProfitMargin,
                             DiscountPrice = product.DiscountPrice,
                             SellingPrice = product.SellingPrice,
-                            Image = product.Image == null ? "ImageNotFound":  "Found"                          
+                            Image = product.Image                          
                         });;
                 }
 
