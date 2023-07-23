@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using IMS.BusinessModel.ViewModel;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,11 +25,11 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(string obj)
+        public async Task<ActionResult> Create(IList<PurchaseDetailsModel> model, string supplierId)
         {
-            var o = JsonConvert.SerializeObject(obj).Split(new string[] {"Remove", "\\", "\""}, StringSplitOptions.RemoveEmptyEntries);            
-            
-            return View(obj);
+            //var o = JsonConvert.SerializeObject(obj).Split(new string[] { "Remove", "\\", "\"" }, StringSplitOptions.RemoveEmptyEntries);
+
+            return View(model);
         }
     }
 }
