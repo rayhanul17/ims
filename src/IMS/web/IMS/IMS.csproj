@@ -207,6 +207,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />
+    <Compile Include="Controllers\PurchaseController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SupplierController.cs" />
     <Compile Include="Global.asax.cs">
@@ -2313,6 +2314,7 @@
     <Content Include="Views\Product\Index.cshtml" />
     <Content Include="Views\Product\Create.cshtml" />
     <Content Include="Views\Product\Edit.cshtml" />
+    <Content Include="Views\Purchase\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
