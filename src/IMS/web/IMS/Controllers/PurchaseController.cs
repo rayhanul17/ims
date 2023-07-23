@@ -15,9 +15,17 @@ namespace IMS.Controllers
             return RedirectToAction("Create");
         }
 
+        [HttpGet]
         public async Task<ActionResult> Create()
         {
             return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Create(dynamic obj)
+        {
+
+            return View(obj);
         }
     }
 }

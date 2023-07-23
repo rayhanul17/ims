@@ -59,7 +59,7 @@
                                 </div>
                                 <div class="col-md-1 form-group">
                                     <label>Quantity</label>
-                                    <input class="form-control" type="number" value="1" name="add_qty" id="qty" onchange="Sum(this.value)" />
+                                    <input class="form-control" type="number" value="1" name="add_qty" id="qty" onkeypress="Sum(this.value)" onmouseout="Sum(this.value)" onchange="Sum(this.value)" />
                                 </div>
                                 <div class="col-md-1 form-group">
                                     <label>Total</label>
@@ -73,7 +73,7 @@
                                 <div class="col-md-1 form-group">
                                     <!-- Item name: <input type="text" name="add_name" />  -->
                                     <label>Action</label>
-                                    <input type="submit" class="btn btn-primary form-control" value="Submit" />
+                                    <input type="button" onclick="Show()"  class="btn btn-primary form-control" value="Submit" />
                                 </div>
                             </div>
                             <div class="col-md-6 form-group">
@@ -93,8 +93,8 @@
 
         function addRow(frm) {
             rowNum++;
-            var row = `<div class="row pb-1" id="rowNum${rowNum}">
-            <div class="col-md-3"><input readonly type="text" class="form-control" name="ctg[]" value="${frm.add_ctg.value}"></div>
+            var row = `<div class="row pb-1 info" id="rowNum${rowNum}">
+            <div class="col-md-3"><input readonly class="form-control" name="ctg[]" value="${frm.add_ctg.value}"></div>
             <div class="col-md-3"><input readonly class="form-control" type="text" name="prd[]" value="${frm.add_prd.value}"></div>
             <div class="col-md-2"><input readonly class="form-control" type="text" name="price[]" value="${frm.add_price.value}"></div>
             <div class="col-md-1"><input readonly class="form-control" type="text" name="qty[]" value="${frm.add_qty.value}"></div>
@@ -114,8 +114,8 @@
             
             let v1 = parseFloat(v);
             let v2 = parseFloat(document.getElementById("price").value);
-            console.log(v1, v2);
-            console.log(v1 * v2);
+            //console.log(v1, v2);
+            //console.log(v1 * v2);
             document.getElementById("total").value = v1 * v2;   
             v1 = 0;
             v2 = 0;
@@ -123,6 +123,17 @@
 
         function removeRow(rnum) {
             jQuery('#rowNum' + rnum).remove();
+        }
+
+        function Show() {            
+            console.log($('#itemRows .info'));            
+            var tRows = $('#itemRows .info').map(function () {
+                return [$(this).find('input').map(function () {
+                    return $(this).val()
+                }).get()]
+            }).get()
+            console.log(tRows);
+            
         }
     </script>
 }
