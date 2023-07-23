@@ -26,9 +26,8 @@ namespace IMS.Controllers
         [HttpPost]
         public async Task<ActionResult> Create(string obj)
         {
-            var o = obj.Replace("[[", "[{");
-            o = o.Replace("]]", "}]");
-            foreach (var item in obj) { }
+            var o = JsonConvert.SerializeObject(obj).Split(new string[] {"Remove", "\\", "\""}, StringSplitOptions.RemoveEmptyEntries);            
+            
             return View(obj);
         }
     }
