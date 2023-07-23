@@ -19,7 +19,7 @@ namespace IMS.Services
         Task UpdateAsync(BrandEditModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
         Task<BrandEditModel> GetByIdAsync(long id);
-        IList<BrandDto> LoadAllBrands();
+        IList<(long, string)> LoadAllBrands();
         (int total, int totalDisplay, IList<BrandDto> records) LoadAllBrands(string searchBy, int length, int start, string sortBy, string sortDir);
     }
     #endregion
@@ -214,10 +214,16 @@ namespace IMS.Services
                 throw;
             }
         }
-        
-        public IList<BrandDto> LoadAllBrands()
+
+        public IList<(long, string)> LoadAllBrands()
         {
-            throw new NotImplementedException();
+            List<(long, string)> brands = new List<(long, string)>();
+            var allBrands = _brandDao.GetCategory(x => x.Status != (int)Status.Delete);
+            foreach (var brand in allBrands)
+            {
+                brands.Add((brand.Id, brand.Name));
+            }
+            return brands;
         }
         #endregion
 

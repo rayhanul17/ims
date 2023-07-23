@@ -21,7 +21,7 @@ namespace IMS.Services
             if (string.IsNullOrWhiteSpace(fileName))
                 return path+"NotFound.png";
             
-            return "\\UploadedFiles\\" + fileName;
+            return path + fileName;
         }
 
         public async Task<string> SaveImage(HttpPostedFileBase file, string path)

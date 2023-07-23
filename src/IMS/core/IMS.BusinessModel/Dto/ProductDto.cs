@@ -13,5 +13,6 @@ namespace IMS.BusinessModel.Dto
         public virtual decimal ProfitMargin { get; set; }
         public virtual int InStockQuantity { get; set; }
         public virtual string Category { get; set; } 
+        public virtual string Brand { get; set; } 
     }
 }

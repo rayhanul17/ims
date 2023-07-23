@@ -16,7 +16,9 @@ namespace IMS.Dao.Mappings
             Map(x => x.InStockQuantity);           
             References(i => i.Category)
                 .Column("CategoryId").Not.Nullable();
-            
+            References(i => i.Brand)
+                .Column("BrandId").Not.Nullable();
+
         }
     }
 }

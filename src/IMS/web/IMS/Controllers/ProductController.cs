@@ -19,6 +19,7 @@ namespace IMS.Controllers
         #region Initialization
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
+        private readonly IBrandService _brandService;
         private readonly IAccountService _accountService;
         private readonly IImageService _imageService;
 
@@ -27,6 +28,7 @@ namespace IMS.Controllers
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
             _productService = new ProductService(session);
             _categoryService = new CategoryService(session);
+            _brandService = new BrandService(session);
             _accountService = new AccountService(session);
             _imageService = new ImageService();
         }
@@ -45,6 +47,9 @@ namespace IMS.Controllers
         public ActionResult Create()
         {
             var model = new ProductAddModel();
+
+            #region Dropdown box loading
+
             var enumList = Enum.GetValues(typeof(Status))
                        .Cast<Status>()
                        .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
@@ -57,6 +62,14 @@ namespace IMS.Controllers
                 Value = x.Item1.ToString()
             }).ToList();
 
+            var brandList = _brandService.LoadAllBrands();
+            ViewBag.BrandList = brandList.Select(x => new SelectListItem
+            {
+                Text = x.Item2,
+                Value = x.Item1.ToString()
+            }).ToList();
+
+            #endregion
 
             _logger.Info("Product Creation Page");
             return View(model);
@@ -70,7 +83,7 @@ namespace IMS.Controllers
             try
             {
                 ValidateProductAddModel(model);
-                if (ModelState.IsValid && image != null)
+                if (ModelState.IsValid)
                 {
                     string path = Server.MapPath("~/UploadedFiles/");                  
 
@@ -99,6 +112,7 @@ namespace IMS.Controllers
                 return View();
             try
             {
+                #region Dropdown box loading
                 var selectList = Enum.GetValues(typeof(Status))
                        .Cast<Status>()
                        .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
@@ -110,7 +124,14 @@ namespace IMS.Controllers
                     Text = x.Item2,
                     Value = x.Item1.ToString()
                 }).ToList();
-                
+
+                var brandList = _brandService.LoadAllBrands();
+                ViewBag.BrandList = brandList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
+                #endregion
 
                 var model = await _productService.GetByIdAsync(id);
                 string path = Server.MapPath("~/UploadedFiles/");
@@ -139,6 +160,8 @@ namespace IMS.Controllers
 
                     var userId = User.Identity.GetUserId<long>();
                     await _productService.UpdateAsync(model, userId);
+
+                    ViewResponse("Successfully updated!", ResponseTypes.Success);
                 }
                 else
                 {
@@ -177,7 +200,7 @@ namespace IMS.Controllers
             try
             {
                 //string path = Server.MapPath("~/UploadedFiles/");
-                string path = "~/UploadedFiles/";
+                string path = "\\UploadedFiles\\";
                 var model = new DataTablesAjaxRequestModel(Request);
                 var data = _productService.LoadAllProducts(model.SearchText, model.Length, model.Start, model.SortColumn,
                     model.SortDirection);
@@ -195,9 +218,9 @@ namespace IMS.Controllers
                                 count++.ToString(),
                                 record.Name,
                                 record.Category,
+                                record.Brand,
                                 record.Description,
-                                record.Status.ToString(),
-                                record.ProfitMargin.ToString(),
+                                record.Status.ToString(),                                
                                 record.DiscountPrice.ToString(),
                                 record.SellingPrice.ToString(),
                                 _imageService.GetImage(path, record.Image),

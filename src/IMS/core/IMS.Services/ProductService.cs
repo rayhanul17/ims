@@ -29,12 +29,14 @@ namespace IMS.Services
         #region Initializtion
         private readonly IProductDao _productDao;
         private readonly ICategoryDao _categoryDao;
+        private readonly IBrandDao _brandDao;
         private readonly IImageService _imageService;
 
         public ProductService(ISession session) : base(session)
         {
             _productDao = new ProductDao(session);
             _categoryDao = new CategoryDao(session);
+            _brandDao = new BrandDao(session);
             _imageService = new ImageService();
         }
         #endregion
@@ -57,6 +59,8 @@ namespace IMS.Services
                         Name = model.Name,
                         CategoryId = model.CategoryId,
                         Category = await _categoryDao.GetByIdAsync(model.CategoryId),
+                        BrandId = model.BrandId,
+                        Brand = await _brandDao.GetByIdAsync(model.BrandId),
                         Description = model.Description,
                         Status = (int)model.Status,
                         ProfitMargin = model.ProfitMargin,
@@ -101,6 +105,8 @@ namespace IMS.Services
                     product.Name = model.Name;
                     product.CategoryId = model.CategoryId;
                     product.Category = await _categoryDao.GetByIdAsync(model.CategoryId);
+                    product.BrandId = model.BrandId;
+                    product.Brand = await _brandDao.GetByIdAsync(model.BrandId);
                     product.Description = model.Description;
                     product.Status = (int)model.Status;
                     product.ProfitMargin = model.ProfitMargin;
@@ -135,6 +141,7 @@ namespace IMS.Services
                     Product.Status = (int)Status.Delete;
                     Product.ModifyBy = userId;
                     Product.ModificationDate = _timeService.Now;
+
                     await _productDao.EditAsync(Product);
                     transaction.Commit();
 
@@ -160,7 +167,8 @@ namespace IMS.Services
                 {
                     Id = product.Id,
                     Name = product.Name,
-                    CategoryId = product.Category.Id,                    
+                    CategoryId = product.Category.Id, 
+                    BrandId = product.Brand.Id,
                     Description = product.Description,
                     BuyingPrice = product.BuyingPrice,
                     SellingPrice = product.SellingPrice,
@@ -210,13 +218,13 @@ namespace IMS.Services
                             Id = product.Id,
                             Name = product.Name,
                             Category = product.Category.Name,
+                            Brand = product.Brand.Name,
                             Description = product.Description,                                                       
-                            Status = (Status)product.Status,
-                            ProfitMargin = product.ProfitMargin,
+                            Status = (Status)product.Status,                            
                             DiscountPrice = product.DiscountPrice,
                             SellingPrice = product.SellingPrice,
                             Image = product.Image                          
-                        });;
+                        });
                 }
 
                 return (result.total, result.totalDisplay, products);

@@ -12,6 +12,7 @@ namespace IMS.BusinessModel.ViewModel
         public virtual decimal ProfitMargin { get; set; }
         public virtual int InStockQuantity { get; set; }
         public long CategoryId { get; set; }
+        public long BrandId { get; set; }
         public string Description { get; set; }
         public int Rank { get; set; }
         public Status Status { get; set; }

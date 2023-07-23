@@ -67,7 +67,7 @@
   <ItemGroup>
     <Compile Include="ApplicationUserDao.cs" />
     <Compile Include="BaseDao.cs" />
-    <Compile Include="Brand.cs" />
+    <Compile Include="BrandDao.cs" />
     <Compile Include="ProductDao.cs" />
     <Compile Include="CategoryDao.cs" />
     <Compile Include="Mappings\ApplicationUserMap.cs" />
