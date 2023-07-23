@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 
 namespace IMS.Controllers
@@ -22,9 +24,11 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(dynamic obj)
+        public async Task<ActionResult> Create(string obj)
         {
-
+            var o = obj.Replace("[[", "[{");
+            o = o.Replace("]]", "}]");
+            foreach (var item in obj) { }
             return View(obj);
         }
     }
