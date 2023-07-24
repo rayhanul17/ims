@@ -10,6 +10,7 @@ namespace IMS.Dao
 {
     public interface IProductDao : IBaseDao<Product, long>
     {
+        IList<Product> GetProducts(Expression<Func<Product, bool>> filter);
         (IList<Product> data, int total, int totalDisplay) LoadAllProducts(Expression<Func<Product, bool>> filter = null,
            string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
     }
@@ -20,7 +21,19 @@ namespace IMS.Dao
         {
 
         }
+        public IList<Product> GetProducts(Expression<Func<Product, bool>> filter)
+        {
+            IQueryable<Product> query = _session.Query<Product>();
 
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            var result = query.ToList();
+
+            return result;
+        }
         public (IList<Product> data, int total, int totalDisplay) LoadAllProducts(Expression<Func<Product, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
         {
             IQueryable<Product> query = _session.Query<Product>();
@@ -50,6 +63,8 @@ namespace IMS.Dao
 
             return (result.ToList(), total, totalDisplay);
         }
+
+        
     }
 
 }

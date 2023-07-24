@@ -1,4 +1,8 @@
-﻿using IMS.BusinessModel.ViewModel;
+﻿using IMS.BusinessModel.Entity;
+using IMS.BusinessModel.ViewModel;
+using IMS.BusinessRules;
+using IMS.Services;
+using IMS.Services.SessionFactories;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,16 +16,57 @@ namespace IMS.Controllers
 {
     public class PurchaseController : AllBaseController
     {
-        // GET: Purchase
+
+        private readonly ICategoryService _categoryService;
+        private readonly IProductService _productService;
+        private readonly IBrandService _brandService;
+        private readonly ISupplierService _supplierService;
+
+        public PurchaseController()
+        {
+            var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
+            _categoryService = new CategoryService(session);
+            _productService = new ProductService(session);
+            _brandService = new BrandService(session);
+            _supplierService = new SupplierService(session);
+        }
         public ActionResult Index()
         {
             return RedirectToAction("Create");
         }
 
         [HttpGet]
-        public async Task<ActionResult> Create()
+        public ActionResult Create()
         {
+            var categoryList = _categoryService.LoadAllActiveCategories();
+            ViewBag.CategoryList = categoryList.Select(x => new SelectListItem
+            {
+                Text = x.Item2,
+                Value = x.Item1.ToString()
+            }).ToList();
+
+            var brandList = _brandService.LoadAllActiveBrands();
+            ViewBag.BrandList = brandList.Select(x => new SelectListItem
+            {
+                Text = x.Item2,
+                Value = x.Item1.ToString()
+            }).ToList();
+
+            var supplierList = _supplierService.LoadAllActiveSuppliers();
+            ViewBag.SupplierList = supplierList.Select(x => new SelectListItem
+            {
+                Text = x.Item2,
+                Value = x.Item1.ToString()
+            }).ToList();
+
             return View();
+        }
+
+        [HttpPost]
+        public JsonResult UpdateProductList(long categoryId, long brandId)
+        {
+            var products = _productService.LoadAllProducts(categoryId, brandId).Select(x => new { value = x.Id, text = x.Name, qty = x.InStockQuantity, price = x.SellingPrice });
+            return Json(products);
         }
 
         [HttpPost]

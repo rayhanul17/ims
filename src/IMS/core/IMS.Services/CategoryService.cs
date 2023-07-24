@@ -20,6 +20,7 @@ namespace IMS.Services
         Task RemoveByIdAsync(long id, long userId);
         Task<CategoryEditModel> GetByIdAsync(long id);
         IList<(long, string)> LoadAllCategories();
+        IList<(long, string)> LoadAllActiveCategories();
         (int total, int totalDisplay, IList<CategoryDto> records) LoadAllCategories(string searchBy, int length, int start, string sortBy, string sortDir);
     }
     #endregion
@@ -218,6 +219,17 @@ namespace IMS.Services
         {
             List<(long, string)> categories = new List<(long, string)> ();
             var allcategories = _categoryDao.GetCategory(x => x.Status != (int)Status.Delete);
+            foreach (var category in allcategories)
+            {
+                categories.Add((category.Id, category.Name));
+            }
+            return categories;
+        }
+
+        public IList<(long, string)> LoadAllActiveCategories()
+        {
+            List<(long, string)> categories = new List<(long, string)>();
+            var allcategories = _categoryDao.GetCategory(x => x.Status == (int)Status.Active);
             foreach (var category in allcategories)
             {
                 categories.Add((category.Id, category.Name));

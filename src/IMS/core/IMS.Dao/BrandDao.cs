@@ -11,7 +11,7 @@ namespace IMS.Dao
 {
     public interface IBrandDao : IBaseDao<Brand, long>
     {
-        IList<Brand> GetCategory(Expression<Func<Brand, bool>> filter);
+        IList<Brand> GetBrand(Expression<Func<Brand, bool>> filter);
         (IList<Brand> data, int total, int totalDisplay) LoadAllBrands(Expression<Func<Brand, bool>> filter = null,
            string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
     }
@@ -23,7 +23,7 @@ namespace IMS.Dao
 
         }
 
-        public IList<Brand> GetCategory(Expression<Func<Brand, bool>> filter)
+        public IList<Brand> GetBrand(Expression<Func<Brand, bool>> filter)
         {
             IQueryable<Brand> query = _session.Query<Brand>();
 

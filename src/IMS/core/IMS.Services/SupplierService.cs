@@ -20,7 +20,7 @@ namespace IMS.Services
         Task UpdateAsync(SupplierEditModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
         Task<SupplierEditModel> GetByIdAsync(long id);
-        IList<SupplierDto> LoadAllSupliers();
+        IList<(long, string)> LoadAllActiveSuppliers();
         (int total, int totalDisplay, IList<SupplierDto> records) LoadAllSuppliers(string searchBy, int length, int start, string sortBy, string sortDir);
     }
     #endregion
@@ -223,10 +223,16 @@ namespace IMS.Services
                 throw;
             }
         }
-        
-        public IList<SupplierDto> LoadAllSupliers()
+
+        public IList<(long, string)> LoadAllActiveSuppliers()
         {
-            throw new NotImplementedException();
+            List<(long, string)> suppliers = new List<(long, string)>();
+            var allSuppliers = _supplierDao.GetSuppliers(x => x.Status == (int)Status.Active);
+            foreach (var supplier in allSuppliers)
+            {
+                suppliers.Add((supplier.Id, supplier.Name));
+            }
+            return suppliers;
         }
         #endregion
 

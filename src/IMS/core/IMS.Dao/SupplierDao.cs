@@ -10,6 +10,7 @@ namespace IMS.Dao
 {
     public interface ISupplierDao : IBaseDao<Supplier, long>
     {
+        IList<Supplier> GetSuppliers(Expression<Func<Supplier, bool>> filter);
         (IList<Supplier> data, int total, int totalDisplay) LoadAllSuppliers(Expression<Func<Supplier, bool>> filter = null,
            string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
     }
@@ -18,6 +19,18 @@ namespace IMS.Dao
     {
         public SupplierDao(ISession session) : base(session)
         {
+        }
+
+        public IList<Supplier> GetSuppliers(Expression<Func<Supplier, bool>> filter)
+        {
+            IQueryable<Supplier> query = _session.Query<Supplier>();
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            return query.ToList();
         }
 
         public (IList<Supplier> data, int total, int totalDisplay) LoadAllSuppliers(Expression<Func<Supplier, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)

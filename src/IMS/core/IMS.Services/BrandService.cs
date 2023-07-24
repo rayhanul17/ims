@@ -20,6 +20,7 @@ namespace IMS.Services
         Task RemoveByIdAsync(long id, long userId);
         Task<BrandEditModel> GetByIdAsync(long id);
         IList<(long, string)> LoadAllBrands();
+        IList<(long, string)> LoadAllActiveBrands();
         (int total, int totalDisplay, IList<BrandDto> records) LoadAllBrands(string searchBy, int length, int start, string sortBy, string sortDir);
     }
     #endregion
@@ -218,7 +219,18 @@ namespace IMS.Services
         public IList<(long, string)> LoadAllBrands()
         {
             List<(long, string)> brands = new List<(long, string)>();
-            var allBrands = _brandDao.GetCategory(x => x.Status != (int)Status.Delete);
+            var allBrands = _brandDao.GetBrand(x => x.Status != (int)Status.Delete);
+            foreach (var brand in allBrands)
+            {
+                brands.Add((brand.Id, brand.Name));
+            }
+            return brands;
+        }
+
+        public IList<(long, string)> LoadAllActiveBrands()
+        {
+            List<(long, string)> brands = new List<(long, string)>();
+            var allBrands = _brandDao.GetBrand(x => x.Status == (int)Status.Active);
             foreach (var brand in allBrands)
             {
                 brands.Add((brand.Id, brand.Name));

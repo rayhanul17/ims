@@ -19,7 +19,8 @@ namespace IMS.Services
         Task UpdateAsync(ProductEditModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
         Task<ProductEditModel> GetByIdAsync(long id);
-        IList<ProductDto> LoadAllProducts();
+        IList<ProductDto> LoadAllProducts(long categoryId, long brandId);
+        IList<(long, string)> LoadAllActiveProducts(long categoryId, long productId);
         (int total, int totalDisplay, IList<ProductDto> records) LoadAllProducts(string searchBy, int length, int start, string sortBy, string sortDir);
     }
     #endregion
@@ -236,9 +237,34 @@ namespace IMS.Services
             }
         }
         
-        public IList<ProductDto> LoadAllProducts()
-        {
-            throw new NotImplementedException();
+        public IList<ProductDto> LoadAllProducts(long categoryId, long brandId)
+        {            
+            var data = _productDao.GetProducts(x => x.Category.Id == categoryId && x.Brand.Id == brandId && x.Status == (int)Status.Active);
+            List<ProductDto> products = new List<ProductDto>();
+            foreach (Product product in data)
+            {
+                products.Add(
+                    new ProductDto
+                    {
+                        Id = product.Id,
+                        Name = product.Name,
+                        InStockQuantity = product.InStockQuantity,
+                        SellingPrice = product.SellingPrice,
+                    });
+            }
+            return products;
+        }
+
+        public IList<(long, string)> LoadAllActiveProducts(long categoyId, long brandId)
+        { 
+            
+            List<(long, string)> products = new List<(long, string)>();
+            var allProducts = _productDao.GetProducts(x => x.CategoryId == categoyId && x.Status == (int)Status.Active);
+            foreach (var product in allProducts)
+            {
+                products.Add((product.Id, product.Name));
+            }
+            return products;
         }
         #endregion
 
