@@ -6,18 +6,18 @@
 <div class="container-fluid">
     <div class="row">
         <!-- left column -->
-        <div class="col 6">
+        <div class="col-5">
             <div class="card card-primary">
                 <div class="card-header">
                     <h3 class="card-title">@ViewBag.Title</h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="row">
                                 <div class="col-md-6 form-group">
                                     <label>Category</label>
-                                    <select class="form-control loadProduct" name="category" id="categorySelectBox" >
+                                    <select class="form-control loadProduct" name="category" id="categorySelectBox">
                                         <option value="">Select Category</option>
                                         @if (ViewBag.CategoryList != null)
                                         {
@@ -42,14 +42,41 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Product</label>
-                                <select class="form-control" name="product" id="productSelectBox"></select>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label>Product</label>
+                                    <select class="form-control" name="product" id="productSelectBox"></select>
+                                </div>
+                                <div class="col-md-2 form-group">
+                                    <label>Quantity</label>
+                                    <input class="form-control" name="quantity" type="number" id="quantiy" />
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label>Unit Price</label>
+                                    <input readonly class="form-control" name="unitPrice" type="number" id="unitPrice" />
+                                </div>
+                            </div>     
+                            <div class="row">
+                                <div id="productImage"></div>
+                            </div>
+                            <div class="row">
+                                <input class="btn btn-primary btn-block" type="button" id="productAddButton" value="Add"/>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-7">
+            <div class="card card-success">
+                <div class="card-header">
+                    <h3 class="card-title">@ViewBag.Title</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
                             <label>Supplier</label>
-                            <select class="form-control" name="supplier">
+                            <select class="form-control" name="Supplier" id="Supplier">
                                 @if (ViewBag.SupplierList != null)
                                 {
                                     foreach (var supplier in ViewBag.SupplierList)
@@ -60,27 +87,38 @@
                             </select>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="col 6">
-            <div class="card card-success">
-                <div class="card-header">
-                    <h3 class="card-title">@ViewBag.Title</h3>
-                </div>
-                <div class="card-body">
                     <div class="row">
-                        <div class="col-md-12">
-                            <label>Supplier</label>
-                            <select class="form-control" name="supplier">
-                                @if (ViewBag.SupplierList != null)
-                                {
-                                    foreach (var supplier in ViewBag.SupplierList)
-                                    {
-                                        <option value="@supplier.Value">@supplier.Text</option>
-                                    }
-                                }
-                            </select>
+                        <div class="card-body table-responsive p-0">
+                            <table class="table table-hover text-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th>Sl</th>
+                                        <th>Product</th>
+                                        <th>Details</th>
+                                        <th>Unit Price</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="itemRows">
+                                    <tr>
+                                        <td>001</td>
+                                        <td>Product 01</td>
+                                        <td>Unknown</td>
+                                        <td>150</td>
+                                        <td>2</td>
+                                        <td>300</td>
+                                    </tr>
+                                    <tr>
+                                        <td>002</td>
+                                        <td>Product 02</td>
+                                        <td>Unknown</td>
+                                        <td>450</td>
+                                        <td>2</td>
+                                        <td>900</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -110,6 +148,45 @@
                        }
                    });
                }
+           });
+
+           $('#productSelectBox').change(function () {
+               let id = $(this).val();
+               console.log(id);
+               if (id != null) {
+                   $.ajax({
+                       type: 'POST',
+                       url: '/Product/GetProductUnitPrice',
+                       data: { productId: id },
+                       success: function (data) {
+                           console.log(data);
+                           $('#unitPrice').val(data.UnitPrice);
+                       }
+                   });
+               }
+           });
+
+           $('#productAddButton').click(function () {
+               let productName = $("#productSelectBox").text();
+               let productId = $("#productSelectBox").val();
+
+               console.log(productName + productId);
+
+               rowNum++;
+               var row = `<tr class="info" id="item[${rowNum}]">                        
+                        <td id="item[${rowNum}].product">"${frm.add_prd.value}"</td>
+                        <td id="item[${rowNum}].price">"${frm.add_price.value}"</td>
+                        <td id="item[${rowNum}].quantity">"${frm.add_qty.value}"</td>
+                        <td id="item[${rowNum}].total">"${frm.add_total.value}"</td>
+                        <td class="form-control btn btn-danger" type="button" value="Remove" onclick="removeRow(${rowNum});"></td></tr>`;
+               //console.log(frm.add_price * frm.add_qty);
+               $('#itemRows').append(row);
+               frm.add_price.value = '';
+               frm.add_qty.value = '';
+               frm.add_total.value = '';
+               //frm.add_name.value = '';
+               frm.add_prd.value = '';
+               frm.add_ctg.value = '';
            });
        });
     </script>       

@@ -55,14 +55,14 @@ namespace IMS.Controllers
                        .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
             ViewBag.StatusList = new SelectList(enumList, "Key", "Value", (int)Status.Active);
 
-            var categoryList = _categoryService.LoadAllCategories();
+            var categoryList = _categoryService.LoadAllActiveCategories();
             ViewBag.CategoryList = categoryList.Select(x => new SelectListItem
             {
                 Text = x.Item2,
                 Value = x.Item1.ToString()
             }).ToList();
 
-            var brandList = _brandService.LoadAllBrands();
+            var brandList = _brandService.LoadAllActiveBrands();
             ViewBag.BrandList = brandList.Select(x => new SelectListItem
             {
                 Text = x.Item2,
@@ -235,6 +235,13 @@ namespace IMS.Controllers
             }
 
             return default(JsonResult);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GetProductUnitPrice(long productId)
+        {
+            var product = await _productService.GetByIdAsync(productId);
+            return Json(new { UnitPrice = product.SellingPrice});
         }
         #endregion
 
