@@ -91,7 +91,8 @@
                         <div class="card-body table-responsive p-0">
                             <table class="table table-hover text-nowrap">
                                 <thead>
-                                    <tr>                                        
+                                    <tr>
+                                        <th>Sl</th>
                                         <th>Product</th>
                                         <th>Details</th>
                                         <th>Unit Price</th>
@@ -99,15 +100,17 @@
                                         <th>Total</th>
                                     </tr>
                                 </thead>
-                                <tbody id="itemRows">
-                                    <tr>                                        
+                                <tbody class="itemRows">
+                                    <tr>
+                                        <td>001</td>
                                         <td>Product 01</td>
                                         <td>Unknown</td>
                                         <td>150</td>
                                         <td>2</td>
                                         <td>300</td>
                                     </tr>
-                                    <tr>                                        
+                                    <tr>
+                                        <td>002</td>
                                         <td>Product 02</td>
                                         <td>Unknown</td>
                                         <td>450</td>
@@ -126,7 +129,6 @@
 
 @section Scripts{
    <script>
-       var rowNum = 0;
        $(document).ready(function () {
            $('.loadProduct').change(function () {               
                let cid = $('#categorySelectBox').val();
@@ -171,25 +173,22 @@
                console.log(productName + productId);
 
                rowNum++;
-               var row = `<tr class="info${rowNum}" id="item${rowNum}">         
-                        
-                        <td id="item[${rowNum}].price">Price[${rowNum}]</td>
-                        <td id="item[${rowNum}].quantity">Quantity[${rowNum}]</td>
-                        <td id="item[${rowNum}].total">Total[${rowNum}]</td>
-                        <td id="item[${rowNum}].nothing">Nothing[${rowNum}]</td>
-                       
-                        <td id="item[${rowNum}].button"><input hidden type='text' value= '10'><input btn btn-danger" type="button" value="Remove" onclick="removeRow(${rowNum})"/></td></tr>`;
-               
+               var row = `<tr class="info" id="item[${rowNum}]">                        
+                        <td id="item[${rowNum}].product">"${frm.add_prd.value}"</td>
+                        <td id="item[${rowNum}].price">"${frm.add_price.value}"</td>
+                        <td id="item[${rowNum}].quantity">"${frm.add_qty.value}"</td>
+                        <td id="item[${rowNum}].total">"${frm.add_total.value}"</td>
+                        <td class="form-control btn btn-danger" type="button" value="Remove" onclick="removeRow(${rowNum});"></td></tr>`;
+               //console.log(frm.add_price * frm.add_qty);
                $('#itemRows').append(row);
-               
+               frm.add_price.value = '';
+               frm.add_qty.value = '';
+               frm.add_total.value = '';
+               //frm.add_name.value = '';
+               frm.add_prd.value = '';
+               frm.add_ctg.value = '';
            });
-
-           
        });
-       function removeRow(rnum) {
-           console.log($(`#rowNum${rnum}`));
-           $(`.info${rnum}`).remove();
-       }
     </script>       
     
     
