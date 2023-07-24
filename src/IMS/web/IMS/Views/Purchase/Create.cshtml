@@ -93,12 +93,12 @@
 
         function addRow(frm) {
             rowNum++;
-            var row = `<div class="row pb-1 info" id="rowNum${rowNum}">
-            <div class="col-md-3"><input readonly class="form-control" name="ctg[]" value="${frm.add_ctg.value}"></div>
-            <div class="col-md-3"><input readonly class="form-control" type="text" name="prd[]" value="${frm.add_prd.value}"></div>
-            <div class="col-md-2"><input readonly class="form-control" type="text" name="price[]" value="${frm.add_price.value}"></div>
-            <div class="col-md-1"><input readonly class="form-control" type="text" name="qty[]" value="${frm.add_qty.value}"></div>
-            <div class="col-md-1"><input readonly class="form-control" type="text" name="total[]" value="${frm.add_total.value}"></div>
+            var row = `<div class="row pb-1 info" id="item[${rowNum}]">
+            <div class="col-md-3"><input readonly class="form-control" name="item[${rowNum}].category" value="${frm.add_ctg.value}"></div>
+            <div class="col-md-3"><input readonly class="form-control" type="text" id="item[${rowNum}].product" value="${frm.add_prd.value}"></div>
+            <div class="col-md-2"><input readonly class="form-control" type="text" id="item[${rowNum}].price" value="${frm.add_price.value}"></div>
+            <div class="col-md-1"><input readonly class="form-control" type="text" id="item[${rowNum}].quantity" value="${frm.add_qty.value}"></div>
+            <div class="col-md-1"><input readonly class="form-control" type="text" id="item[${rowNum}].total" value="${frm.add_total.value}"></div>
             <div class="col-md-2"><input class="form-control btn btn-danger" type="button" value="Remove" onclick="removeRow(${rowNum});"></div></div>`;
             //console.log(frm.add_price * frm.add_qty);
             jQuery('#itemRows').append(row);
@@ -122,36 +122,68 @@
         };
 
         function removeRow(rnum) {
-            jQuery('#rowNum' + rnum).remove();
+            jQuery('#item' + rnum).remove();
         }
 
         function Show() {            
-            console.log($('#itemRows .info'));            
+                  
             var tRows = $('#itemRows .info').map(function () {
                 return [$(this).find('input').map(function () {
                     return $(this).val()
                 }).get()]
             }).get()
             
-            console.log(tRows);
-          
-            console.log(JSON.stringify(tRows));
-            let v = JSON.stringify(tRows);
 
-            let request = new XMLHttpRequest();
-            if (request != null) {
-                var url = "/purchase/create";
-                request.open("Post", url, false);
-                var params = "{obj: '" + tRows + "', supplierId: '"+10+"'}";
-                request.setRequestHeader("Content-Type", "application/json");
-                request.onreadystatechange = function () {
-                    if (request.readyState == 4 && request.status == 200) {
-                        var response = request.responseText;
-                        alert("Hello: " + response.Name + " .\nCurrent Date and Time: " + response.DateTime);
-                    }
-                };
-                request.send(params);
-            }            
+            var c = document.getElementsByClassName('info').length;
+            for (let i = 1; i <= c; i++) {
+                console.log(document.getElementById(`item[${i}]` + ".product").value);
+                console.log(document.getElementById(`item[${i}]` + ".total").value);
+                console.log(document.getElementById(`item[${i}]` + ".quantity").value);
+            }
+            var items = document.getElementsByClassName('info')['item[3]']
+
+            console.log(tRows);
+            let v = JSON.stringify(tRows);
+            v = JSON.parse(v);
+            console.log(v);
+
+            let val = `[
+                {
+                    "ProductId": 10,
+                    "Quantity": 12,
+                    "Total": 5
+                },
+                {
+                    "ProductId": 30,
+                    "Quantity": 22,
+                    "Total": 50
+                }]`;
+            
+            val = JSON.parse(val);
+            console.log(val)
+
+            $.ajax({
+                type: 'POST',
+                url: '/purchase/create',
+                contentType: 'application/json;',
+                data: JSON.stringify({ model: val, supplierId: 10 }),
+                dataType: 'json'                
+            });
+
+            //let request = new XMLHttpRequest();
+            //if (request != null) {
+            //    var url = "/purchase/create";
+            //    request.open("Post", url, false);
+            //    var params = `{model: ${val}, supplierId: ${10}}`;
+            //    request.setRequestHeader("Content-Type", "application/json");
+            //    request.onreadystatechange = function () {
+            //        if (request.readyState == 4 && request.status == 200) {
+            //            var response = request.responseText;
+            //            alert("Hello: " + response.Name + " .\nCurrent Date and Time: " + response.DateTime);
+            //        }
+            //    };
+            //    request.send(params);
+            //}            
         }
     </script>
 }
