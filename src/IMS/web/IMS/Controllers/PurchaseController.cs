@@ -1,8 +1,10 @@
 ﻿using IMS.BusinessModel.Entity;
 using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
+using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
+using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -21,6 +23,7 @@ namespace IMS.Controllers
         private readonly IProductService _productService;
         private readonly IBrandService _brandService;
         private readonly ISupplierService _supplierService;
+        private readonly IPurchaseService _purchaseService;
 
         public PurchaseController()
         {
@@ -29,6 +32,7 @@ namespace IMS.Controllers
             _productService = new ProductService(session);
             _brandService = new BrandService(session);
             _supplierService = new SupplierService(session);
+            _purchaseService = new PurchaseService(session);
         }
         public ActionResult Index()
         {
@@ -70,10 +74,29 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(PurchaseDetailsModel[] model, long supplierId)
+        public async Task<ActionResult> Create(PurchaseDetailsModel[] model, long supplierId, decimal grandTotal)
         {
 
+            if (model != null && supplierId > 0 && grandTotal > -1) 
+            {
+                try
+                {
+                    model = model.Where(x => x.IsDeleted == false).ToArray();
+                    var userId = User.Identity.GetUserId<long>();
+                    await _purchaseService.AddAsync(model, grandTotal, supplierId, userId);
+                    ViewResponse("Successfully purchase completed!", ResponseTypes.Success);
 
+                }
+                catch(Exception ex)
+                {
+                    ViewResponse("Something went wrong", ResponseTypes.Danger);
+                    _logger.Error(ex.Message, ex);
+                }
+            }
+            else
+            {
+                ViewResponse("You make mistake during purchase creation", ResponseTypes.Danger);                
+            }
             return RedirectToAction("Create");
         }
     }

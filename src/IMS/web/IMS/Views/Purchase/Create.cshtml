@@ -7,9 +7,9 @@
     <div class="row">
         <!-- left column -->
         <div class="col-md-5">
-            <div class="card card-primary">
+            <div class="card card-info">
                 <div class="card-header">
-                    <h3 class="card-title">@ViewBag.Title</h3>
+                    <h3 class="card-title">Item Query</h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -60,7 +60,7 @@
                                 <div id="productImage"></div>
                             </div>
                             <div class="row">
-                                <input class="btn btn-primary btn-block" type="button" id="productAddButton" value="Add" />
+                                <input class="btn btn-info btn-block" type="button" id="productAddButton" value="Add" />
                             </div>
                         </div>
                     </div>
@@ -68,9 +68,9 @@
             </div>
         </div>
         <div class="col-md-7">
-            <div class="card card-success">
+            <div class="card card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">@ViewBag.Title</h3>
+                    <h3 class="card-title">Item List</h3>
                 </div>
                 <div class="card-body overflow-auto">
                     @using (Html.BeginForm("Create", "Purchase", FormMethod.Post, htmlAttributes: new { @id = "myform", @class = "nav-link cmxform" }))
@@ -110,8 +110,8 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="card-footer">
-                                    <button type="submit" class="btn btn-success btn-block">Submit</button>
+                                <div class="row">
+                                    <input type="submit" class="btn btn-primary btn-block" value="Confirm Purchase"/>
                                 </div>
                             </div>
                         </div>
