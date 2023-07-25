@@ -96,10 +96,10 @@ namespace IMS.Services
             try
             {
                 Expression<Func<Purchase, bool>> filter = null;
-                if (searchBy != null)
-                {
-                    filter = x => x.GrandTotalPrice.Equals(searchBy);
-                }
+                //if (searchBy != null)
+                //{
+                //    filter = x => x.GrandTotalPrice.Equals(searchBy);
+                //}
 
                 var result = _purchaseDao.LoadAllPurchases(filter, null, start, length, sortBy, sortDir);
 

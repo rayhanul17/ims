@@ -19,6 +19,7 @@ namespace IMS.Controllers
         private readonly IBrandService _brandService;
         private readonly ISupplierService _supplierService;
         private readonly IPurchaseService _purchaseService;
+        private readonly IAccountService _accountService;
 
         public PurchaseController()
         {
@@ -28,10 +29,11 @@ namespace IMS.Controllers
             _brandService = new BrandService(session);
             _supplierService = new SupplierService(session);
             _purchaseService = new PurchaseService(session);
+            _accountService = new AccountService(session);
         }
         public ActionResult Index()
         {
-            return RedirectToAction("Create");
+            return View();
         }
 
         [HttpGet]
@@ -59,14 +61,7 @@ namespace IMS.Controllers
             }).ToList();
 
             return View();
-        }
-
-        [HttpPost]
-        public JsonResult UpdateProductList(long categoryId, long brandId)
-        {
-            var products = _productService.LoadAllProducts(categoryId, brandId).Select(x => new { value = x.Id, text = x.Name, qty = x.InStockQuantity, price = x.SellingPrice });
-            return Json(products);
-        }
+        }        
 
         [HttpPost]
         public async Task<ActionResult> Create(PurchaseDetailsModel[] model, long supplierId, decimal grandTotal)
@@ -99,5 +94,58 @@ namespace IMS.Controllers
             }
             return RedirectToAction("Create");
         }
+
+        #region JSON
+        [HttpPost]
+        public JsonResult UpdateProductList(long categoryId, long brandId)
+        {
+            var products = _productService.LoadAllProducts(categoryId, brandId).Select(x => new { value = x.Id, text = x.Name, qty = x.InStockQuantity, price = x.SellingPrice });
+            return Json(products);
+        }
+
+        public JsonResult GetPurchases()
+        {
+            try
+            {
+                var model = new DataTablesAjaxRequestModel(Request);
+                var data = _purchaseService.LoadAllPurchases(model.SearchText, model.Length, model.Start, model.SortColumn,
+                    model.SortDirection);
+
+                var count = 1;
+
+                return Json(new
+                {
+                    draw = Request["draw"],
+                    recordsTotal = data.total,
+                    recordsFiltered = data.totalDisplay,
+                    data = (from record in data.records
+                            select new string[]
+                            {
+                                count++.ToString(),
+                                _accountService.GetUserName(record.SupplierId),
+                                _accountService.GetUserName(record.CreateBy),
+                                record.PurchaseDate.ToString(),
+                                _accountService.GetUserName(record.CreateBy),
+                                record.GrandTotalPrice.ToString(),
+                                record.Id.ToString()
+                            }
+                        ).ToArray()
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+            }
+
+            return default(JsonResult);
+        }
+
+        [HttpGet]
+        public JsonResult Details(long purchaseId)
+        {
+            return Json(new { purchaseId });
+        }
+
+        #endregion
     }
 }
