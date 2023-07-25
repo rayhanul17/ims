@@ -48,6 +48,8 @@ namespace IMS.Services
                         product.InStockQuantity += item.Quantity;
                         product.ModifyBy = userId;
                         product.ModificationDate = _timeService.Now;
+                        product.BuyingPrice = item.UnitPrice;
+                        product.SellingPrice = item.UnitPrice + (item.UnitPrice * product.ProfitMargin / 100) - product.DiscountPrice;
 
                         await _productDao.EditAsync(product);
 

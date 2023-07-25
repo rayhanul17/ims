@@ -1,6 +1,7 @@
 ﻿using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
+using IMS.BusinessRules.Exceptions;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
@@ -129,6 +130,10 @@ namespace IMS.Controllers
             {
                 var userId = User.Identity.GetUserId<long>();
                 await _categoryService.RemoveByIdAsync(id, userId);
+            }
+            catch(CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
             }
             catch (Exception ex)
             {

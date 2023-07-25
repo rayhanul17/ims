@@ -46,7 +46,7 @@ namespace IMS.Services
                     var count = _brandDao.GetCount(x => x.Name == model.Name);
                     if(count > 0)
                     {
-                        throw new DuplicateException("Found another Brand with this name");
+                        throw new CustomException("Found another Brand with this name");
                     }
 
                     var brand = new Brand()
@@ -87,7 +87,7 @@ namespace IMS.Services
                     }
                     if (namecount > 1)
                     {
-                        throw new DuplicateException("Already exist brand with this name");
+                        throw new CustomException("Already exist brand with this name");
                     }
 
                     var brand = new Brand()

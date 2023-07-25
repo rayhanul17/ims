@@ -13,6 +13,8 @@ namespace IMS.Models
     public enum ResponseTypes
     {
         Success,
+        Info,
+        Warning,
         Danger
     }
 }

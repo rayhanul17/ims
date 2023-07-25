@@ -1,6 +1,7 @@
 ﻿using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
+using IMS.BusinessRules.Exceptions;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
@@ -167,7 +168,7 @@ namespace IMS.Controllers
                 {
                     ViewResponse("Fillup form properly", ResponseTypes.Danger);
                 }
-            }
+            }            
             catch (Exception ex)
             {
                 ViewResponse(ex.Message, ResponseTypes.Danger);
@@ -184,6 +185,10 @@ namespace IMS.Controllers
             {
                 var userId = User.Identity.GetUserId<long>();
                 await _productService.RemoveByIdAsync(id, userId);
+            }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
             }
             catch (Exception ex)
             {
@@ -204,8 +209,7 @@ namespace IMS.Controllers
                 var model = new DataTablesAjaxRequestModel(Request);
                 var data = _productService.LoadAllProducts(model.SearchText, model.Length, model.Start, model.SortColumn,
                     model.SortDirection);
-
-                var count = 1;
+                
 
                 return Json(new
                 {
@@ -214,8 +218,7 @@ namespace IMS.Controllers
                     recordsFiltered = data.totalDisplay,
                     data = (from record in data.records
                             select new string[]
-                            {
-                                count++.ToString(),
+                            {                                
                                 record.Name,
                                 record.Category,
                                 record.Brand,
@@ -223,6 +226,7 @@ namespace IMS.Controllers
                                 record.Status.ToString(),                                
                                 record.DiscountPrice.ToString(),
                                 record.SellingPrice.ToString(),
+                                record.InStockQuantity.ToString(),
                                 _imageService.GetImage(path, record.Image),
                                 record.Id.ToString()
                             }

@@ -46,7 +46,7 @@ namespace IMS.Services
                     var count = _customerDao.GetCount(x => x.Email == model.Email && x.ContactNumber == model.ContactNumber);
                     if(count > 0)
                     {
-                        throw new DuplicateException("Found another customer with this name");
+                        throw new CustomException("Found another customer with this name");
                     }
 
                     var customer = new Customer()
@@ -89,7 +89,7 @@ namespace IMS.Services
                     }
                     if (namecount > 1)
                     {
-                        throw new DuplicateException("Already exist customer with this name");
+                        throw new CustomException("Already exist customer with this name");
                     }
 
                     var customer = new Customer()

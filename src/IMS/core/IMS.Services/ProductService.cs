@@ -52,7 +52,7 @@ namespace IMS.Services
                     var count = _productDao.GetCount(x => x.Name == model.Name);
                     if(count > 0)
                     {
-                        throw new DuplicateException("Found another Product with this name");
+                        throw new CustomException("Found another Product with this name");
                     }
 
                     var product = new Product()
@@ -100,7 +100,7 @@ namespace IMS.Services
                     }
                     if (namecount > 1)
                     {
-                        throw new DuplicateException("Already exist Product with this name");
+                        throw new CustomException("Already exist Product with this name");
                     }                    
                     
                     product.Name = model.Name;
@@ -112,6 +112,7 @@ namespace IMS.Services
                     product.Status = (int)model.Status;
                     product.ProfitMargin = model.ProfitMargin;
                     product.DiscountPrice = model.DiscountPrice;
+                    product.SellingPrice = product.BuyingPrice + (product.BuyingPrice * model.ProfitMargin / 100) - model.DiscountPrice;
 
                     if (!string.IsNullOrWhiteSpace(model.Image))
                         product.Image = model.Image;
@@ -138,14 +139,22 @@ namespace IMS.Services
                 try
                 {
                     //await _productDao.RemoveByIdAsync(id);
-                    var Product = await _productDao.GetByIdAsync(id);
-                    Product.Status = (int)Status.Delete;
-                    Product.ModifyBy = userId;
-                    Product.ModificationDate = _timeService.Now;
+                    var product = await _productDao.GetByIdAsync(id);
+                    if(product.InStockQuantity > 0)
+                    {
+                        throw new CustomException("Product can't be delete due to quantity level");
+                    }
+                    product.Status = (int)Status.Delete;
+                    product.ModifyBy = userId;
+                    product.ModificationDate = _timeService.Now;
 
-                    await _productDao.EditAsync(Product);
+                    await _productDao.EditAsync(product);
                     transaction.Commit();
 
+                }
+                catch(CustomException ex)
+                {
+                    throw ex;
                 }
                 catch (Exception ex)
                 {
@@ -224,7 +233,8 @@ namespace IMS.Services
                             Status = (Status)product.Status,                            
                             DiscountPrice = product.DiscountPrice,
                             SellingPrice = product.SellingPrice,
-                            Image = product.Image                          
+                            Image = product.Image, 
+                            InStockQuantity = product.InStockQuantity,
                         });
                 }
 

@@ -33,9 +33,6 @@
                 <thead>
                     <tr>
                         <th>
-                            ID
-                        </th>
-                        <th>
                             Name
                         </th>
                         <th>
@@ -44,17 +41,20 @@
                         <th>
                             Brand
                         </th>
-                        <th >
+                        <th>
                             Description
                         </th>
                         <th>
                             Status
-                        </th>                    
+                        </th>
                         <th>
                             Discount Price
                         </th>
                         <th>
                             Selling Price
+                        </th>
+                        <th>
+                            Quantity
                         </th>
                         <th>
                             Image
@@ -103,6 +103,7 @@
                     { "name": "Status" },                    
                     { "name": "Discount Price" },
                     { "name": "Selling Price" },
+                    { "name": "Quantity" },
                     { "name": "Image" }
                 ],
                 "columnDefs": [
@@ -130,7 +131,7 @@
                             return `<img src='${data}' width=100px, height=100px/>`;
                         }
                     },
-                    { "orderable": false, "targets": [0, 2, 3, 5, 6, 7, 8] }                    
+                    { "orderable": false, "targets": [ 1, 2, 4, 5, 6, 7, 8 ] }                    
                 ],
                 "order": [1, 'asc']
             });

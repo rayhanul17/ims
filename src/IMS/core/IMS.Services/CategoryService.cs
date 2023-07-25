@@ -29,10 +29,12 @@ namespace IMS.Services
     {
         #region Initializtion
         private readonly ICategoryDao _categoryDao;
+        private readonly IProductDao _productDao;
 
         public CategoryService(ISession session) : base(session)
         {
             _categoryDao = new CategoryDao(session);
+            _productDao = new ProductDao(session);
         }
         #endregion
 
@@ -46,7 +48,7 @@ namespace IMS.Services
                     var count = _categoryDao.GetCount(x => x.Name == model.Name);
                     if(count > 0)
                     {
-                        throw new DuplicateException("Found another category with this name");
+                        throw new CustomException("Found another category with this name");
                     }
 
                     var category = new Category()
@@ -87,7 +89,7 @@ namespace IMS.Services
                     }
                     if (namecount > 1)
                     {
-                        throw new DuplicateException("Already exist category with this name");
+                        throw new CustomException("Already exist category with this name");
                     }
 
                     var category = new Category()
@@ -123,6 +125,11 @@ namespace IMS.Services
             {
                 try
                 {
+                    var count = _productDao.GetCount(x => x.Category.Id == id && x.Status != (int)Status.Delete);
+                    if (count > 0)
+                    {
+                        throw new CustomException("Found product under this category");
+                    }
                     //await _categoryDao.RemoveByIdAsync(id);
                     var category = await _categoryDao.GetByIdAsync(id);
                     category.Status = (int)Status.Delete;
@@ -131,6 +138,10 @@ namespace IMS.Services
                     await _categoryDao.EditAsync(category);
                     transaction.Commit();
 
+                }
+                catch(CustomException ex)
+                {
+                    throw ex;
                 }
                 catch (Exception ex)
                 {

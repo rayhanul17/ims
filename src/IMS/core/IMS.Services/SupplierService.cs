@@ -46,7 +46,7 @@ namespace IMS.Services
                     var count = _supplierDao.GetCount(x => x.Email == model.Email && x.ContactNumber == model.ContactNumber);
                     if (count > 0)
                     {
-                        throw new DuplicateException("Found another supplier with this name");
+                        throw new CustomException("Found another supplier with this name");
                     }
 
                     var supplier = new Supplier()
@@ -89,7 +89,7 @@ namespace IMS.Services
                     }
                     if (namecount > 1)
                     {
-                        throw new DuplicateException("Already exist supplier with this name");
+                        throw new CustomException("Already exist supplier with this name");
                     }
 
                     var supplier = new Supplier()

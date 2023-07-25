@@ -11,6 +11,7 @@ namespace IMS.BusinessModel.ViewModel
         public virtual decimal BuyingPrice { get; set; }
         public virtual decimal SellingPrice { get; set; }
         public virtual decimal DiscountPrice { get; set; }
+        public virtual decimal UnitPrice { get; set; }
         public virtual decimal ProfitMargin { get; set; }
         public virtual int InStockQuantity { get; set; }
         public long CategoryId { get; set; }
