@@ -76,7 +76,7 @@
                     @using (Html.BeginForm("Create", "Purchase", FormMethod.Post, htmlAttributes: new { @id = "myform", @class = "nav-link cmxform" }))
                     {
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-8">
                                 <label>Supplier</label>
                                 <select class="form-control" name="supplierId" id="supplierSelectBox">
                                     @if (ViewBag.SupplierList != null)
@@ -87,6 +87,10 @@
                                         }
                                     }
                                 </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Grand Total</label>
+                                <input readonly type="number" class = "form-control" id="grandTotal" name="grandTotal" value="0"/>
                             </div>
                         </div>
                         <div class="row">
@@ -99,6 +103,7 @@
                                                 <th>Unit Price</th>
                                                 <th>Quantity</th>
                                                 <th>Total</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody id="itemRows">                                           
@@ -166,17 +171,19 @@
 
                 console.log(productName + ":" + productId + `${quantity} ${unitPrice}`);
 
-                
-                var row = `<tr>
 
+                var row = `<tr id='rowNum${rowNum}'>
                                 <td id="item[${rowNum}].price"><input hidden type='text' name='model[${rowNum}].ProductId' value= '${productId}'>${productName}</td>
-                                <td id="item[${rowNum}].unitPrice">${unitPrice}</td>
+                                <td id="item[${rowNum}].unitPrice"><input hidden type='text' name='model[${rowNum}].UnitPrice' value= '${unitPrice}'>${unitPrice}</td>
                                 <td id="item[${rowNum}].quantiy"><input hidden type='text' name='model[${rowNum}].Quantity' value= '${quantity}'>${quantity}</td>
-                                <td id="item[${rowNum}].total"><input hidden type='text' name='model[${rowNum}].Total' value= '${total}'>${total}</td>
-                                <td id="item[${rowNum}].button"><input btn btn-danger" type="button" value="Remove" onclick="removeRow(${rowNum})"/>
-                                <input hidden type='text' name='model[${rowNum}].IsDeleted' value= '${false}'></td></tr>`;
+                                <td id="item[${rowNum}].total"><input hidden type='text' name='model[${rowNum}].Total' id='total${rowNum}' value= '${total}'>${total}</td>
+                                <td id="item[${rowNum}].button"><input class="btn btn-danger" type="button" value="X" onclick="removeRow(${rowNum})"/>
+                                <input id='model${rowNum}' hidden name='model[${rowNum}].IsDeleted' value= ${false}></td></tr>`;
 
                 $('#itemRows').append(row);
+                let v = parseFloat($('#grandTotal').val()) + total;
+                console.log(v);
+                $('#grandTotal').val(v);
                 rowNum++;
             });
 
@@ -184,7 +191,9 @@
         });
         function removeRow(rnum) {
             console.log($(`#rowNum${rnum}`));
-            $(`.info${rnum}`).remove();
+            $(`#model${rnum}`).val(true);            
+            $('#grandTotal').val(parseFloat($('#grandTotal').val()) - $(`#total${rnum}`).val());
+            $(`#rowNum${rnum}`).hide();
         }
     </script>
 
