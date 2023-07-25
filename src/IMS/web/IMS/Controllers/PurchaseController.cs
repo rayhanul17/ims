@@ -1,17 +1,12 @@
-﻿using IMS.BusinessModel.Entity;
-using IMS.BusinessModel.ViewModel;
+﻿using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
 using Microsoft.AspNet.Identity;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Helpers;
 using System.Web.Mvc;
 
 namespace IMS.Controllers
@@ -77,17 +72,22 @@ namespace IMS.Controllers
         public async Task<ActionResult> Create(PurchaseDetailsModel[] model, long supplierId, decimal grandTotal)
         {
 
-            if (model != null && supplierId > 0 && grandTotal > -1) 
+            if (model != null && supplierId > 0 && grandTotal > -1)
             {
                 try
                 {
-                    model = model.Where(x => x.IsDeleted == false).ToArray();
+                    model = model.Where(x => x.IsDeleted == false && x.ProductId > 0).ToArray();
+                    if (model.Length == 0)
+                    {
+                        ViewResponse("You make mistake during purchase creation", ResponseTypes.Danger);
+                        return RedirectToAction("Create");
+                    }
                     var userId = User.Identity.GetUserId<long>();
                     await _purchaseService.AddAsync(model, grandTotal, supplierId, userId);
                     ViewResponse("Successfully purchase completed!", ResponseTypes.Success);
 
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     ViewResponse("Something went wrong", ResponseTypes.Danger);
                     _logger.Error(ex.Message, ex);
@@ -95,7 +95,7 @@ namespace IMS.Controllers
             }
             else
             {
-                ViewResponse("You make mistake during purchase creation", ResponseTypes.Danger);                
+                ViewResponse("You make mistake during purchase creation", ResponseTypes.Danger);
             }
             return RedirectToAction("Create");
         }

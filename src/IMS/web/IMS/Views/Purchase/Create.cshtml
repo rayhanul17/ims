@@ -111,7 +111,7 @@
                                     </table>
                                 </div>
                                 <div class="row">
-                                    <input type="submit" class="btn btn-primary btn-block" value="Confirm Purchase"/>
+                                    <input type="submit" class="btn btn-primary btn-block" id="purchaseButton" value="Confirm Purchase"/>
                                 </div>
                             </div>
                         </div>
@@ -167,12 +167,13 @@
                 let productId = $("#productSelectBox").val();
                 let quantity = $("#quantity").val();
                 let unitPrice = $("#unitPrice").val();
-                let total = quantity * unitPrice;
+                if (productId > 0 && quantity > 0 && unitPrice > -1) {
+                    let total = quantity * unitPrice;
 
-                console.log(productName + ":" + productId + `${quantity} ${unitPrice}`);
+                    console.log(productName + ":" + productId + `${quantity} ${unitPrice}`);
 
 
-                var row = `<tr id='rowNum${rowNum}'>
+                    var row = `<tr id='rowNum${rowNum}'>
                                 <td id="item[${rowNum}].price"><input hidden type='text' name='model[${rowNum}].ProductId' value= '${productId}'>${productName}</td>
                                 <td id="item[${rowNum}].unitPrice"><input hidden type='text' name='model[${rowNum}].UnitPrice' value= '${unitPrice}'>${unitPrice}</td>
                                 <td id="item[${rowNum}].quantiy"><input hidden type='text' name='model[${rowNum}].Quantity' value= '${quantity}'>${quantity}</td>
@@ -180,13 +181,16 @@
                                 <td id="item[${rowNum}].button"><input class="btn btn-danger" type="button" value="X" onclick="removeRow(${rowNum})"/>
                                 <input id='model${rowNum}' hidden name='model[${rowNum}].IsDeleted' value= ${false}></td></tr>`;
 
-                $('#itemRows').append(row);
-                let v = parseFloat($('#grandTotal').val()) + total;
-                console.log(v);
-                $('#grandTotal').val(v);
-                rowNum++;
+                    $('#itemRows').append(row);
+                    let v = parseFloat($('#grandTotal').val()) + total;
+                    console.log(v);
+                    $('#grandTotal').val(v);
+                    rowNum++;
+                }
+                else {
+                    alert("Give information properly");
+                }
             });
-
 
         });
         function removeRow(rnum) {
@@ -195,6 +199,7 @@
             $('#grandTotal').val(parseFloat($('#grandTotal').val()) - $(`#total${rnum}`).val());
             $(`#rowNum${rnum}`).hide();
         }
+
     </script>
 
 
