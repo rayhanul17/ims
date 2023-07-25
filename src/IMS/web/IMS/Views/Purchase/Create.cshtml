@@ -49,18 +49,18 @@
                                 </div>
                                 <div class="col-md-2 form-group">
                                     <label>Quantity</label>
-                                    <input class="form-control" name="quantity" type="number" id="quantiy" />
+                                    <input class="form-control" name="quantity" type="number" id="quantity" />
                                 </div>
                                 <div class="col-md-4 form-group">
                                     <label>Unit Price</label>
-                                    <input readonly class="form-control" name="unitPrice" type="number" id="unitPrice" />
+                                    <input class="form-control" name="unitPrice" type="number" id="unitPrice" />
                                 </div>
-                            </div>     
+                            </div>
                             <div class="row">
                                 <div id="productImage"></div>
                             </div>
                             <div class="row">
-                                <input class="btn btn-primary btn-block" type="button" id="productAddButton" value="Add"/>
+                                <input class="btn btn-primary btn-block" type="button" id="productAddButton" value="Add" />
                             </div>
                         </div>
                     </div>
@@ -73,51 +73,44 @@
                     <h3 class="card-title">@ViewBag.Title</h3>
                 </div>
                 <div class="card-body overflow-auto">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <label>Supplier</label>
-                            <select class="form-control" name="Supplier" id="Supplier">
-                                @if (ViewBag.SupplierList != null)
-                                {
-                                    foreach (var supplier in ViewBag.SupplierList)
+                    @using (Html.BeginForm("Create", "Purchase", FormMethod.Post, htmlAttributes: new { @id = "myform", @class = "nav-link cmxform" }))
+                    {
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Supplier</label>
+                                <select class="form-control" name="supplierId" id="supplierSelectBox">
+                                    @if (ViewBag.SupplierList != null)
                                     {
-                                        <option value="@supplier.Value">@supplier.Text</option>
+                                        foreach (var supplier in ViewBag.SupplierList)
+                                        {
+                                            <option value="@supplier.Value">@supplier.Text</option>
+                                        }
                                     }
-                                }
-                            </select>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="card-body table-responsive p-0">
-                            <table class="table table-hover text-nowrap">
-                                <thead>
-                                    <tr>                                        
-                                        <th>Product</th>
-                                        <th>Details</th>
-                                        <th>Unit Price</th>
-                                        <th>Quantity</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="itemRows">
-                                    <tr>                                        
-                                        <td>Product 01</td>
-                                        <td>Unknown</td>
-                                        <td>150</td>
-                                        <td>2</td>
-                                        <td>300</td>
-                                    </tr>
-                                    <tr>                                        
-                                        <td>Product 02</td>
-                                        <td>Unknown</td>
-                                        <td>450</td>
-                                        <td>2</td>
-                                        <td>900</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card-body table-responsive p-0">
+                                    <table class="table table-hover text-nowrap">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Unit Price</th>
+                                                <th>Quantity</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="itemRows">                                           
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-success btn-block">Submit</button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
             </div>
         </div>
@@ -125,72 +118,75 @@
 </div>
 
 @section Scripts{
-   <script>
-       var rowNum = 0;
-       $(document).ready(function () {
-           $('.loadProduct').change(function () {               
-               let cid = $('#categorySelectBox').val();
-               let bid = $('#brandSelectBox').val();
-               if (bid != null && cid != null) {
-                   $.ajax({
-                       type: 'POST',
-                       url: '/Purchase/UpdateProductList',
-                       data: { categoryId: cid, brandId: bid },
-                       success: function (data) {
-                           console.log(data);
-                           var s = '<option value="">Select Product</option>';
-                           for (var i = 0; i < data.length; i++) {
-                               s += '<option value="' + data[i].value + '">' + data[i].text + '</option>';
-                           }
-                           $("#productSelectBox").html(s);
-                       }
-                   });
-               }
-           });
+    <script>
+        var rowNum = 0;
+        $(document).ready(function () {
+            $('.loadProduct').change(function () {
+                let cid = $('#categorySelectBox').val();
+                let bid = $('#brandSelectBox').val();
+                if (bid != null && cid != null) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Purchase/UpdateProductList',
+                        data: { categoryId: cid, brandId: bid },
+                        success: function (data) {
+                            console.log(data);
+                            var s = '<option value="">Select Product</option>';
+                            for (var i = 0; i < data.length; i++) {
+                                s += '<option value="' + data[i].value + '">' + data[i].text + '</option>';
+                            }
+                            $("#productSelectBox").html(s);
+                        }
+                    });
+                }
+            });
 
-           $('#productSelectBox').change(function () {
-               let id = $(this).val();
-               console.log(id);
-               if (id != null) {
-                   $.ajax({
-                       type: 'POST',
-                       url: '/Product/GetProductUnitPrice',
-                       data: { productId: id },
-                       success: function (data) {
-                           console.log(data);
-                           $('#unitPrice').val(data.UnitPrice);
-                       }
-                   });
-               }
-           });
+            $('#productSelectBox').change(function () {
+                let id = $(this).val();
+                console.log(id);
+                if (id != null) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Product/GetProductUnitPrice',
+                        data: { productId: id },
+                        success: function (data) {
+                            console.log(data);
+                            $('#unitPrice').val(data.UnitPrice);
+                        }
+                    });
+                }
+            });
 
-           $('#productAddButton').click(function () {
-               let productName = $("#productSelectBox").text();
-               let productId = $("#productSelectBox").val();
+            $('#productAddButton').click(function () {
+                let productName = $("#productSelectBox option:selected").text();
+                let productId = $("#productSelectBox").val();
+                let quantity = $("#quantity").val();
+                let unitPrice = $("#unitPrice").val();
+                let total = quantity * unitPrice;
 
-               console.log(productName + productId);
+                console.log(productName + ":" + productId + `${quantity} ${unitPrice}`);
 
-               rowNum++;
-               var row = `<tr class="info${rowNum}" id="item${rowNum}">         
-                        
-                        <td id="item[${rowNum}].price">Price[${rowNum}]</td>
-                        <td id="item[${rowNum}].quantity">Quantity[${rowNum}]</td>
-                        <td id="item[${rowNum}].total">Total[${rowNum}]</td>
-                        <td id="item[${rowNum}].nothing">Nothing[${rowNum}]</td>
-                       
-                        <td id="item[${rowNum}].button"><input hidden type='text' value= '10'><input btn btn-danger" type="button" value="Remove" onclick="removeRow(${rowNum})"/></td></tr>`;
-               
-               $('#itemRows').append(row);
-               
-           });
+                
+                var row = `<tr>
 
-           
-       });
-       function removeRow(rnum) {
-           console.log($(`#rowNum${rnum}`));
-           $(`.info${rnum}`).remove();
-       }
-    </script>       
-    
-    
+                                <td id="item[${rowNum}].price"><input hidden type='text' name='model[${rowNum}].ProductId' value= '${productId}'>${productName}</td>
+                                <td id="item[${rowNum}].unitPrice">${unitPrice}</td>
+                                <td id="item[${rowNum}].quantiy"><input hidden type='text' name='model[${rowNum}].Quantity' value= '${quantity}'>${quantity}</td>
+                                <td id="item[${rowNum}].total"><input hidden type='text' name='model[${rowNum}].Total' value= '${total}'>${total}</td>
+                                <td id="item[${rowNum}].button"><input btn btn-danger" type="button" value="Remove" onclick="removeRow(${rowNum})"/>
+                                <input hidden type='text' name='model[${rowNum}].IsDeleted' value= '${false}'></td></tr>`;
+
+                $('#itemRows').append(row);
+                rowNum++;
+            });
+
+
+        });
+        function removeRow(rnum) {
+            console.log($(`#rowNum${rnum}`));
+            $(`.info${rnum}`).remove();
+        }
+    </script>
+
+
 }

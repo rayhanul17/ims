@@ -72,9 +72,9 @@ namespace IMS.Controllers
         [HttpPost]
         public async Task<ActionResult> Create(PurchaseDetailsModel[] model, long supplierId)
         {
-            //var o = JsonConvert.SerializeObject(obj).Split(new string[] { "Remove", "\\", "\"" }, StringSplitOptions.RemoveEmptyEntries);
 
-            return View(model);
+
+            return RedirectToAction("Create");
         }
     }
 }
