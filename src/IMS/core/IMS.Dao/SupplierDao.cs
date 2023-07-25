@@ -10,6 +10,7 @@ namespace IMS.Dao
 {
     public interface ISupplierDao : IBaseDao<Supplier, long>
     {
+        Supplier GetById(long id);
         IList<Supplier> GetSuppliers(Expression<Func<Supplier, bool>> filter);
         (IList<Supplier> data, int total, int totalDisplay) LoadAllSuppliers(Expression<Func<Supplier, bool>> filter = null,
            string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
@@ -21,6 +22,10 @@ namespace IMS.Dao
         {
         }
 
+        public Supplier GetById(long id)
+        {
+            return _session.Get<Supplier>(id);
+        }
         public IList<Supplier> GetSuppliers(Expression<Func<Supplier, bool>> filter)
         {
             IQueryable<Supplier> query = _session.Query<Supplier>();

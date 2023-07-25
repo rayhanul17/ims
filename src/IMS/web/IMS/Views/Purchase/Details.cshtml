@@ -1,0 +1,53 @@
+﻿@model IMS.BusinessModel.Dto.PurchaseReportDto
+@{
+    ViewBag.Title = "Purchase Details";
+}
+
+<div class="row" id="section-to-print">
+    <div class="col-12">
+        <div class="card text-center">
+            <div class="card-header">
+                <h3>Purchase Report</h3><hr />
+                <h3>Supplier: Company Name</h3>
+                <h5>Date Time: 2023-06-01 10.00 AM</h5>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>Sl</th>
+                            <th>Product</th>
+                            <th>Details</th>
+                            <th>Unit Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{int count = 1;
+                            for (int i = 0, j = i + 1; i < 10; i++)
+                            {
+                                <tr>
+                                    <td>@count</td>
+                                    <td>Product 01</td>
+                                    <td>Unknown</td>
+                                    <td>150</td>
+                                    <td>2</td>
+                                    <td>300</td>
+                                </tr>
+                                count++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer text-center">
+                <h3 class="card-title text-center">Grand Total: 1200.00 Tk</h3>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+</div>
+

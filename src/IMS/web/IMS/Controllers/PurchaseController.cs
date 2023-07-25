@@ -1,4 +1,5 @@
-﻿using IMS.BusinessModel.ViewModel;
+﻿using IMS.BusinessModel.Dto;
+using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
 using IMS.Models;
 using IMS.Services;
@@ -122,10 +123,9 @@ namespace IMS.Controllers
                             select new string[]
                             {
                                 count++.ToString(),
-                                _accountService.GetUserName(record.SupplierId),
+                                _supplierService.GetNameById(record.SupplierId),
                                 _accountService.GetUserName(record.CreateBy),
-                                record.PurchaseDate.ToString(),
-                                _accountService.GetUserName(record.CreateBy),
+                                record.PurchaseDate.ToString(),                                
                                 record.GrandTotalPrice.ToString(),
                                 record.Id.ToString()
                             }
@@ -140,10 +140,11 @@ namespace IMS.Controllers
             return default(JsonResult);
         }
 
-        [HttpGet]
-        public JsonResult Details(long purchaseId)
+        
+        public async Task<ActionResult> Details(long id)
         {
-            return Json(new { purchaseId });
+            var model = await _purchaseService.GetPurchaseDetailsAsync(id);
+            return View();
         }
 
         #endregion

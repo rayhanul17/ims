@@ -2318,6 +2318,7 @@
     <Content Include="Views\Purchase\Create - Copy.cshtml" />
     <Content Include="Views\Purchase\Create - Copy %282%29.cshtml" />
     <Content Include="Views\Purchase\Index.cshtml" />
+    <Content Include="Views\Purchase\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -19,6 +19,7 @@ namespace IMS.Services
         Task AddAsync(SupplierAddModel model, long userId);
         Task UpdateAsync(SupplierEditModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
+        string GetNameById(long id);
         Task<SupplierEditModel> GetByIdAsync(long id);
         IList<(long, string)> LoadAllActiveSuppliers();
         (int total, int totalDisplay, IList<SupplierDto> records) LoadAllSuppliers(string searchBy, int length, int start, string sortBy, string sortDir);
@@ -177,6 +178,13 @@ namespace IMS.Services
             }
             
         }
+
+        public string GetNameById(long id)
+        {
+            var supplier = _supplierDao.GetById(id);
+            return supplier.Name;
+        }
+
         #endregion
 
         #region Single Instance Loading

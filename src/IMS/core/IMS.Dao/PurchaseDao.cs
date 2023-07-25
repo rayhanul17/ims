@@ -38,15 +38,12 @@ namespace IMS.Dao
 
             switch (sortBy)
             {
-                case "Date":
+                case "Total Amount":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.GrandTotalPrice) : query.OrderByDescending(c => c.GrandTotalPrice);
+                    break;
+                case "Purchase Date":
                     query = sortDir == "asc" ? query.OrderBy(c => c.PurchaseDate) : query.OrderByDescending(c => c.PurchaseDate);
-                    break;
-                case "Created By":
-                    query = sortDir == "asc" ? query.OrderBy(c => c.CreateBy) : query.OrderByDescending(c => c.CreateBy);
-                    break;
-                    //case "Modified By":
-                    //    query = sortDir == "asc" ? query.OrderBy(c => c.ModifyBy) : query.OrderByDescending(c => c.ModifyBy);
-                    //    break;
+                    break;                
             }
 
             var result = query.Skip(pageIndex).Take(pageSize);
