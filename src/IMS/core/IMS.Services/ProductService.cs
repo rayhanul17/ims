@@ -19,6 +19,7 @@ namespace IMS.Services
         Task UpdateAsync(ProductEditModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
         Task<ProductEditModel> GetByIdAsync(long id);
+        Task<ProductDto> GetPriceAndQuantityByIdAsync(long id);
         IList<ProductDto> LoadAllProducts(long categoryId, long brandId);
         IList<(long, string)> LoadAllActiveProducts(long categoryId, long productId);
         (int total, int totalDisplay, IList<ProductDto> records) LoadAllProducts(string searchBy, int length, int start, string sortBy, string sortDir);
@@ -140,6 +141,10 @@ namespace IMS.Services
                 {
                     //await _productDao.RemoveByIdAsync(id);
                     var product = await _productDao.GetByIdAsync(id);
+                    if (product != null)
+                    {
+                        throw new CustomException("No object found with this id");
+                    }
                     if(product.InStockQuantity > 0)
                     {
                         throw new CustomException("Product can't be delete due to quantity level");
@@ -171,7 +176,7 @@ namespace IMS.Services
                 var product = await _productDao.GetByIdAsync(id);
                 if (product == null)
                 {
-                    throw new ArgumentNullException(nameof(product));
+                    throw new CustomException("No object found with this id");
                 }
                 return new ProductEditModel
                 {
@@ -196,6 +201,28 @@ namespace IMS.Services
                 };
             }
             catch(Exception ex)
+            {
+                _serviceLogger.Error(ex.Message, ex);
+                throw;
+            }
+        }
+
+        public async Task<ProductDto> GetPriceAndQuantityByIdAsync(long id)
+        {
+            try
+            {
+                var product = await _productDao.GetByIdAsync(id);
+                if (product == null)
+                {
+                    throw new CustomException("No object found with this id");
+                }
+                return new ProductDto
+                {
+                    SellingPrice = product.SellingPrice,
+                    InStockQuantity = product.InStockQuantity
+                };
+            }
+            catch (Exception ex)
             {
                 _serviceLogger.Error(ex.Message, ex);
                 throw;

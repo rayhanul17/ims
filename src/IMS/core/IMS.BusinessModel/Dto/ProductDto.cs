@@ -5,14 +5,14 @@ namespace IMS.BusinessModel.Dto
 {
     public class ProductDto : BaseDto<long>
     {        
-        public virtual string Description { get; set; }
-        public virtual string Image { get; set; }
-        public virtual decimal BuyingPrice { get; set; }
-        public virtual decimal SellingPrice { get; set; }
-        public virtual decimal DiscountPrice { get; set; }
-        public virtual decimal ProfitMargin { get; set; }
-        public virtual int InStockQuantity { get; set; }
-        public virtual string Category { get; set; } 
-        public virtual string Brand { get; set; } 
+        public string Description { get; set; }
+        public string Image { get; set; }
+        public decimal BuyingPrice { get; set; }
+        public decimal SellingPrice { get; set; }
+        public decimal DiscountPrice { get; set; }
+        public decimal ProfitMargin { get; set; }
+        public int InStockQuantity { get; set; }
+        public string Category { get; set; } 
+        public string Brand { get; set; } 
     }
 }

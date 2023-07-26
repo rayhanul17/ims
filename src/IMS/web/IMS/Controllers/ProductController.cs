@@ -249,10 +249,11 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> GetProductSellingPrice(long productId)
+        public async Task<JsonResult> GetProductSellingPriceAndQuantiy(long productId)
         {
-            var product = await _productService.GetByIdAsync(productId);
-            return Json(new { UnitPrice = product.SellingPrice });
+            var product = await _productService.GetPriceAndQuantityByIdAsync(productId);
+            var data = Json(new { UnitPrice = product.SellingPrice, Quantity = product.InStockQuantity });
+            return data;
         }
         #endregion
 

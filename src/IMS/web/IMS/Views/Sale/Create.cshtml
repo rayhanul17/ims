@@ -57,6 +57,7 @@
                                 <div class="col-md-2 form-group">
                                     <label>Quantity</label>
                                     <input class="form-control" name="quantity" type="number" id="quantity" />
+                                    <input hidden class="form-control" name="quantity" type="number" id="maxQuantity" />
                                 </div>
                                 <div class="col-md-4 form-group">
                                     <label>Unit Price</label>
@@ -159,11 +160,13 @@
                 if (id != null) {
                     $.ajax({
                         type: 'POST',
-                        url: '/Product/GetProductSellingPrice',
+                        url: '/Product/GetProductSellingPriceAndQuantiy',
                         data: { productId: id },
                         success: function (data) {
                             console.log(data);
                             $('#unitPrice').val(data.UnitPrice);
+                            $('#maxQuantity').val(data.Quantity);
+                            console.log(data.Quantity);
                         }
                     });
                 }
@@ -180,6 +183,9 @@
 
                     if ($(`.prd_r${productId}`).length > 0 && $(`.prd_b${productId}`).val() == 'false') {
                         alert('Already exist');
+                    }
+                    else if ($('#maxQuantity').val() < $('#quantity').val()) {
+                        alert("You can buy at most: " + $('#maxQuantity').val())
                     }
                     else {
                         if ($(`.prd_r${productId}`).length > 0 && $(`.prd_b${productId}`).length > 0) {
