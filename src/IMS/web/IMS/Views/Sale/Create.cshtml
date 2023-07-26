@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "Add New Purchase";
+    ViewBag.Title = "Add New Sale";
 }
 
 <div class="container-fluid">
@@ -60,7 +60,7 @@
                                 </div>
                                 <div class="col-md-4 form-group">
                                     <label>Unit Price</label>
-                                    <input class="form-control" name="unitPrice" type="number" id="unitPrice" />
+                                    <input readonly class="form-control" name="unitPrice" type="number" id="unitPrice" />
                                 </div>
                             </div>
                             <div class="row">
@@ -75,29 +75,29 @@
             </div>
         </div>
         <div class="col-md-7">
-            <div class="card card-primary">
+            <div class="card card-info">
                 <div class="card-header">
                     <h3 class="card-title">Item List</h3>
                 </div>
                 <div class="card-body overflow-y-scroll">
-                    @using (Html.BeginForm("Create", "Purchase", FormMethod.Post, htmlAttributes: new { @id = "myform", @class = "nav-link cmxform" }))
+                    @using (Html.BeginForm("Create", "Sale", FormMethod.Post, htmlAttributes: new { @id = "myform", @class = "nav-link cmxform" }))
                     {
                         <div class="row">
                             <div class="col-md-8">
-                                <label>Supplier</label>
-                                <select class="form-control" name="supplierId" id="supplierSelectBox">
-                                    @if (ViewBag.SupplierList != null)
+                                <label>Customer</label>
+                                <select class="form-control" name="customerId" id="customerSelectBox">
+                                    @if (ViewBag.CustomerList != null)
                                     {
-                                        foreach (var supplier in ViewBag.SupplierList)
+                                        foreach (var customer in ViewBag.CustomerList)
                                         {
-                                            <option value="@supplier.Value">@supplier.Text</option>
+                                            <option value="@customer.Value">@customer.Text</option>
                                         }
                                     }
                                 </select>
                             </div>
                             <div class="col-md-4">
                                 <label>Grand Total</label>
-                                <input readonly type="number" class = "form-control" id="grandTotal" name="grandTotal" value="0"/>
+                                <input readonly type="number" class="form-control" id="grandTotal" name="grandTotal" value="0" />
                             </div>
                         </div>
                         <div class="row">
@@ -113,12 +113,12 @@
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="itemRows">                                           
+                                        <tbody id="itemRows">
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="row">
-                                    <input type="submit" class="btn btn-primary btn-block" id="purchaseButton" value="Confirm Purchase"/>
+                                    <input type="submit" class="btn btn-info btn-block" id="purchaseButton" value="Confirm Purchase" />
                                 </div>
                             </div>
                         </div>
@@ -139,7 +139,7 @@
                 if (bid != null && cid != null) {
                     $.ajax({
                         type: 'POST',
-                        url: '/Purchase/UpdateProductList',
+                        url: '/Sale/UpdateProductList',
                         data: { categoryId: cid, brandId: bid },
                         success: function (data) {
                             console.log(data);
@@ -159,7 +159,7 @@
                 if (id != null) {
                     $.ajax({
                         type: 'POST',
-                        url: '/Product/GetProductBuyingPrice',
+                        url: '/Product/GetProductSellingPrice',
                         data: { productId: id },
                         success: function (data) {
                             console.log(data);
@@ -175,7 +175,7 @@
                 let quantity = $("#quantity").val();
                 let unitPrice = $("#unitPrice").val();
 
-                               
+
                 if (productId > 0 && quantity > 0 && unitPrice > -1) {
 
                     if ($(`.prd_r${productId}`).length > 0 && $(`.prd_b${productId}`).val() == 'false') {
@@ -186,7 +186,7 @@
                             alert('Already exist but deleted');
                             $(`.prd_r${productId}`).removeClass(`prd_r${productId}`);
                             $(`.prd_b${productId}`).removeClass(`prd_b${productId}`);
-                            
+
                         }
                         let total = quantity * unitPrice;
 
@@ -216,7 +216,7 @@
         });
         function removeRow(rnum) {
             console.log($(`#rowNum${rnum}`));
-            $(`#model${rnum}`).val(true);            
+            $(`#model${rnum}`).val(true);
             $('#grandTotal').val(parseFloat($('#grandTotal').val()) - $(`#total${rnum}`).val());
             $(`#rowNum${rnum}`).hide();
         }

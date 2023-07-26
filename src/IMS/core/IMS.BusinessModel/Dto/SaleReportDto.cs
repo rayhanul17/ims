@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace IMS.BusinessModel.Dto
 {
-    public class PurchaseReportDto
+    public class SaleReportDto
     {
-        public string SupplierName { get; set; }
-        public string SupplierDescription { get; set; }
-        public DateTime PurchaseDate { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerDescription { get; set; }
+        public DateTime SaleDate { get; set; }
         public decimal GrandTotalPrice { get; set; }
         public IList<ProductInformation> Products { get; set; } = new List<ProductInformation>();
 
-    }    
+    }
 }

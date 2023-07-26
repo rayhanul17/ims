@@ -72,6 +72,7 @@
     <Compile Include="AccountService.cs" />
     <Compile Include="BaseService.cs" />
     <Compile Include="BrandService.cs" />
+    <Compile Include="SaleService.cs" />
     <Compile Include="PurchaseService.cs" />
     <Compile Include="ImageService.cs" />
     <Compile Include="ProductService.cs" />

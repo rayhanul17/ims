@@ -10,6 +10,8 @@ namespace IMS.Dao
 {
     public interface ICustomerDao : IBaseDao<Customer, long>
     {
+        Customer GetById(long id);
+        IList<Customer> GetCustomers(Expression<Func<Customer, bool>> filter);
         (IList<Customer> data, int total, int totalDisplay) LoadAllCustomers(Expression<Func<Customer, bool>> filter = null,
            string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
     }
@@ -19,7 +21,10 @@ namespace IMS.Dao
         public CustomerDao(ISession session) : base(session)
         {
         }
-
+        public Customer GetById(long id)
+        {
+            return _session.Get<Customer>(id);
+        }
         public (IList<Customer> data, int total, int totalDisplay) LoadAllCustomers(Expression<Func<Customer, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
         {
             IQueryable<Customer> query = _session.Query<Customer>();
@@ -48,6 +53,18 @@ namespace IMS.Dao
             var result = query.Skip(pageIndex).Take(pageSize);
 
             return (result.ToList(), total, totalDisplay);
+        }
+
+        public IList<Customer> GetCustomers(Expression<Func<Customer, bool>> filter)
+        {
+            IQueryable<Customer> query = _session.Query<Customer>();
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            return query.ToList();
         }
     }
 

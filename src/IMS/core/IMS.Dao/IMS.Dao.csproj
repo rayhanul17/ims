@@ -68,6 +68,8 @@
     <Compile Include="ApplicationUserDao.cs" />
     <Compile Include="BaseDao.cs" />
     <Compile Include="BrandDao.cs" />
+    <Compile Include="Mappings\SaleMapping.cs" />
+    <Compile Include="SaleDao.cs" />
     <Compile Include="PurchaseDao.cs" />
     <Compile Include="Mappings\PurchaseMapping.cs" />
     <Compile Include="ProductDao.cs" />

@@ -1,9 +1,6 @@
-﻿using FluentNHibernate.Utils;
-using IMS.BusinessModel.Dto;
+﻿using IMS.BusinessModel.Dto;
 using IMS.BusinessModel.Entity;
 using IMS.BusinessModel.ViewModel;
-using IMS.BusinessRules.Enum;
-using IMS.BusinessRules.Exceptions;
 using IMS.Dao;
 using NHibernate;
 using System;
@@ -45,7 +42,7 @@ namespace IMS.Services
             {
                 try
                 {
-                    List<PurchaseDetails> purchaseDetails = new List<PurchaseDetails> ();
+                    List<PurchaseDetails> purchaseDetails = new List<PurchaseDetails>();
                     foreach (var item in model)
                     {
                         var product = await _productDao.GetByIdAsync(item.ProductId);
@@ -88,7 +85,7 @@ namespace IMS.Services
                 }
             }
         }
-        
+
         #endregion
 
         #region Single Instance Loading
@@ -99,17 +96,17 @@ namespace IMS.Services
             var supplier = _supplierDao.GetById(purchase.SupplierId);
             var purchaseProducts = new List<ProductInformation>();
 
-            foreach(var item in purchase.PurchaseDetails)
+            foreach (var item in purchase.PurchaseDetails)
             {
                 var product = await _productDao.GetByIdAsync(item.ProductId);
-                var unitPrice = item.TotalPrice/item.Quantity;
+                var unitPrice = item.TotalPrice / item.Quantity;
                 purchaseProducts.Add(new ProductInformation
                 {
                     ProductName = product.Name,
                     Description = product.Description,
-                    UnitPrice = Math.Round(unitPrice,2),
+                    UnitPrice = Math.Round(unitPrice, 2),
                     Quantity = item.Quantity,
-                    TotalPrice = Math.Round(item.TotalPrice,2)
+                    TotalPrice = Math.Round(item.TotalPrice, 2)
                 });
             }
             var purchaseReport = new PurchaseReportDto
@@ -117,7 +114,7 @@ namespace IMS.Services
                 SupplierName = supplier.Name,
                 SupplierDescription = supplier.Address,
                 PurchaseDate = purchase.PurchaseDate,
-                GrandTotalPrice = Math.Round(purchase.GrandTotalPrice,2),
+                GrandTotalPrice = Math.Round(purchase.GrandTotalPrice, 2),
                 Products = purchaseProducts
             };
 
@@ -149,7 +146,7 @@ namespace IMS.Services
                             SupplierId = purchase.SupplierId,
                             CreateBy = purchase.CreateBy,
                             PurchaseDate = purchase.PurchaseDate,
-                            GrandTotalPrice = Math.Round(purchase.GrandTotalPrice,2)
+                            GrandTotalPrice = Math.Round(purchase.GrandTotalPrice, 2)
                         });
                 }
 

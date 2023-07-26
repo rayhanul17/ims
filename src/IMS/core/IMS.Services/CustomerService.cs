@@ -20,7 +20,9 @@ namespace IMS.Services
         Task UpdateAsync(CustomerEditModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
         Task<CustomerEditModel> GetByIdAsync(long id);
+        string GetNameById(long id);        
         IList<CustomerDto> LoadAllCustomers();
+        IList<(long, string)> LoadAllActiveCustomers();
         (int total, int totalDisplay, IList<CustomerDto> records) LoadAllCustomers(string searchBy, int length, int start, string sortBy, string sortDir);
     }
     #endregion
@@ -177,6 +179,12 @@ namespace IMS.Services
             }
             
         }
+
+        public string GetNameById(long id)
+        {
+            var customer = _customerDao.GetById(id);
+            return customer.Name;
+        }
         #endregion
 
         #region Single Instance Loading
@@ -229,6 +237,17 @@ namespace IMS.Services
             throw new NotImplementedException();
         }
         #endregion
+
+        public IList<(long, string)> LoadAllActiveCustomers()
+        {
+            List<(long, string)> customers = new List<(long, string)>();
+            var allCustomers = _customerDao.GetCustomers(x => x.Status == (int)Status.Active);
+            foreach (var supplier in allCustomers)
+            {
+                customers.Add((supplier.Id, supplier.Name));
+            }
+            return customers;
+        }
 
     }
 }
