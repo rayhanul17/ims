@@ -1,4 +1,4 @@
-﻿
+﻿@model IMS.BusinessModel.Dto.DashboardDto
 @{
     ViewBag.Title = "Dashboard";
 }
@@ -9,7 +9,7 @@
             <!-- small box -->
             <div class="small-box bg-info">
                 <div class="inner">
-                    <h3>15000</h3>
+                    <h3>@Model.ToatlPurchasePrice</h3>
                     <p>Total Purchase</p>
                 </div>
                 <div class="icon">
@@ -24,7 +24,7 @@
             <div class="small-box bg-success">
                 <div class="inner">
                     <!-- <h3>53<sup style="font-size: 20px">%</sup></h3> -->
-                    <h3>12000</h3>
+                    <h3>@Model.TotalSalePrice</h3>
                     <p>Total Sale</p>
                 </div>
                 <div class="icon">
@@ -40,8 +40,10 @@
             <!-- small box -->
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3>16</h3>
-                    <p>Total Supplier</p>
+                    <h3>@Model.TotalActiveSupplier</h3>
+                    <p>Total Active Supplier</p>
+                    <h3>@Model.TotalInActiveSupplier</h3>
+                    <p>Total InActive Supplier</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-person"></i>
@@ -54,8 +56,10 @@
             <!-- small box -->
             <div class="small-box bg-danger">
                 <div class="inner">
-                    <h3>65</h3>
-                    <p>Total Customer</p>
+                    <h3>@Model.TotalActiveCustomer</h3>
+                    <p>Total Active Customer</p>
+                    <h3>@Model.TotalInActiveCustomer</h3>
+                    <p>Total InActive Customer</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-person"></i>
