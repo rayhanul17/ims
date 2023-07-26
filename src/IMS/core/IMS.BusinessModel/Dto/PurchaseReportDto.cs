@@ -9,11 +9,16 @@ namespace IMS.BusinessModel.Dto
         public string SupplierDescription { get; set; }
         public DateTime PurchaseDate { get; set; }
         public decimal GrandTotalPrice { get; set; }
-        public IList<(string ProductName, int Quantity, decimal TotalPrice)> Products { get; set; }
+        public IList<ProductInformation> Products { get; set; } = new List<ProductInformation>();
 
-        public PurchaseReportDto()
-        {
-            Products = new List<(string ProductName, int Quantity, decimal TotalPrice)>();
-        }
+    }
+
+    public class ProductInformation
+    {
+        public string ProductName { get; set; }
+        public string Description { get; set; }
+        public decimal UnitPrice { get; set; }
+        public int Quantity { get; set; }
+        public decimal TotalPrice { get; set; }
     }
 }

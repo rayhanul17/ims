@@ -1,4 +1,5 @@
-﻿using IMS.BusinessModel.Dto;
+﻿using FluentNHibernate.Utils;
+using IMS.BusinessModel.Dto;
 using IMS.BusinessModel.Entity;
 using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules.Enum;
@@ -27,11 +28,13 @@ namespace IMS.Services
         #region Initializtion
         private readonly IPurchaseDao _purchaseDao;
         private readonly IProductDao _productDao;
+        private readonly ISupplierDao _supplierDao;
 
         public PurchaseService(ISession session) : base(session)
         {
             _purchaseDao = new PurchaseDao(session);
             _productDao = new ProductDao(session);
+            _supplierDao = new SupplierDao(session);
         }
         #endregion
 
@@ -93,8 +96,32 @@ namespace IMS.Services
         public async Task<PurchaseReportDto> GetPurchaseDetailsAsync(long id)
         {
             var purchase = await _purchaseDao.GetByIdAsync(id);
+            var supplier = _supplierDao.GetById(id);
+            var purchaseProducts = new List<ProductInformation>();
 
-            return new PurchaseReportDto();
+            foreach(var item in purchase.PurchaseDetails)
+            {
+                var product = await _productDao.GetByIdAsync(item.ProductId);
+                var unitPrice = item.TotalPrice/item.Quantity;
+                purchaseProducts.Add(new ProductInformation
+                {
+                    ProductName = product.Name,
+                    Description = product.Description,
+                    UnitPrice = unitPrice,
+                    Quantity = item.Quantity,
+                    TotalPrice = item.TotalPrice,
+                });
+            }
+            var purchaseReport = new PurchaseReportDto
+            {
+                SupplierName = supplier.Name,
+                SupplierDescription = supplier.Address,
+                PurchaseDate = purchase.PurchaseDate,
+                GrandTotalPrice = purchase.GrandTotalPrice,
+                Products = purchaseProducts
+            };
+
+            return purchaseReport;
         }
 
         #endregion

@@ -144,7 +144,7 @@ namespace IMS.Controllers
         public async Task<ActionResult> Details(long id)
         {
             var model = await _purchaseService.GetPurchaseDetailsAsync(id);
-            return View();
+            return View(model);
         }
 
         #endregion
