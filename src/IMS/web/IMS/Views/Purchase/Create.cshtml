@@ -4,6 +4,13 @@
 }
 
 <div class="container-fluid">
+    <div class="row bg-body-secondary">
+        <div class="col-12">
+            <div class="card-header">
+                <h1 class="card-title">@ViewData["Title"]</h1>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <!-- left column -->
         <div class="col-md-5">
@@ -72,7 +79,7 @@
                 <div class="card-header">
                     <h3 class="card-title">Item List</h3>
                 </div>
-                <div class="card-body overflow-auto">
+                <div class="card-body overflow-y-scroll">
                     @using (Html.BeginForm("Create", "Purchase", FormMethod.Post, htmlAttributes: new { @id = "myform", @class = "nav-link cmxform" }))
                     {
                         <div class="row">
@@ -96,7 +103,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="card-body table-responsive p-0">
-                                    <table class="table table-hover text-nowrap">
+                                    <table class="table table-hover text-nowrap overflow-y-auto">
                                         <thead>
                                             <tr>
                                                 <th>Product</th>
@@ -167,25 +174,39 @@
                 let productId = $("#productSelectBox").val();
                 let quantity = $("#quantity").val();
                 let unitPrice = $("#unitPrice").val();
+
+                               
                 if (productId > 0 && quantity > 0 && unitPrice > -1) {
-                    let total = quantity * unitPrice;
 
-                    console.log(productName + ":" + productId + `${quantity} ${unitPrice}`);
+                    if ($(`.prd_r${productId}`).length > 0 && $(`.prd_b${productId}`).val() == 'false') {
+                        alert('Already exist');
+                    }
+                    else {
+                        if ($(`.prd_r${productId}`).length > 0 && $(`.prd_b${productId}`).length > 0) {
+                            alert('Already exist but deleted');
+                            $(`.prd_r${productId}`).removeClass(`prd_r${productId}`);
+                            $(`.prd_b${productId}`).removeClass(`prd_b${productId}`);
+                            
+                        }
+                        let total = quantity * unitPrice;
+
+                        console.log(productName + ":" + productId + `${quantity} ${unitPrice}`);
 
 
-                    var row = `<tr id='rowNum${rowNum}'>
+                        var row = `<tr id='rowNum${rowNum}' class='prd_r${productId}'>
                                 <td id="item[${rowNum}].price"><input hidden type='text' name='model[${rowNum}].ProductId' value= '${productId}'>${productName}</td>
                                 <td id="item[${rowNum}].unitPrice"><input hidden type='text' name='model[${rowNum}].UnitPrice' value= '${unitPrice}'>${unitPrice}</td>
                                 <td id="item[${rowNum}].quantiy"><input hidden type='text' name='model[${rowNum}].Quantity' value= '${quantity}'>${quantity}</td>
                                 <td id="item[${rowNum}].total"><input hidden type='text' name='model[${rowNum}].Total' id='total${rowNum}' value= '${total}'>${total}</td>
                                 <td id="item[${rowNum}].button"><input class="btn btn-danger" type="button" value="X" onclick="removeRow(${rowNum})"/>
-                                <input id='model${rowNum}' hidden name='model[${rowNum}].IsDeleted' value= ${false}></td></tr>`;
+                                <input id='model${rowNum}' hidden name='model[${rowNum}].IsDeleted' class='prd_b${productId}' value= ${false}></td></tr>`;
 
-                    $('#itemRows').append(row);
-                    let v = parseFloat($('#grandTotal').val()) + total;
-                    console.log(v);
-                    $('#grandTotal').val(v);
-                    rowNum++;
+                        $('#itemRows').append(row);
+                        let v = parseFloat($('#grandTotal').val()) + total;
+                        console.log(v);
+                        $('#grandTotal').val(v);
+                        rowNum++;
+                    }
                 }
                 else {
                     alert("Give information properly");

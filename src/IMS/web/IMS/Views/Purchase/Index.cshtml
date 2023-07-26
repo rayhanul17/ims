@@ -70,6 +70,7 @@
             $('#table').DataTable({
                 "processing": true,
                 "serverSide": true,
+                "searching": false,
                 "ajax": {
                     "url": "/Purchase/GetPurchases",
                     "type": "POST",
@@ -88,7 +89,7 @@
                         "targets": 5,
                         "render": function (data, type, row) {
                             return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/purchase/details/${data}'">
-                                                            <i class="fas fa-pencil-alt">
+                                                            <i class="fas fa-list">
                                                             </i>
                                                             View Details
                                                         </button>`;

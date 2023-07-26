@@ -96,7 +96,7 @@ namespace IMS.Services
         public async Task<PurchaseReportDto> GetPurchaseDetailsAsync(long id)
         {
             var purchase = await _purchaseDao.GetByIdAsync(id);
-            var supplier = _supplierDao.GetById(id);
+            var supplier = _supplierDao.GetById(purchase.SupplierId);
             var purchaseProducts = new List<ProductInformation>();
 
             foreach(var item in purchase.PurchaseDetails)
@@ -107,9 +107,9 @@ namespace IMS.Services
                 {
                     ProductName = product.Name,
                     Description = product.Description,
-                    UnitPrice = unitPrice,
+                    UnitPrice = Math.Round(unitPrice,2),
                     Quantity = item.Quantity,
-                    TotalPrice = item.TotalPrice,
+                    TotalPrice = Math.Round(item.TotalPrice,2)
                 });
             }
             var purchaseReport = new PurchaseReportDto
@@ -117,7 +117,7 @@ namespace IMS.Services
                 SupplierName = supplier.Name,
                 SupplierDescription = supplier.Address,
                 PurchaseDate = purchase.PurchaseDate,
-                GrandTotalPrice = purchase.GrandTotalPrice,
+                GrandTotalPrice = Math.Round(purchase.GrandTotalPrice,2),
                 Products = purchaseProducts
             };
 
@@ -149,7 +149,7 @@ namespace IMS.Services
                             SupplierId = purchase.SupplierId,
                             CreateBy = purchase.CreateBy,
                             PurchaseDate = purchase.PurchaseDate,
-                            GrandTotalPrice = purchase.GrandTotalPrice,
+                            GrandTotalPrice = Math.Round(purchase.GrandTotalPrice,2)
                         });
                 }
 
