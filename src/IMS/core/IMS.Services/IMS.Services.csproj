@@ -72,6 +72,8 @@
     <Compile Include="AccountService.cs" />
     <Compile Include="BaseService.cs" />
     <Compile Include="BrandService.cs" />
+    <Compile Include="BankService.cs" />
+    <Compile Include="PaymentService.cs" />
     <Compile Include="ReportService.cs" />
     <Compile Include="SaleService.cs" />
     <Compile Include="PurchaseService.cs" />

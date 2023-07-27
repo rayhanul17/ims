@@ -1,0 +1,54 @@
+﻿@model IMS.BusinessModel.Dto.PaymentDto
+@{
+    ViewData["Title"] = "Make Payment";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">@ViewData["Title"]</h3>
+                </div>
+                @using (Html.BeginForm("Create", "Payment", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="card-body">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="form-group">
+                            <label>Total Amount to be paid</label>
+                            @Html.TextBoxFor(m => m.Amount, new { @class = "form-control", @placeholder = "Total Amount", @type = "text"})
+                            @Html.ValidationMessageFor(m => m.Amount, null, new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            <label>Previously Paid</label>
+                            @Html.TextBoxFor(m => m.IsPaid, new { @class = "form-control", @placeholder = "Previous Paid", @type = "text"})
+
+                        </div>
+                        <div class="form-group">
+                            <label>Select Payment Method</label>
+                            @Html.DropDownListFor(m => m.PaymentMethod, (IEnumerable<SelectListItem>)ViewBag.PaymentMethodList, new { @class = "form-control" })
+
+                        </div>
+                        <div class="form-group">
+                            <label>Select Bank</label>
+                            @Html.DropDownListFor(m => m.BankId, (IEnumerable<SelectListItem>)ViewBag.BankList, new { @class = "form-control" })
+
+                        </div>
+                        <div class="form-group">
+                            <label> @Html.LabelFor(m => m.TransactionId)</label>
+                            @Html.TextBoxFor(m => m.TransactionId, new { @class = "form-control", @placeholder = "Transaction Id", @type = "number" })
+
+                        </div>
+                    </div>                    
+                    @Html.HiddenFor(model => model.OperationId)
+                    @Html.HiddenFor(model => model.OperationType)
+                    @Html.HiddenFor(model => model.Id)
+                    <div class="card-footer">
+                        <input type="submit" value="Submit" class="btn btn-primary btn-lg btn-block" />
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

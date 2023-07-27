@@ -1,0 +1,120 @@
+﻿using IMS.BusinessModel.Dto;
+using IMS.BusinessModel.ViewModel;
+using IMS.BusinessRules;
+using IMS.BusinessRules.Enum;
+using IMS.Models;
+using IMS.Services;
+using IMS.Services.SessionFactories;
+using Microsoft.AspNet.Identity;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+
+namespace IMS.Controllers
+{
+    public class PaymentController : AllBaseController
+    {
+        private readonly IPaymentService _paymentService;
+        private readonly IBankService _bankService;
+        private readonly IAccountService _accountService;
+
+        public PaymentController()
+        {
+            var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
+            _paymentService = new PaymentService(session);
+            _bankService = new BankService(session);
+            _accountService = new AccountService(session);
+        }
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> Create(long operationId = 1, int operationType = 1, decimal PayNow = 0)
+        {
+
+            var paymentMethodList = Enum.GetValues(typeof(PaymentMethod))
+                       .Cast<PaymentMethod>().ToDictionary(key => (int)key);
+            ViewBag.PaymentMethodList = new SelectList(paymentMethodList, "Key", "Value", (int)Status.Active);
+
+            var bankList = _bankService.LoadAllActiveBanks();
+            ViewBag.BankList = bankList.Select(x => new SelectListItem
+            {
+                Text = x.Item2,
+                Value = x.Item1.ToString()
+            }).ToList();
+
+            //var model = await _paymentService.GetPaymentDetailsAsync(operationId, operationType);
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Create(PaymentModel model)
+        {
+
+            if (model != null)
+            {
+                try
+                {  
+                    await _paymentService.AddAsync(model);
+                    ViewResponse("Successfully Payment completed!", ResponseTypes.Success);
+
+                }
+                catch (Exception ex)
+                {
+                    ViewResponse("Something went wrong", ResponseTypes.Danger);
+                    _logger.Error(ex.Message, ex);
+                }
+            }
+            else
+            {
+                ViewResponse("You make mistake during Payment creation", ResponseTypes.Danger);
+            }
+            return RedirectToAction("Create");
+        }
+
+        #region JSON       
+
+        public JsonResult GetPayments()
+        {
+            try
+            {
+                var model = new DataTablesAjaxRequestModel(Request);
+                var data = _paymentService.LoadAllPayments(model.SearchText, model.Length, model.Start, model.SortColumn,
+                    model.SortDirection);
+
+                var count = 1;
+
+                return Json(new
+                {
+                    draw = Request["draw"],
+                    recordsTotal = data.total,
+                    recordsFiltered = data.totalDisplay,
+                    data = (from record in data.records
+                            select new string[]
+                            {
+                                count++.ToString(),
+                                record.OperationType.ToString(),
+                                record.Amount.ToString(),
+                                record.IsPaid.ToString(),                                
+                                record.PaymentDate.ToString(),                                
+                                record.PaymentMethod.ToString(),
+                                record.TransactionId,
+                                record.Id.ToString()
+                            }
+                        ).ToArray()
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+            }
+
+            return default(JsonResult);
+        }      
+
+        #endregion
+    }
+}
