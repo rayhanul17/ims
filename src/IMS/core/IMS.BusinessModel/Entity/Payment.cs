@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace IMS.BusinessModel.Entity
 {
@@ -7,12 +8,8 @@ namespace IMS.BusinessModel.Entity
         public virtual long Id { get; set; }
         public virtual long OperationId { get; set; }
         public virtual int OperationType { get; set; }
-        public virtual int PaymentMethod { get; set; }
-        public virtual decimal Amount { get; set; }
-        public virtual bool IsPaid { get; set; }
-        public virtual string TransactionId { get; set; }
-        public virtual DateTime PaymentDate { get; set; }
-        public virtual long BankId { get; set; }
-        public virtual Bank Bank { get; set; }
+        public virtual decimal TotalAmount { get; set; }
+        public virtual decimal PaidAmount { get; set; }  
+        public virtual IList<PaymentDetails> PaymentDetails { get; set; } = new List<PaymentDetails>();
     }
 }

@@ -16,10 +16,11 @@ namespace IMS.Services
     #region Interface
     public interface IPaymentService
     {
-        Task AddAsync(PaymentModel model);
-
-        (int total, int totalDisplay, IList<PaymentDto> records) LoadAllPayments(string searchBy, int length, int start, string sortBy, string sortDir);
-        Task<PaymentDto> GetPaymentDetailsAsync(long operationId, int operationType);
+        Task AddAsync(long operationId, OperationType operationType, decimal Amount);
+        Task MakePaymentAsync(PaymentModel model);
+        (int total, int totalDisplay, IList<PaymentReportDto> records) LoadAllPayments(string searchBy, int length, int start, string sortBy, string sortDir);
+        Task<PaymentModel> GetPaymentByIdAsync(long paymentId);
+        Task<PaymentReportDto> GetPaymentDetailsAsync(long paymentId);
     }
     #endregion
 
@@ -35,7 +36,7 @@ namespace IMS.Services
             _bankDao = new BankDao(session);
         }
 
-        public async Task AddAsync(PaymentModel model)
+        public async Task AddAsync(long operationId, OperationType operationType, decimal Amount)
         {
             using(var transaction = _session.BeginTransaction())
             {
@@ -43,15 +44,10 @@ namespace IMS.Services
                 {
                     var payment = new Payment
                     {                        
-                        BankId = model.BankId,
-                        Bank = await _bankDao.GetByIdAsync(model.BankId),
-                        OperationId = model.OperationId,
-                        OperationType = (int)model.OperationType,
-                        PaymentMethod = (int)model.PaymentMethod,
-                        TransactionId = model.TransactionId,
-                        IsPaid = true,
-                        Amount = model.Amount,
-                        PaymentDate = _timeService.Now
+                        OperationId = operationId,
+                        OperationType = (int)operationType,
+                        TotalAmount = Amount,
+                        PaidAmount = 0
                     };
 
                     await _paymentDao.EditAsync(payment);
@@ -61,7 +57,52 @@ namespace IMS.Services
                 catch (Exception ex)
                 {
                     _serviceLogger.Error(ex.Message, ex);
-                    throw new CustomException("Something went wron during payment");
+                    throw new CustomException("Something went wrong during payment creation");
+                }
+            }
+        }
+
+        public async Task MakePaymentAsync(PaymentModel model)
+        {
+            using (var transaction = _session.BeginTransaction())
+            {
+                try
+                {
+                    var payment = await _paymentDao.GetByIdAsync(model.PaymentId);
+                    var bank = await _bankDao.GetByIdAsync(model.BankId);
+
+                    var paymentDetails = new PaymentDetails
+                    {
+                        BankId = model.BankId,
+                        TransactionId = model.TransactionId,
+                        Amount = model.Amount,
+                        PaymentDate = _timeService.Now,
+                        Payment = payment,
+                        Bank = bank,                       
+                        
+                    };
+                    payment.PaidAmount += model.Amount;
+                    
+                    payment.PaymentDetails.Add(paymentDetails);
+                    await _paymentDao.EditAsync(payment);
+
+                    if(payment.PaidAmount == payment.TotalAmount)
+                    {
+                        var tableName = Convert.ToString((OperationType)payment.OperationType);
+                        var query = $"UPDATE TableName SET IsPaid = 1 WHERE Id = {payment.OperationId};";
+                        query = query.Replace("TableName", tableName);
+
+                        await _paymentDao.ExecuteUpdateDeleteQuery(query);
+                    }
+
+                    transaction.Commit();
+
+                }
+                catch (Exception ex)
+                {
+                    _serviceLogger.Error(ex.Message, ex);
+                    transaction.Rollback();
+                    throw new CustomException("Something went wrong during payment creation");
                 }
             }
         }
@@ -74,23 +115,29 @@ namespace IMS.Services
 
         #region Single Instance Loading
 
-        public async Task<PaymentDto> GetPaymentDetailsAsync(long operationId, int operationType)
+        public async Task<PaymentModel> GetPaymentByIdAsync(long paymentId)
         {
             var payment = await Task.Run(() => _paymentDao.Get(
-                x => x.OperationId == operationId && 
-                    x.OperationType == operationType).FirstOrDefault());
+                x => x.Id == paymentId).FirstOrDefault());
 
-            var paymentDto = new PaymentDto
+            var model = new PaymentModel
             {
-                Id = payment.Id,
-                OperationType = (OperationType)payment.OperationType,
-                OperationId = payment.OperationId,
-                BankId = payment.BankId,
-                Amount = payment.Amount,
-                PaymentMethod = (PaymentMethod)payment.PaymentMethod,
-                IsPaid = payment.IsPaid,               
-                TransactionId = payment.TransactionId,
-                PaymentDate = _timeService.Now
+                PaymentId = payment.Id,
+                TotalAmount = payment.TotalAmount,
+                DueAmount = payment.TotalAmount - payment.PaidAmount,
+                Amount = payment.TotalAmount - payment.PaidAmount
+            };
+
+            return model;
+        }
+        public async Task<PaymentReportDto> GetPaymentDetailsAsync(long paymentId)
+        {
+            var payment = await Task.Run(() => _paymentDao.Get(
+                x => x.OperationId == paymentId).FirstOrDefault());
+
+            var paymentDto = new PaymentReportDto
+            {
+                
             };
 
             return paymentDto;
@@ -99,7 +146,7 @@ namespace IMS.Services
         #endregion
 
         #region List Loading Function
-        public (int total, int totalDisplay, IList<PaymentDto> records) LoadAllPayments(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
+        public (int total, int totalDisplay, IList<PaymentReportDto> records) LoadAllPayments(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
         {
             try
             {
@@ -107,20 +154,16 @@ namespace IMS.Services
 
                 var result = _paymentDao.LoadAllPayments(filter, null, start, length, sortBy, sortDir);
 
-                List<PaymentDto> payments = new List<PaymentDto>();
+                List<PaymentReportDto> payments = new List<PaymentReportDto>();
                 foreach (Payment payment in result.data)
                 {
                     payments.Add(
-                        new PaymentDto
+                        new PaymentReportDto
                         {
-                            Id = payment.Id,
-                            BankId = payment.Bank.Id,
-                            OperationId = payment.OperationId,
+                            Id = payment.Id,                      
                             OperationType = (OperationType)payment.OperationType,
-                            PaymentMethod = (PaymentMethod)payment.PaymentMethod,
-                            TransactionId = payment.TransactionId,
-                            Amount = payment.Amount,
-                            IsPaid = payment.IsPaid                            
+                            TotalAmount = payment.TotalAmount,
+                            PaidAmount = payment.PaidAmount,
                         });
                 }
 

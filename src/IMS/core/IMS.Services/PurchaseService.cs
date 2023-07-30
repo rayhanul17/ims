@@ -13,7 +13,7 @@ namespace IMS.Services
     #region Interface
     public interface IPurchaseService
     {
-        Task AddAsync(IList<PurchaseDetailsModel> model, decimal grandTotal, long supplierId, long userId);
+        Task<long> AddAsync(IList<PurchaseDetailsModel> model, decimal grandTotal, long supplierId, long userId);
 
         (int total, int totalDisplay, IList<PurchaseDto> records) LoadAllPurchases(string searchBy, int length, int start, string sortBy, string sortDir);
         Task<PurchaseReportDto> GetPurchaseDetailsAsync(long purchaseId);
@@ -36,7 +36,7 @@ namespace IMS.Services
         #endregion
 
         #region Operational Function
-        public async Task AddAsync(IList<PurchaseDetailsModel> model, decimal grandTotal, long supplierId, long userId)
+        public async Task<long> AddAsync(IList<PurchaseDetailsModel> model, decimal grandTotal, long supplierId, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -73,8 +73,9 @@ namespace IMS.Services
                         PurchaseDetails = purchaseDetails
                     };
 
-                    await _purchaseDao.AddAsync(Purchase);
+                    var id = await _purchaseDao.AddAsync(Purchase);
                     transaction.Commit();
+                    return id;
                 }
                 catch (Exception ex)
                 {
@@ -146,7 +147,8 @@ namespace IMS.Services
                             SupplierId = purchase.SupplierId,
                             CreateBy = purchase.CreateBy,
                             PurchaseDate = purchase.PurchaseDate,
-                            GrandTotalPrice = Math.Round(purchase.GrandTotalPrice, 2)
+                            GrandTotalPrice = Math.Round(purchase.GrandTotalPrice, 2),
+                            IsPaid = purchase.IsPaid,
                         });
                 }
 

@@ -4,10 +4,11 @@ namespace IMS.BusinessModel.Dto
 {
     public class PurchaseDto
     {
-        public virtual long Id { get; set; }
-        public virtual long SupplierId { get; set; }
-        public virtual long CreateBy { get; set; }
-        public virtual DateTime PurchaseDate { get; set; }
-        public virtual decimal GrandTotalPrice { get; set; }
+        public long Id { get; set; }
+        public long SupplierId { get; set; }
+        public long CreateBy { get; set; }
+        public DateTime PurchaseDate { get; set; }
+        public decimal GrandTotalPrice { get; set; }
+        public bool IsPaid { get; set; }
     }
 }

@@ -32,7 +32,7 @@ namespace IMS.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Create(long operationId = 1, int operationType = 1, decimal PayNow = 0)
+        public async Task<ActionResult> Create(long id)
         {
 
             var paymentMethodList = Enum.GetValues(typeof(PaymentMethod))
@@ -46,19 +46,19 @@ namespace IMS.Controllers
                 Value = x.Item1.ToString()
             }).ToList();
 
-            //var model = await _paymentService.GetPaymentDetailsAsync(operationId, operationType);
-            return View();
+            var model = await _paymentService.GetPaymentByIdAsync(id);
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(PaymentModel model)
+        public async Task<ActionResult> Create(PaymentModel model, long id)
         {
 
             if (model != null)
             {
                 try
                 {  
-                    await _paymentService.AddAsync(model);
+                    await _paymentService.MakePaymentAsync(model);
                     ViewResponse("Successfully Payment completed!", ResponseTypes.Success);
 
                 }
@@ -97,11 +97,8 @@ namespace IMS.Controllers
                             {
                                 count++.ToString(),
                                 record.OperationType.ToString(),
-                                record.Amount.ToString(),
-                                record.IsPaid.ToString(),                                
-                                record.PaymentDate.ToString(),                                
-                                record.PaymentMethod.ToString(),
-                                record.TransactionId,
+                                record.TotalAmount.ToString(),
+                                record.PaidAmount.ToString(),
                                 record.Id.ToString()
                             }
                         ).ToArray()

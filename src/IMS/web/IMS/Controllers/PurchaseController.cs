@@ -1,6 +1,7 @@
 ﻿using IMS.BusinessModel.Dto;
 using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
+using IMS.BusinessRules.Enum;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
@@ -20,6 +21,7 @@ namespace IMS.Controllers
         private readonly IBrandService _brandService;
         private readonly ISupplierService _supplierService;
         private readonly IPurchaseService _purchaseService;
+        private readonly IPaymentService _paymentService;
         private readonly IAccountService _accountService;
 
         public PurchaseController()
@@ -30,6 +32,7 @@ namespace IMS.Controllers
             _brandService = new BrandService(session);
             _supplierService = new SupplierService(session);
             _purchaseService = new PurchaseService(session);
+            _paymentService = new PaymentService(session);
             _accountService = new AccountService(session);
         }
         public ActionResult Index()
@@ -79,7 +82,9 @@ namespace IMS.Controllers
                         return RedirectToAction("Create");
                     }
                     var userId = User.Identity.GetUserId<long>();
-                    await _purchaseService.AddAsync(model, grandTotal, supplierId, userId);
+                    var id = await _purchaseService.AddAsync(model, grandTotal, supplierId, userId);
+                    await _paymentService.AddAsync(id, OperationType.Purchase, grandTotal);
+
                     ViewResponse("Successfully purchase completed!", ResponseTypes.Success);
 
                 }
@@ -127,7 +132,8 @@ namespace IMS.Controllers
                                 _accountService.GetUserName(record.CreateBy),
                                 record.PurchaseDate.ToString(),                                
                                 record.GrandTotalPrice.ToString(),
-                                record.Id.ToString()
+                                record.Id.ToString(),
+                                record.IsPaid.ToString(),
                             }
                         ).ToArray()
                 });

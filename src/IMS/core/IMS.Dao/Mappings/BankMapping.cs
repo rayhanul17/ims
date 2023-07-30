@@ -8,7 +8,7 @@ namespace IMS.Dao.Mappings
         {
             Table("Bank");            
             Map(x => x.Description);
-            HasMany(x => x.Payment)
+            HasMany(x => x.PaymentDetails)
                 .KeyColumn("BankId")
                 .Inverse()
                 .LazyLoad()

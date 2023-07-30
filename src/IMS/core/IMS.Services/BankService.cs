@@ -125,11 +125,11 @@ namespace IMS.Services
             {
                 try
                 {
-                    var count = _paymentDao.GetCount(x => x.Bank.Id == id );
-                    if (count > 0)
-                    {
-                        throw new CustomException("Found payment under this bank");
-                    }
+                    //var count = _paymentDao.GetCount(x => x.PaymentDetails.);
+                    //if (count > 0)
+                    //{
+                    //    throw new CustomException("Found payment under this bank");
+                    //}
                     //await _bankDao.RemoveByIdAsync(id);
                     var bank = await _bankDao.GetByIdAsync(id);
                     bank.Status = (int)Status.Delete;

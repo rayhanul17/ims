@@ -13,6 +13,7 @@ namespace IMS.Dao.Mappings
             Map(x => x.CreateBy);
             Map(x => x.SaleDate);
             Map(x => x.GrandTotalPrice);
+            Map(x => x.IsPaid);
 
             HasMany(x => x.SaleDetails)
                 .KeyColumn("SaleId")                

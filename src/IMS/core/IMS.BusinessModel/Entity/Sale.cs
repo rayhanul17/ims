@@ -9,7 +9,8 @@ namespace IMS.BusinessModel.Entity
         public virtual long CustomerId { get; set; }
         public virtual long CreateBy { get; set; }
         public virtual DateTime SaleDate { get; set; }
-        public virtual decimal GrandTotalPrice { get; set; }               
+        public virtual decimal GrandTotalPrice { get; set; }     
+        public virtual bool IsPaid { get; set; }
         public virtual IList<SaleDetails> SaleDetails { get; set; } = new List<SaleDetails>();
     }
 }

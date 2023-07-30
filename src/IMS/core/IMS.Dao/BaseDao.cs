@@ -8,13 +8,14 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using System.Runtime.Remoting.Contexts;
 using IMS.BusinessRules.Enum;
+using System.Collections;
 
 namespace IMS.Dao
 {
     #region Interfaces
     public interface IBaseDao<TEntity, TKey> where TEntity : class, IEntity<TKey>
     {
-        Task AddAsync(TEntity entity);
+        Task<TKey> AddAsync(TEntity entity);
         Task RemoveByIdAsync(TKey id);
         Task RemoveAsync(TEntity entityToDelete);
         Task EditAsync(TEntity entityToUpdate);
@@ -22,6 +23,7 @@ namespace IMS.Dao
         IList<TEntity> Get(Expression<Func<TEntity, bool>> filter);
         IList<TEntity> GetAll();
         int GetCount(Expression<Func<TEntity, bool>> filter = null);
+        Task<int> ExecuteUpdateDeleteQuery(string query);
         (IList<TEntity> data, int total, int totalDisplay) GetDynamic(
             Expression<Func<TEntity, bool>> filter = null,
             string orderBy = null, int pageIndex = 1, int pageSize = 10);
@@ -55,9 +57,10 @@ namespace IMS.Dao
             _session = session;
         }
 
-        public virtual async Task AddAsync(TEntity entity)
+        public virtual async Task<TKey> AddAsync(TEntity entity)
         {
             await _session.SaveAsync(entity);
+            return entity.Id;
         }
 
         public virtual async Task<TEntity> GetByIdAsync(TKey id)
@@ -113,6 +116,13 @@ namespace IMS.Dao
             return query.ToList();
         }
 
+        public async Task<int> ExecuteUpdateDeleteQuery(string query)
+        {
+            var sql = _session.CreateSQLQuery(query);
+            int resut = await sql.ExecuteUpdateAsync();
+
+            return resut;
+        }
         public virtual IList<TEntity> Get(Expression<Func<TEntity, bool>> filter,
             int pageIndex = 1, int pageSize = 10)
         {
