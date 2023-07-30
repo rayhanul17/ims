@@ -1,6 +1,7 @@
 ﻿using IMS.BusinessModel.Dto;
 using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
+using IMS.BusinessRules.Enum;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
@@ -20,6 +21,7 @@ namespace IMS.Controllers
         private readonly IBrandService _brandService;
         private readonly ICustomerService _customerService;
         private readonly ISaleService _saleService;
+        private readonly IPaymentService _paymentService;
         private readonly IAccountService _accountService;
 
         public SaleController()
@@ -30,6 +32,7 @@ namespace IMS.Controllers
             _brandService = new BrandService(session);
             _customerService = new CustomerService(session);
             _saleService = new SaleService(session);
+            _paymentService = new PaymentService(session);
             _accountService = new AccountService(session);
         }
         public ActionResult Index()
@@ -79,7 +82,9 @@ namespace IMS.Controllers
                         return RedirectToAction("Create");
                     }
                     var userId = User.Identity.GetUserId<long>();
-                    await _saleService.AddAsync(model, grandTotal, customerId, userId);
+                    var id = await _saleService.AddAsync(model, grandTotal, customerId, userId);
+                    await _paymentService.AddAsync(id, OperationType.Sale, grandTotal);
+
                     ViewResponse("Successfully Sale completed!", ResponseTypes.Success);
 
                 }
@@ -125,9 +130,10 @@ namespace IMS.Controllers
                                 count++.ToString(),
                                 _customerService.GetNameById(record.CustomerId),
                                 _accountService.GetUserName(record.CreateBy),
-                                record.SaleDate.ToString(),                                
+                                record.SaleDate.ToString(),
                                 record.GrandTotalPrice.ToString(),
-                                record.Id.ToString()
+                                record.Id.ToString(),
+                                record.IsPaid.ToString(),
                             }
                         ).ToArray()
                 });

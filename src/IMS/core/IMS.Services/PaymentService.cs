@@ -19,7 +19,7 @@ namespace IMS.Services
         Task AddAsync(long operationId, OperationType operationType, decimal Amount);
         Task MakePaymentAsync(PaymentModel model);
         (int total, int totalDisplay, IList<PaymentReportDto> records) LoadAllPayments(string searchBy, int length, int start, string sortBy, string sortDir);
-        Task<PaymentModel> GetPaymentByIdAsync(long paymentId);
+        Task<PaymentModel> GetPaymentByIdAsync(long operationId, int operationType);
         Task<PaymentReportDto> GetPaymentDetailsAsync(long paymentId);
     }
     #endregion
@@ -116,10 +116,10 @@ namespace IMS.Services
 
         #region Single Instance Loading
 
-        public async Task<PaymentModel> GetPaymentByIdAsync(long paymentId)
+        public async Task<PaymentModel> GetPaymentByIdAsync(long paymentId, int operationType)
         {
             var payment = await Task.Run(() => _paymentDao.Get(
-                x => x.Id == paymentId).FirstOrDefault());
+                x => x.OperationId == paymentId && x.OperationType == operationType).FirstOrDefault());
 
             var model = new PaymentModel
             {

@@ -13,7 +13,7 @@ namespace IMS.Services
     #region Interface
     public interface ISaleService
     {
-        Task AddAsync(IList<SaleDetailsModel> model, decimal grandTotal, long CustomerId, long userId);
+        Task<long> AddAsync(IList<SaleDetailsModel> model, decimal grandTotal, long CustomerId, long userId);
 
         (int total, int totalDisplay, IList<SaleDto> records) LoadAllSales(string searchBy, int length, int start, string sortBy, string sortDir);
         Task<SaleReportDto> GetSaleDetailsAsync(long SaleId);
@@ -36,7 +36,7 @@ namespace IMS.Services
         #endregion
 
         #region Operational Function
-        public async Task AddAsync(IList<SaleDetailsModel> model, decimal grandTotal, long CustomerId, long userId)
+        public async Task<long> AddAsync(IList<SaleDetailsModel> model, decimal grandTotal, long CustomerId, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -47,10 +47,10 @@ namespace IMS.Services
                     {
                         var product = await _productDao.GetByIdAsync(item.ProductId);
                         product.InStockQuantity -= item.Quantity;
-                        //product.ModifyBy = userId;
-                        //product.ModificationDate = _timeService.Now;
-                        //product.BuyingPrice = item.UnitPrice;
-                        //product.SellingPrice = item.UnitPrice + (item.UnitPrice * product.ProfitMargin / 100) - product.DiscountPrice;
+                        product.ModifyBy = userId;
+                        product.ModificationDate = _timeService.Now;
+                        product.BuyingPrice = item.UnitPrice;
+                        product.SellingPrice = item.UnitPrice + (item.UnitPrice * product.ProfitMargin / 100) - product.DiscountPrice;
 
                         await _productDao.EditAsync(product);
 
@@ -73,8 +73,9 @@ namespace IMS.Services
                         SaleDetails = saleDetails
                     };
 
-                    await _saleDao.AddAsync(sale);
+                    var id = await _saleDao.AddAsync(sale);
                     transaction.Commit();
+                    return id;
                 }
                 catch (Exception ex)
                 {
@@ -146,7 +147,8 @@ namespace IMS.Services
                             CustomerId = Sale.CustomerId,
                             CreateBy = Sale.CreateBy,
                             SaleDate = Sale.SaleDate,
-                            GrandTotalPrice = Math.Round(Sale.GrandTotalPrice, 2)
+                            GrandTotalPrice = Math.Round(Sale.GrandTotalPrice, 2),
+                            IsPaid = Sale.IsPaid,
                         });
                 }
 

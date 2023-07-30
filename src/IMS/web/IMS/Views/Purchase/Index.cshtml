@@ -95,7 +95,7 @@
                                                             View Details
                                                         </button> `;
                             if (v == 'False') {
-                                b = b + `<button type="submit" class="btn btn-warning btn-sm" onclick="window.location.href='/payment/create/${data}'">
+                                b = b + `<button type="submit" class="btn btn-warning btn-sm" onclick="window.location.href='/payment/create?operationId=${data}&operationType=0'">
                                                             <i class="fas fa-dollar-sign">
                                                             </i>
                                                             Make Payment

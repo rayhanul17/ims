@@ -32,7 +32,7 @@ namespace IMS.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Create(long id)
+        public async Task<ActionResult> Create(long operationId, int operationType)
         {
 
             var paymentMethodList = Enum.GetValues(typeof(PaymentMethod))
@@ -46,12 +46,12 @@ namespace IMS.Controllers
                 Value = x.Item1.ToString()
             }).ToList();
 
-            var model = await _paymentService.GetPaymentByIdAsync(id);
+            var model = await _paymentService.GetPaymentByIdAsync(operationId, operationType);
             return View(model);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(PaymentModel model, long id)
+        public async Task<ActionResult> Create(PaymentModel model)
         {
 
             if (model != null)
@@ -72,7 +72,7 @@ namespace IMS.Controllers
             {
                 ViewResponse("You make mistake during Payment creation", ResponseTypes.Danger);
             }
-            return RedirectToAction("Create");
+            return RedirectToAction("Index");
         }
 
         #region JSON       
