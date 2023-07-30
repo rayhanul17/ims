@@ -77,6 +77,7 @@ namespace IMS.Services
                         TransactionId = model.TransactionId,
                         Amount = model.Amount,
                         PaymentDate = _timeService.Now,
+                        PaymentMethod = (int)model.PaymentMethod,
                         Payment = payment,
                         Bank = bank,                       
                         
@@ -135,9 +136,29 @@ namespace IMS.Services
             var payment = await Task.Run(() => _paymentDao.Get(
                 x => x.OperationId == paymentId).FirstOrDefault());
 
+            var paymentDetails = new List<PaymentInformation>();
+
+            foreach( var item in payment.PaymentDetails)
+            {
+                var bank = await _bankDao.GetByIdAsync(item.Bank.Id);
+                paymentDetails.Add(
+                    new PaymentInformation
+                    {
+                        PaymentMethod = (PaymentMethod)item.PaymentMethod,
+                        Amount = item.Amount,
+                        TransactionId = item.TransactionId,
+                        PaymentDate = item.PaymentDate,
+                        Bank = bank.Name
+                    });
+            }
+
             var paymentDto = new PaymentReportDto
             {
-                
+                OperationType = (OperationType)payment.OperationType,
+                PaidAmount = payment.PaidAmount,
+                TotalAmount = payment.TotalAmount,
+                DueAmount = payment.TotalAmount - payment.PaidAmount,
+                PaymentDetails = paymentDetails
             };
 
             return paymentDto;
@@ -164,6 +185,7 @@ namespace IMS.Services
                             OperationType = (OperationType)payment.OperationType,
                             TotalAmount = payment.TotalAmount,
                             PaidAmount = payment.PaidAmount,
+                            DueAmount = payment.TotalAmount - payment.PaidAmount,
                         });
                 }
 

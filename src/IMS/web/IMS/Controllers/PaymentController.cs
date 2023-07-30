@@ -99,6 +99,7 @@ namespace IMS.Controllers
                                 record.OperationType.ToString(),
                                 record.TotalAmount.ToString(),
                                 record.PaidAmount.ToString(),
+                                record.DueAmount.ToString(),
                                 record.Id.ToString()
                             }
                         ).ToArray()
@@ -110,8 +111,13 @@ namespace IMS.Controllers
             }
 
             return default(JsonResult);
-        }      
+        }
 
+        public async Task<ActionResult> Details(long id)
+        {
+            var model = await _paymentService.GetPaymentDetailsAsync(id);
+            return View(model);
+        }
         #endregion
     }
 }

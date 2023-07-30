@@ -2330,6 +2330,7 @@
     <Content Include="Views\Bank\Edit.cshtml" />
     <Content Include="Views\Payment\Index.cshtml" />
     <Content Include="Views\Payment\Create.cshtml" />
+    <Content Include="Views\Payment\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

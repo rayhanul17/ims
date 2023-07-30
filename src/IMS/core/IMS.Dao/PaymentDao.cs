@@ -38,9 +38,12 @@ namespace IMS.Dao
 
             switch (sortBy)
             {
-                case "Total Amount":
+                case "TotalAmount":
                     query = sortDir == "asc" ? query.OrderBy(c => c.TotalAmount) : query.OrderByDescending(c => c.TotalAmount);
-                    break;                             
+                    break;
+                case "PaidAmount":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.PaidAmount) : query.OrderByDescending(c => c.PaidAmount);
+                    break;
             }
 
             var result = query.Skip(pageIndex).Take(pageSize);
