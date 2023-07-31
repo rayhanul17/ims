@@ -10,5 +10,6 @@ namespace IMS.BusinessModel.Dto
         public DateTime SaleDate { get; set; }
         public decimal GrandTotalPrice { get; set; }
         public bool IsPaid { get; set; }
+        public long PaymentId { get; set; }
     }
 }

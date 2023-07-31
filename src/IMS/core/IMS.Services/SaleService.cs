@@ -116,7 +116,9 @@ namespace IMS.Services
                 CustomerDescription = customer.Address,
                 SaleDate = sale.SaleDate,
                 GrandTotalPrice = Math.Round(sale.GrandTotalPrice, 2),
-                Products = saleProducts
+                Products = saleProducts,
+                PaymentId = sale.PaymentId,
+                SaleId = sale.Id
             };
 
             return saleReport;
@@ -149,6 +151,7 @@ namespace IMS.Services
                             SaleDate = Sale.SaleDate,
                             GrandTotalPrice = Math.Round(Sale.GrandTotalPrice, 2),
                             IsPaid = Sale.IsPaid,
+                            PaymentId=Sale.PaymentId,
                         });
                 }
 

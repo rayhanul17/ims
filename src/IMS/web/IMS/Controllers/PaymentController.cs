@@ -32,7 +32,7 @@ namespace IMS.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Create(long operationId, int operationType)
+        public async Task<ActionResult> Create(long id)
         {
 
             var paymentMethodList = Enum.GetValues(typeof(PaymentMethod))
@@ -46,7 +46,7 @@ namespace IMS.Controllers
                 Value = x.Item1.ToString()
             }).ToList();
 
-            var model = await _paymentService.GetPaymentByIdAsync(operationId, operationType);
+            var model = await _paymentService.GetPaymentByIdAsync(id);
             return View(model);
         }
 

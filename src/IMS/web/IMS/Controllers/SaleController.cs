@@ -134,6 +134,7 @@ namespace IMS.Controllers
                                 record.GrandTotalPrice.ToString(),
                                 record.Id.ToString(),
                                 record.IsPaid.ToString(),
+                                record.PaymentId.ToString(),
                             }
                         ).ToArray()
                 });

@@ -9,6 +9,8 @@ namespace IMS.BusinessModel.Dto
         public string SupplierDescription { get; set; }
         public DateTime PurchaseDate { get; set; }
         public decimal GrandTotalPrice { get; set; }
+        public long PaymentId { get; set; }
+        public long PurchaseId { get; set; }
         public IList<ProductInformation> Products { get; set; } = new List<ProductInformation>();
 
     }    

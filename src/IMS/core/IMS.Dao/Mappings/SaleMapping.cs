@@ -14,6 +14,7 @@ namespace IMS.Dao.Mappings
             Map(x => x.SaleDate);
             Map(x => x.GrandTotalPrice);
             Map(x => x.IsPaid);
+            Map(x => x.PaymentId);
 
             HasMany(x => x.SaleDetails)
                 .KeyColumn("SaleId")                

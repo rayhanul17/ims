@@ -116,7 +116,9 @@ namespace IMS.Services
                 SupplierDescription = supplier.Address,
                 PurchaseDate = purchase.PurchaseDate,
                 GrandTotalPrice = Math.Round(purchase.GrandTotalPrice, 2),
-                Products = purchaseProducts
+                Products = purchaseProducts,
+                PaymentId = purchase.PaymentId,
+                PurchaseId = purchase.Id
             };
 
             return purchaseReport;
@@ -149,6 +151,7 @@ namespace IMS.Services
                             PurchaseDate = purchase.PurchaseDate,
                             GrandTotalPrice = Math.Round(purchase.GrandTotalPrice, 2),
                             IsPaid = purchase.IsPaid,
+                            PaymentId= purchase.PaymentId,
                         });
                 }
 

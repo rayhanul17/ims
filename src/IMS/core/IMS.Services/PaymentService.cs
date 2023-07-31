@@ -19,7 +19,7 @@ namespace IMS.Services
         Task AddAsync(long operationId, OperationType operationType, decimal Amount);
         Task MakePaymentAsync(PaymentModel model);
         (int total, int totalDisplay, IList<PaymentReportDto> records) LoadAllPayments(string searchBy, int length, int start, string sortBy, string sortDir);
-        Task<PaymentModel> GetPaymentByIdAsync(long operationId, int operationType);
+        Task<PaymentModel> GetPaymentByIdAsync(long paymentId);
         Task<PaymentReportDto> GetPaymentDetailsAsync(long paymentId);
     }
     #endregion
@@ -50,7 +50,14 @@ namespace IMS.Services
                         PaidAmount = 0
                     };
 
-                    await _paymentDao.EditAsync(payment);
+                    var paymentId = await _paymentDao.AddAsync(payment);
+
+                    var tableName = Convert.ToString((OperationType)payment.OperationType);
+                    var query = $"UPDATE TableName SET PaymentId = {paymentId} WHERE Id = {payment.OperationId};";
+                    query = query.Replace("TableName", tableName);
+
+                    await _paymentDao.ExecuteUpdateDeleteQuery(query);
+
                     transaction.Commit();
 
                 }
@@ -116,10 +123,9 @@ namespace IMS.Services
 
         #region Single Instance Loading
 
-        public async Task<PaymentModel> GetPaymentByIdAsync(long paymentId, int operationType)
+        public async Task<PaymentModel> GetPaymentByIdAsync(long paymentId)
         {
-            var payment = await Task.Run(() => _paymentDao.Get(
-                x => x.OperationId == paymentId && x.OperationType == operationType).FirstOrDefault());
+            var payment = await Task.Run(() => _paymentDao.Get(x => x.Id == paymentId).FirstOrDefault());
 
             var model = new PaymentModel
             {
@@ -134,7 +140,7 @@ namespace IMS.Services
         public async Task<PaymentReportDto> GetPaymentDetailsAsync(long paymentId)
         {
             var payment = await Task.Run(() => _paymentDao.Get(
-                x => x.OperationId == paymentId).FirstOrDefault());
+                x => x.Id == paymentId).FirstOrDefault());
 
             var paymentDetails = new List<PaymentInformation>();
 
@@ -171,7 +177,12 @@ namespace IMS.Services
         {
             try
             {
-                Expression<Func<Payment, bool>> filter = null;               
+                Expression<Func<Payment, bool>> filter = null;
+                
+                if (!string.IsNullOrWhiteSpace(searchBy))
+                {
+                    filter = x => x.Id == Convert.ToInt64(searchBy) || x.OperationId == Convert.ToInt64(searchBy);
+                }
 
                 var result = _paymentDao.LoadAllPayments(filter, null, start, length, sortBy, sortDir);
 
