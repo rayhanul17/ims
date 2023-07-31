@@ -1,0 +1,54 @@
+﻿@model IMS.BusinessModel.ViewModel.UserRolesModel
+@{
+    ViewBag.Title = "ManageUserRole";
+}
+<div class="container-fluid">
+    <div class="row">
+        <!-- left column -->
+        <div class="col-md-6 ">
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">User Management</h3>
+                </div>
+                <!-- /.card-header -->
+                <div>
+                    <div class="card-body">
+                        @using (Html.BeginForm("ManageUserRole", "User", FormMethod.Post, htmlAttributes: new { @id = "myform", @class = "nav-link cmxform" }))
+                        {
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Select a user</label>
+                                        <div class="form-group">
+                                            <label> @Html.LabelFor(m => m.UserId)</label>
+                                            @Html.DropDownListFor(m => m.UserId, (IEnumerable<SelectListItem>)ViewBag.UserList, new { @class = "form-control" })                                           
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Check Roles</label>
+                                        <div class="col-sm-6">
+                                            @for (int i = 0; i < Model.Roles.Count; i++)
+                                            {
+                                                <div class="form-check">
+                                                    @Html.CheckBoxFor(m => Model.Roles[i].IsChecked, new { @class = "form-check-input" })
+                                                    @Model.Roles[i].Text
+                                                    @Html.HiddenFor(m => Model.Roles[i].Value)
+                                                    @Html.HiddenFor(m => Model.Roles[i].Text)
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    
+                                            <div class="form-group">
+                                                <button type="submit" class="btn btn-primary">Update</button>
+                                            </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

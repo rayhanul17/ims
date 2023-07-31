@@ -213,6 +213,7 @@
     <Compile Include="Controllers\PurchaseController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SupplierController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -2333,12 +2334,12 @@
     <Content Include="Views\Payment\Details.cshtml" />
     <Content Include="Views\Account\Login - Copy.cshtml" />
     <Content Include="Views\Account\Register - Copy.cshtml" />
+    <Content Include="Views\User\ManageUserRole.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Assets\css\alt\" />
     <Folder Include="Views\AllBase\" />
-    <Folder Include="Views\User\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

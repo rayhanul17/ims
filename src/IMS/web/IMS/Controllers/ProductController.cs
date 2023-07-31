@@ -21,7 +21,7 @@ namespace IMS.Controllers
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly IBrandService _brandService;
-        private readonly IAccountService _accountService;
+        private readonly IUserService _userService;
         private readonly IImageService _imageService;
 
         public ProductController()
@@ -30,7 +30,7 @@ namespace IMS.Controllers
             _productService = new ProductService(session);
             _categoryService = new CategoryService(session);
             _brandService = new BrandService(session);
-            _accountService = new AccountService(session);
+            _userService = new UserService(session);
             _imageService = new ImageService();
         }
 

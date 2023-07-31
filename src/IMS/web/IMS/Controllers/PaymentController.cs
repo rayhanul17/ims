@@ -17,14 +17,14 @@ namespace IMS.Controllers
     {
         private readonly IPaymentService _paymentService;
         private readonly IBankService _bankService;
-        private readonly IAccountService _accountService;
+        private readonly IUserService _userService;
 
         public PaymentController()
         {
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
             _paymentService = new PaymentService(session);
             _bankService = new BankService(session);
-            _accountService = new AccountService(session);
+            _userService = new UserService(session);
         }
         public ActionResult Index()
         {

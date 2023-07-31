@@ -20,13 +20,13 @@ namespace IMS.Controllers
     {
         #region Initialization
         private readonly IBankService _bankService;
-        private readonly IAccountService _accountService;
+        private readonly IUserService _userService;
 
         public BankController()
         {
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
             _bankService = new BankService(session);
-            _accountService = new AccountService(session);
+            _userService = new UserService(session);
         }
 
         #endregion
@@ -170,7 +170,7 @@ namespace IMS.Controllers
                                 record.Name,
                                 record.Description,
                                 record.Status.ToString(),
-                                _accountService.GetUserName(record.CreateBy),
+                                _userService.GetUserName(record.CreateBy),
                                 record.CreationDate.ToString(),
                                 record.Id.ToString()
                             }

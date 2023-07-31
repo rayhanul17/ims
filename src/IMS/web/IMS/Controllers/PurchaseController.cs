@@ -22,7 +22,7 @@ namespace IMS.Controllers
         private readonly ISupplierService _supplierService;
         private readonly IPurchaseService _purchaseService;
         private readonly IPaymentService _paymentService;
-        private readonly IAccountService _accountService;
+        private readonly IUserService _userService;
 
         public PurchaseController()
         {
@@ -33,7 +33,7 @@ namespace IMS.Controllers
             _supplierService = new SupplierService(session);
             _purchaseService = new PurchaseService(session);
             _paymentService = new PaymentService(session);
-            _accountService = new AccountService(session);
+            _userService = new UserService(session);
         }
         public ActionResult Index()
         {
@@ -129,7 +129,7 @@ namespace IMS.Controllers
                             {
                                 count++.ToString(),
                                 _supplierService.GetNameById(record.SupplierId),
-                                _accountService.GetUserName(record.CreateBy),
+                                _userService.GetUserName(record.CreateBy),
                                 record.PurchaseDate.ToString(),                                
                                 record.GrandTotalPrice.ToString(),
                                 record.Id.ToString(),

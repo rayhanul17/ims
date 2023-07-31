@@ -167,8 +167,8 @@ namespace IMS.Controllers
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
                     
                     var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
-                    IAccountService accountService = new AccountService(session);
-                    await accountService.CreateUserAsync(model.Name, user.Id, User.Identity.GetUserId<long>());
+                    IUserService userService = new UserService(session);
+                    await userService.CreateUserAsync(model.Name, user.Id, User.Identity.GetUserId<long>());
 
                     return RedirectToAction("Index", "Home");
                 }

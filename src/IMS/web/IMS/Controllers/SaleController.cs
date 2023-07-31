@@ -22,7 +22,7 @@ namespace IMS.Controllers
         private readonly ICustomerService _customerService;
         private readonly ISaleService _saleService;
         private readonly IPaymentService _paymentService;
-        private readonly IAccountService _accountService;
+        private readonly IUserService _userService;
 
         public SaleController()
         {
@@ -33,7 +33,7 @@ namespace IMS.Controllers
             _customerService = new CustomerService(session);
             _saleService = new SaleService(session);
             _paymentService = new PaymentService(session);
-            _accountService = new AccountService(session);
+            _userService = new UserService(session);
         }
         public ActionResult Index()
         {
@@ -129,7 +129,7 @@ namespace IMS.Controllers
                             {
                                 count++.ToString(),
                                 _customerService.GetNameById(record.CustomerId),
-                                _accountService.GetUserName(record.CreateBy),
+                                _userService.GetUserName(record.CreateBy),
                                 record.SaleDate.ToString(),
                                 record.GrandTotalPrice.ToString(),
                                 record.Id.ToString(),
