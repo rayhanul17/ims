@@ -1,10 +1,12 @@
 ﻿using IMS.BusinessModel.Entity;
 using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
+using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -73,14 +75,30 @@ namespace IMS.Controllers
         [HttpPost]
         public async Task<ActionResult> ManageUserRole(UserRolesModel model)
         {
-            model.Roles = model.Roles.Where(x => x.IsChecked).ToList();
-            var userName = UserManager.FindById(model.UserId).UserName;
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var removeRoles = model.Roles.Where(x => !x.IsChecked).Select(x => x.Text).ToArray();
+                    var addRoles = model.Roles.Where(x => x.IsChecked).Select(x => x.Text).ToArray();
+                    //var userName = UserManager.FindById(model.UserId).UserName;
 
-            var res = Roles.RoleExists("sa");
-            var r = await UserManager.AddToRoleAsync(model.UserId, "SA");
-            //Roles.RemoveUserFromRole(userName, "sa");
+                    var s = await UserManager.RemoveFromRolesAsync(model.UserId, removeRoles);
+                    var r = await UserManager.AddToRolesAsync(model.UserId, addRoles);
+                }
+                catch(Exception ex )
+                {
+                    _logger.Error(ex);
+                    ViewResponse("Something went wrong during role management", ResponseTypes.Warning);
+                }
 
-            return View();
+                
+            }
+            else
+            {
+                ViewResponse("Provide Data Properly", ResponseTypes.Warning);
+            }
+            return RedirectToAction("ManageUserRole");
         }
     }
 }
