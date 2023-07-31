@@ -37,6 +37,7 @@ namespace IMS.Services
                         Name = name,
                         CreateBy = creatorId,
                         CreationDate = _timeService.Now,
+                        Status = 1
                     };
 
                     await _userDao.AddAsync(user);

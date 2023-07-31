@@ -86,7 +86,7 @@ namespace IMS.Controllers
                     var s = await UserManager.RemoveFromRolesAsync(model.UserId, removeRoles);
                     var r = await UserManager.AddToRolesAsync(model.UserId, addRoles);
                 }
-                catch(Exception ex )
+                catch(Exception ex)
                 {
                     _logger.Error(ex);
                     ViewResponse("Something went wrong during role management", ResponseTypes.Warning);
