@@ -9,7 +9,7 @@ namespace IMS.Models
 {
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     //change bellow classes
-    public class ApplicationUser : IdentityUser<long, UserLoginIntPk, UserRoleIntPk, UserClaimIntPk>
+    public class ApplicationUser : IdentityUser<long, UserLoginLongPk, UserRoleLongPk, UserClaimLongPk>
     {
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {
@@ -25,12 +25,12 @@ namespace IMS.Models
     //public ApplicationDbContext()
     //    : base("Data Source = DESKTOP-L0GNHBL\\SQLEXPRESS;Database=IMS;Trusted_Connection=True;")
 
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, RoleIntPk, long,
-        UserLoginIntPk, UserRoleIntPk, UserClaimIntPk>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, RoleLongPk, long,
+        UserLoginLongPk, UserRoleLongPk, UserClaimLongPk>
     {     
         //"Data Source = DESKTOP-L0GNHBL\SQLEXPRESS;Database=IMS;Trusted_Connection=True;"
         public ApplicationDbContext()
-            : base(DbConnectionString.ConnectionString)
+            : base("Data Source = .\\SQLEXPRESS;Database=IMS;Trusted_Connection=True;")
         {
 
         }
@@ -42,36 +42,36 @@ namespace IMS.Models
     }
 
     //New drived classes 
-    public class UserRoleIntPk : IdentityUserRole<long>
+    public class UserRoleLongPk : IdentityUserRole<long>
     {
     }
 
-    public class UserClaimIntPk : IdentityUserClaim<long>
+    public class UserClaimLongPk : IdentityUserClaim<long>
     {
     }
 
-    public class UserLoginIntPk : IdentityUserLogin<long>
+    public class UserLoginLongPk : IdentityUserLogin<long>
     {
     }
 
-    public class RoleIntPk : IdentityRole<long, UserRoleIntPk>
+    public class RoleLongPk : IdentityRole<long, UserRoleLongPk>
     {
-        public RoleIntPk() { }
-        public RoleIntPk(string name) { Name = name; }
+        public RoleLongPk() { }
+        public RoleLongPk(string name) { Name = name; }
     }
 
-    public class UserStoreIntPk : UserStore<ApplicationUser, RoleIntPk, long,
-       UserLoginIntPk, UserRoleIntPk, UserClaimIntPk>
+    public class UserStoreLongPk : UserStore<ApplicationUser, RoleLongPk, long,
+       UserLoginLongPk, UserRoleLongPk, UserClaimLongPk>
     {
-        public UserStoreIntPk(ApplicationDbContext context)
+        public UserStoreLongPk(ApplicationDbContext context)
             : base(context)
         {
         }
     }
 
-    public class RoleStoreIntPk : RoleStore<RoleIntPk, long, UserRoleIntPk>
+    public class RoleStoreLongPk : RoleStore<RoleLongPk, long, UserRoleLongPk>
     {
-        public RoleStoreIntPk(ApplicationDbContext context)
+        public RoleStoreLongPk(ApplicationDbContext context)
             : base(context)
         {
         }

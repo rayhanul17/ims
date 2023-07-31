@@ -15,6 +15,7 @@ using System.Web.Mvc;
 
 namespace IMS.Controllers
 {
+    [Authorize(Roles = "SA")]
     public class BankController : AllBaseController
     {
         #region Initialization
