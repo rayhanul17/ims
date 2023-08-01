@@ -1,17 +1,15 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+﻿using IMS.BusinessRules;
+using IMS.Models;
+using IMS.Services;
+using IMS.Services.SessionFactories;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using IMS.Models;
-using IMS.BusinessRules;
-using IMS.Services.SessionFactories;
-using IMS.Services;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
 
 namespace IMS.Controllers
 {
@@ -28,7 +26,7 @@ namespace IMS.Controllers
             _userService = new UserService(session);
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -40,9 +38,9 @@ namespace IMS.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -96,7 +94,8 @@ namespace IMS.Controllers
                 switch (result)
                 {
                     case SignInStatus.Success:
-                        return RedirectToLocal(returnUrl);
+                        return RedirectToAction("Dashboard", "Report");
+                        //return RedirectToLocal(returnUrl);
                     case SignInStatus.LockedOut:
                         return View("Lockout");
                     case SignInStatus.RequiresVerification:
@@ -144,7 +143,7 @@ namespace IMS.Controllers
             // If a user enters incorrect codes for a specified amount of time then the user account 
             // will be locked out for a specified amount of time. 
             // You can configure the account lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
+            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -160,7 +159,7 @@ namespace IMS.Controllers
 
         //
         // GET: /Account/Register
-        [AllowAnonymous]
+        [Authorize(Roles = "SA")]
         public ActionResult Register()
         {
             return View();
@@ -169,7 +168,7 @@ namespace IMS.Controllers
         //
         // POST: /Account/Register
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(Roles = "SA")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
@@ -190,7 +189,7 @@ namespace IMS.Controllers
                     {
                         await _userService.CreateUserAsync(model.Name, model.Email, user.Id, User.Identity.GetUserId<long>());
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         try
                         {
@@ -203,7 +202,7 @@ namespace IMS.Controllers
                         ViewResponse("Something went wrong during user registration", ResponseTypes.Danger);
                         _logger.Error(ex);
                     }
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Product");
                 }
                 AddErrors(result);
             }
@@ -432,7 +431,7 @@ namespace IMS.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Account");
         }
 
         //

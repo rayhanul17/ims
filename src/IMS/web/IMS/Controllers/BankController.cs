@@ -15,7 +15,7 @@ using System.Web.Mvc;
 
 namespace IMS.Controllers
 {
-    [Authorize(Roles = "SA")]
+    
     public class BankController : AllBaseController
     {
         #region Initialization
@@ -32,6 +32,7 @@ namespace IMS.Controllers
         #endregion
 
         #region Index
+        [Authorize(Roles = "Seller")]
         public ActionResult Index()
         {
             return View();
@@ -40,6 +41,7 @@ namespace IMS.Controllers
 
         #region Operational Function
         [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
         public ActionResult Create()
         {
             var model = new BankAddModel();
@@ -54,6 +56,7 @@ namespace IMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Create(BankAddModel model)
         {
             try
@@ -78,6 +81,7 @@ namespace IMS.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(long id)
         {
             if (id == 0)
@@ -101,6 +105,7 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(BankEditModel model)
         {
             try
@@ -126,6 +131,7 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Delete(long id)
         {
             try
@@ -147,6 +153,7 @@ namespace IMS.Controllers
         #endregion
 
         #region Ajax Call
+        [AllowAnonymous]
         public JsonResult GetBanks()
         {
             
