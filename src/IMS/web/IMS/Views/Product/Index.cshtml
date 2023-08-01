@@ -127,6 +127,11 @@
                                                             <i class="fas fa-trash">
                                                             </i>
                                                             Delete
+                                                        </button>
+                                                        <button type="submit" class="btn btn-warning btn-sm show-rank-modal" data-id='${data}' value= '${data}'>
+                                                            <i class="fas fa-info">
+                                                            </i>
+                                                            Rank
                                                         </button>`;
                             
                             if (c) {
@@ -158,13 +163,30 @@
             var m = $("#modal-default");
             m.find('.modal-body p').text('Are you sure you want to delete this product?');
             $("#deleteId").val(id);
-            $("#deleteForm").attr("action", "/product/delete");
+            $("#rankForm").attr("action", "/product/delete");
             console.log(m);
             m.modal('show');
         });
 
         $("#deleteButton").click(function () {
             $("#deleteForm").submit();
+
+        });
+
+        $('#table').on('click', '.show-rank-modal', function (event) {
+            var id = $(this).data("id");
+            console.log(id);
+            var m = $("#rank-modal");
+            m.find('.modal-title').text('Update Rank');
+            m.find('.modal-body p').text('Are you sure you want to update this product Rank?');
+            $("#deleteId").val(id);
+            $("rankForm").attr("action", "/product/delete");
+            console.log(m);
+            m.modal('show');
+        });
+
+        $("#updateButton").click(function () {
+            $("#rankForm").submit();
 
         });
 
