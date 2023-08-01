@@ -1,6 +1,7 @@
 ﻿using IMS.BusinessModel.Entity;
 using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
+using IMS.BusinessRules.Exceptions;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
@@ -43,9 +44,88 @@ namespace IMS.Controllers
                 _userManager = value;
             }
         }
+
+        [HttpGet]
         public ActionResult Index()
         {
             return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Block(long id)
+        {
+            try
+            {
+                await _userService.BlockAsync(id);
+            }
+            catch(CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex);
+            }
+            catch (Exception ex)
+            {
+                ViewResponse("Something went wrong", ResponseTypes.Warning);
+                _logger.Error(ex);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> Edit(long id)
+        {
+            try
+            {
+                var user = UserManager.FindById(id);
+                if (user == null)
+                {
+                    ViewResponse("Wrong id given!", ResponseTypes.Warning);
+                    return View();
+                }
+                var email = user.Email;
+                var userName = _userService.GetUserName(id);
+
+                var model = new UserEditModel
+                {
+                    Id = id,
+                    Email = email,
+                    Name = userName,
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ViewResponse("Something went wrong!", ResponseTypes.Warning);
+                _logger.Error(ex);
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Edit(UserEditModel model, long id)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var user = UserManager.FindById(id);
+                    user.Email = model.Email;
+                    user.UserName = model.Name;
+
+                    await UserManager.UpdateAsync(user);
+                    var userId = User.Identity.GetUserId<long>();
+                    await _userService.UpdateUserAsync(model.Name, model.Email, model.Id, userId);
+                }
+
+                catch (Exception ex)
+                {
+                    ViewResponse("Something went wrong during user update", ResponseTypes.Warning);
+                    _logger.Error(ex);
+                }
+            }
+            return View(model);
         }
 
         [HttpGet]
@@ -124,6 +204,7 @@ namespace IMS.Controllers
                                 count++.ToString(),
                                 record.Name,
                                 record.Email,
+                                string.Join(", ", UserManager.GetRoles(record.Id)),
                                 record.Status.ToString(),
                                 _userService.GetUserName(record.CreateBy),
                                 record.CreationDate.ToString(),
