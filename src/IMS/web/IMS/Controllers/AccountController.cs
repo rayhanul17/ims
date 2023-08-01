@@ -16,13 +16,16 @@ using IMS.Services;
 namespace IMS.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController : AllBaseController
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private readonly IUserService _userService;
 
         public AccountController()
         {
+            var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
+            _userService = new UserService(session);
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
@@ -76,22 +79,40 @@ namespace IMS.Controllers
                 return View(model);
             }
 
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
-            switch (result)
+            try
             {
-                case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
-                case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                case SignInStatus.Failure:
-                default:
-                    ModelState.AddModelError("", "Invalid login attempt.");
+                var isActive = await _userService.IsActiveUserAsync(model.Email);
+
+
+                if (!isActive)
+                {
+                    ModelState.AddModelError("", "You are not recognized user");
                     return View(model);
+                }
+
+                // This doesn't count login failures towards account lockout
+                // To enable password failures to trigger account lockout, change to shouldLockout: true
+                var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+                switch (result)
+                {
+                    case SignInStatus.Success:
+                        return RedirectToLocal(returnUrl);
+                    case SignInStatus.LockedOut:
+                        return View("Lockout");
+                    case SignInStatus.RequiresVerification:
+                        return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    case SignInStatus.Failure:
+                    default:
+                        ModelState.AddModelError("", "Invalid login attempt.");
+                        return View(model);
+                }
             }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                ModelState.AddModelError("", "Something went wrong");
+            }
+            return View(model);
         }
 
         //
@@ -165,11 +186,23 @@ namespace IMS.Controllers
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                    
-                    var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
-                    IUserService userService = new UserService(session);
-                    await userService.CreateUserAsync(model.Name, user.Id, User.Identity.GetUserId<long>());
-
+                    try
+                    {
+                        await _userService.CreateUserAsync(model.Name, user.Id, User.Identity.GetUserId<long>());
+                    }
+                    catch(Exception ex)
+                    {
+                        try
+                        {
+                            result = await UserManager.DeleteAsync(user);
+                        }
+                        catch (Exception ex2)
+                        {
+                            _logger.Error(ex2);
+                        }
+                        ViewResponse("Something went wrong during user registration", ResponseTypes.Danger);
+                        _logger.Error(ex);
+                    }
                     return RedirectToAction("Index", "Home");
                 }
                 AddErrors(result);

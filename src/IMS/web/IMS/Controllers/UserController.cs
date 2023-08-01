@@ -79,11 +79,13 @@ namespace IMS.Controllers
             {
                 try
                 {
-                    var removeRoles = model.Roles.Where(x => !x.IsChecked).Select(x => x.Text).ToArray();
+                    //var removeRoles = model.Roles.Where(x => !x.IsChecked).Select(x => x.Text).ToArray();
                     var addRoles = model.Roles.Where(x => x.IsChecked).Select(x => x.Text).ToArray();
                     //var userName = UserManager.FindById(model.UserId).UserName;
 
-                    var s = await UserManager.RemoveFromRolesAsync(model.UserId, removeRoles);
+                    var userRoles = UserManager.GetRoles(model.UserId).ToArray();
+                    
+                    var s = await UserManager.RemoveFromRolesAsync(model.UserId, userRoles);                    
                     var r = await UserManager.AddToRolesAsync(model.UserId, addRoles);
                 }
                 catch(Exception ex)
@@ -99,6 +101,43 @@ namespace IMS.Controllers
                 ViewResponse("Provide Data Properly", ResponseTypes.Warning);
             }
             return RedirectToAction("ManageUserRole");
+        }
+
+        public JsonResult GetUsers()
+        {
+            try
+            {
+                var model = new DataTablesAjaxRequestModel(Request);
+                var data = _userService.LoadAllUsers(model.SearchText, model.Length, model.Start, model.SortColumn,
+                    model.SortDirection);
+
+                var count = 1;
+
+                return Json(new
+                {
+                    draw = Request["draw"],
+                    recordsTotal = data.total,
+                    recordsFiltered = data.totalDisplay,
+                    data = (from record in data.records
+                            select new string[]
+                            {
+                                count++.ToString(),
+                                record.Name,
+                                record.Email,
+                                record.Status.ToString(),
+                                _userService.GetUserName(record.CreateBy),
+                                record.CreationDate.ToString(),
+                                record.Id.ToString()
+                            }
+                        ).ToArray()
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+            }
+
+            return default(JsonResult);
         }
     }
 }

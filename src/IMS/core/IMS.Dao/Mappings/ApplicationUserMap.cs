@@ -14,6 +14,7 @@ namespace IMS.Dao.Mappings
         {
             Table("ApplicationUser");
             Map(x => x.AspNetUsersId);
+            Map(x => x.Email);
         }
     }
 }

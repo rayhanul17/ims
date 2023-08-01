@@ -2335,6 +2335,7 @@
     <Content Include="Views\Account\Login - Copy.cshtml" />
     <Content Include="Views\Account\Register - Copy.cshtml" />
     <Content Include="Views\User\ManageUserRole.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
