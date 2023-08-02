@@ -2,6 +2,7 @@
 using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
+using IMS.BusinessRules.Exceptions;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
@@ -87,6 +88,10 @@ namespace IMS.Controllers
 
                     ViewResponse("Successfully Sale completed!", ResponseTypes.Success);
 
+                }
+                catch(CustomException ex)
+                {
+                    ViewResponse(ex.Message, ResponseTypes.Warning);
                 }
                 catch (Exception ex)
                 {

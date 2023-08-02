@@ -76,41 +76,58 @@ namespace IMS.Services
                 try
                 {
                     var payment = await _paymentDao.GetByIdAsync(model.PaymentId);
-                    var bank = await _bankDao.GetByIdAsync(model.BankId);
-
-                    var paymentDetails = new PaymentDetails
+                    if (payment == null)
                     {
-                        BankId = model.BankId,
-                        TransactionId = model.TransactionId,
-                        Amount = model.Amount,
-                        PaymentDate = _timeService.Now,
-                        PaymentMethod = (int)model.PaymentMethod,
-                        Payment = payment,
-                        Bank = bank,                       
-                        
-                    };
-                    payment.PaidAmount += model.Amount;
-                    
-                    payment.PaymentDetails.Add(paymentDetails);
-                    await _paymentDao.EditAsync(payment);
-
-                    if(payment.PaidAmount == payment.TotalAmount)
-                    {
-                        var tableName = Convert.ToString((OperationType)payment.OperationType);
-                        var query = $"UPDATE TableName SET IsPaid = 1 WHERE Id = {payment.OperationId};";
-                        query = query.Replace("TableName", tableName);
-
-                        await _paymentDao.ExecuteUpdateDeleteQuery(query);
+                        throw new CustomException("Wrong payment id found");
                     }
+                    else
+                    {
+                        if(payment.TotalAmount == model.TotalAmount
+                            && model.Amount > 0
+                            && model.Amount <= payment.TotalAmount - payment.PaidAmount)
+                        {
+                            var bank = await _bankDao.GetByIdAsync(model.BankId);
 
-                    transaction.Commit();
+                            var paymentDetails = new PaymentDetails
+                            {
+                                BankId = model.BankId,
+                                TransactionId = model.TransactionId,
+                                Amount = model.Amount,
+                                PaymentDate = _timeService.Now,
+                                PaymentMethod = (int)model.PaymentMethod,
+                                Payment = payment,
+                                Bank = bank,
+
+                            };
+                            payment.PaidAmount += model.Amount;
+
+                            payment.PaymentDetails.Add(paymentDetails);
+                            await _paymentDao.EditAsync(payment);
+
+                            if (payment.PaidAmount == payment.TotalAmount)
+                            {
+                                var tableName = Convert.ToString((OperationType)payment.OperationType);
+                                var query = $"UPDATE TableName SET IsPaid = 1 WHERE Id = {payment.OperationId};";
+                                query = query.Replace("TableName", tableName);
+
+                                await _paymentDao.ExecuteUpdateDeleteQuery(query);
+                            }
+
+                            transaction.Commit();
+                        }
+                        else
+                        {
+                            throw new CustomException("Modified payment information");
+                        }
+                        
+                    }
 
                 }
                 catch (Exception ex)
                 {
                     _serviceLogger.Error(ex.Message, ex);
                     transaction.Rollback();
-                    throw new CustomException("Something went wrong during payment creation");
+                    throw;
                 }
             }
         }

@@ -7,10 +7,14 @@
     <div class="row">
         <div class="col-lg-6 col-12">
             <!-- small box -->
-            <div class="small-box bg-info">
+            <div class="small-box bg-gradient-info">
                 <div class="inner">
-                    <h3>@Model.ToatlPurchasePrice</h3>
-                    <p>Total Purchase</p>
+                    <h3>@Model.ToatlPurchaseAmount</h3>
+                    <p>Total Purchase Amount</p>
+                    <h3>@Model.ToatlPurchasePaidAmount</h3>
+                    <p>Total Paid</p>
+                    <h3>@Model.ToatlPurchaseDueAmount</h3>
+                    <p>Total Due</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-bag"></i>
@@ -21,11 +25,15 @@
         <!-- ./col -->
         <div class="col-lg-6 col-12">
             <!-- small box -->
-            <div class="small-box bg-success">
+            <div class="small-box bg-gradient-info">
                 <div class="inner">
                     <!-- <h3>53<sup style="font-size: 20px">%</sup></h3> -->
-                    <h3>@Model.TotalSalePrice</h3>
-                    <p>Total Sale</p>
+                    <h3>@Model.TotalSaleAmount</h3>
+                    <p>Total Sale Amount</p>
+                    <h3>@Model.TotalSalePaidAmount</h3>
+                    <p>Total Paid</p>
+                    <h3>@Model.TotalSaleDueAmount</h3>
+                    <p>Total Due</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-stats-bars"></i>
@@ -54,7 +62,7 @@
         <!-- ./col -->
         <div class="col-lg-6 col-12">
             <!-- small box -->
-            <div class="small-box bg-gradient-success">
+            <div class="small-box bg-gradient-info">
                 <div class="inner">
                     <h3>@Model.TotalActiveCustomer</h3>
                     <p>Total Active Customer</p>

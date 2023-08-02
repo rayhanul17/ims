@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace IMS.Controllers
 {
-    public class ReportController : Controller
+    public class ReportController : AllBaseController
     {
         #region Initialization
         private readonly IReportService _reportService;

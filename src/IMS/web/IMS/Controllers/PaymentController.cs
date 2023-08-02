@@ -2,6 +2,7 @@
 using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
+using IMS.BusinessRules.Exceptions;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
@@ -37,7 +38,7 @@ namespace IMS.Controllers
 
             var paymentMethodList = Enum.GetValues(typeof(PaymentMethod))
                        .Cast<PaymentMethod>().ToDictionary(key => (int)key);
-            ViewBag.PaymentMethodList = new SelectList(paymentMethodList, "Key", "Value", (int)Status.Active);
+            ViewBag.PaymentMethodList = new SelectList(paymentMethodList, "Key", "Value", PaymentMethod.Bank);
 
             var bankList = _bankService.LoadAllActiveBanks();
             ViewBag.BankList = bankList.Select(x => new SelectListItem
@@ -52,7 +53,7 @@ namespace IMS.Controllers
 
         [HttpPost]
         public async Task<ActionResult> Create(PaymentModel model)
-        {
+        {           
 
             if (model != null)
             {
@@ -61,6 +62,10 @@ namespace IMS.Controllers
                     await _paymentService.MakePaymentAsync(model);
                     ViewResponse("Successfully Payment completed!", ResponseTypes.Success);
 
+                }
+                catch(CustomException ex)
+                {
+                    ViewResponse(ex.Message, ResponseTypes.Warning);
                 }
                 catch (Exception ex)
                 {

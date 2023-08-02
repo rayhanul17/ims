@@ -1,6 +1,7 @@
 ﻿using IMS.BusinessModel.Dto;
 using IMS.BusinessModel.Entity;
 using IMS.BusinessModel.ViewModel;
+using IMS.BusinessRules.Exceptions;
 using IMS.Dao;
 using NHibernate;
 using System;
@@ -46,11 +47,19 @@ namespace IMS.Services
                     foreach (var item in model)
                     {
                         var product = await _productDao.GetByIdAsync(item.ProductId);
+                        if(product == null )
+                        {
+                            throw new CustomException("No Product found with id");
+                        }
+                        else if(product.InStockQuantity < item.Quantity)
+                        {
+                            throw new CustomException("Selling quantity more than instock quantity");
+                        }
                         product.InStockQuantity -= item.Quantity;
-                        product.ModifyBy = userId;
-                        product.ModificationDate = _timeService.Now;
-                        product.BuyingPrice = item.UnitPrice;
-                        product.SellingPrice = item.UnitPrice + (item.UnitPrice * product.ProfitMargin / 100) - product.DiscountPrice;
+                        //product.ModifyBy = userId;
+                        //product.ModificationDate = _timeService.Now;
+                        //product.BuyingPrice = item.UnitPrice;
+                        //product.SellingPrice = item.UnitPrice + (item.UnitPrice * product.ProfitMargin / 100) - product.DiscountPrice;
 
                         await _productDao.EditAsync(product);
 
@@ -59,7 +68,7 @@ namespace IMS.Services
                             {
                                 ProductId = item.ProductId,
                                 Quantity = item.Quantity,
-                                TotalPrice = item.Total,
+                                TotalPrice = product.SellingPrice * item.Quantity,
                             }
                         );
                     }

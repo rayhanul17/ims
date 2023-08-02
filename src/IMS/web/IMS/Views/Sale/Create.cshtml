@@ -185,7 +185,7 @@
                     if ($(`.prd_r${productId}`).length > 0 && $(`.prd_b${productId}`).val() == 'false') {
                         alert('Already exist');
                     }
-                    else if ($('#maxQuantity').val() < $('#quantity').val()) {
+                    else if (parseInt($('#maxQuantity').val()) < parseInt($('#quantity').val())) {
                         alert("You can buy at most: " + $('#maxQuantity').val())
                     }
                     else {

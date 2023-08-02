@@ -33,7 +33,46 @@ namespace IMS.Services
         #endregion
         public async Task<DashboardDto> GetDashboardDataAsync()
         {
+            var totalPurchaseSaleAmount = await _reportDao.ExecuteQueryAsync<PurchaseSaleAmountDto>(@"SELECT
+                                        OperationType,
+                                        SUM(TotalAmount) AS TotalAmount,
+                                        SUM(PaidAmount) AS TotalPaidAmount,
+                                        SUM(TotalAmount-PaidAmount) AS TotalDueAmount
+                                        FROM Payment
+                                        GROUP BY OperationType");
+
+            var totalCustomer = await _reportDao.ExecuteQueryAsync<ActiveInactiveDto>(@"SELECT
+                                [Status],
+                                Count(CASE WHEN [Status] = 0 THEN 'I' WHEN [Status] = 1 THEN 'A' END) AS Count
+                                FROM Customer
+                                GROUP BY [Status]");
+
+            var totalSuplier = await _reportDao.ExecuteQueryAsync<ActiveInactiveDto>(@"SELECT
+                                [Status],
+                                Count(CASE WHEN [Status] = 0 THEN 'I' WHEN [Status] = 1 THEN 'A' END) AS Count
+                                FROM Supplier
+                                GROUP BY [Status]");
+
+            var totalBank = await _reportDao.ExecuteQueryAsync<ActiveInactiveDto>(@"SELECT
+                                [Status],
+                                Count(CASE WHEN [Status] = 0 THEN 'I' WHEN [Status] = 1 THEN 'A' END) AS Count
+                                FROM Bank
+                                GROUP BY [Status]");
+
             var dashboard = new DashboardDto();
+            dashboard.ToatlPurchaseAmount = totalPurchaseSaleAmount[0].TotalAmount;
+            dashboard.ToatlPurchasePaidAmount = totalPurchaseSaleAmount[0].TotalPaidAmount;
+            dashboard.ToatlPurchaseDueAmount = totalPurchaseSaleAmount[0].TotalDueAmount;
+            dashboard.TotalSaleAmount = totalPurchaseSaleAmount[1].TotalAmount;
+            dashboard.TotalSalePaidAmount = totalPurchaseSaleAmount[1].TotalPaidAmount;
+            dashboard.TotalSaleDueAmount = totalPurchaseSaleAmount[1].TotalDueAmount;
+            dashboard.TotalActiveCustomer = await _reportDao.GetTotalCount("Id", "Customer", "Status = 1");
+            dashboard.TotalInActiveCustomer = await _reportDao.GetTotalCount("Id", "Customer", "Status = 0");
+            dashboard.TotalActiveSupplier = await _reportDao.GetTotalCount("Id", "Supplier", "Status = 1");
+            dashboard.TotalInActiveSupplier = await _reportDao.GetTotalCount("Id", "Supplier", "Status = 0");
+
+
+            /*
             dashboard.ToatlPurchasePrice = await _reportDao.GetSingleColumnTatal("GrandTotalPrice", "Purchase");
             dashboard.TotalSalePrice = await _reportDao.GetSingleColumnTatal("GrandTotalPrice", "Sale");
             dashboard.TotalActiveCustomer = await _reportDao.GetTotalCount("Id", "Customer", "Status = 1");
@@ -41,6 +80,11 @@ namespace IMS.Services
             dashboard.TotalActiveSupplier = await _reportDao.GetTotalCount("Id", "Supplier", "Status = 1");
             dashboard.TotalInActiveSupplier = await _reportDao.GetTotalCount("Id", "Supplier", "Status = 0");
 
+            dashboard.TotalActiveCustomer = totalCustomer[0] != null? totalCustomer[0].Count : 0;
+            dashboard.TotalInActiveCustomer = totalCustomer[1] != null ? totalCustomer[1].Count : 0;
+            dashboard.TotalActiveSupplier = totalSuplier[0] != null ? totalSuplier[0].Count : 0;
+            dashboard.TotalInActiveSupplier = totalSuplier[1] != null ? totalSuplier[0].Count : 0;
+            */
             return dashboard;
         }
     }
