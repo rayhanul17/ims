@@ -40,7 +40,7 @@ namespace IMS.Dao.Mappings
                 .Column("PaymentId").Not.Nullable();
 
             References(i => i.Bank)
-                .Column("BankId").Not.Nullable();
+                .Column("BankId").Nullable();
         }
     }
 

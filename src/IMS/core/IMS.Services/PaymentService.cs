@@ -87,7 +87,11 @@ namespace IMS.Services
                             && model.Amount <= payment.TotalAmount - payment.PaidAmount)
                         {
                             var bank = await _bankDao.GetByIdAsync(model.BankId);
-
+                            if (model.PaymentMethod == PaymentMethod.Bank && bank == null)
+                            {
+                                throw new CustomException("Bank not found");
+                            }
+                           
                             var paymentDetails = new PaymentDetails
                             {
                                 BankId = model.BankId,

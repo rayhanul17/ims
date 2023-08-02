@@ -9,7 +9,7 @@ namespace IMS.BusinessModel.Entity
         public virtual decimal Amount { get; set; }
         public virtual string TransactionId { get; set; }
         public virtual DateTime PaymentDate { get; set; }
-        public virtual long BankId { get; set; }
+        public virtual long? BankId { get; set; }
         public virtual Bank Bank { get; set; }
         public virtual long PaymentId { get; set; }
         public virtual Payment Payment { get; set; }

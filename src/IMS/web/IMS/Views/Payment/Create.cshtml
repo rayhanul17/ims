@@ -38,7 +38,7 @@
                         </div>
                         <div class="form-group" id="bankListBox">
                             <label>Select Bank</label>
-                            @Html.DropDownListFor(m => m.BankId, (IEnumerable<SelectListItem>)ViewBag.BankList, new { @class = "form-control" })
+                            @Html.DropDownListFor(m => m.BankId, (IEnumerable<SelectListItem>)ViewBag.BankList, "Select Bank", new { @id = "bankListBox", @class = "form-control" })
 
                         </div>
                         <div class="form-group" id="transactionField">
@@ -81,16 +81,19 @@
             let due = parseFloat($("#dueAmount").val());
             let pay = parseFloat($("#payAmount").val());
             let payType = $("#paymentMethodListBox").val();
+            let bank = parseFloat($("#bankListBox").val());
             let transactionIdLength = $("#transactionId").val().length;
             if (pay > 0 && pay <= due) {
                 $('#payAmount').css('border-color', '');
                 console.log("step1");
-                if (payType == '1' || (payType == '2' && transactionIdLength > 4)) {
+                if (payType == '1' || (payType == '2' && bank != '' && transactionIdLength > 4)) {
                     $('#transactionId').css('border-color', '');
+                    $('#bankListBox').css('border', '');
                     $("#paymentForm").submit();
                 }
                 else {
                     $('#transactionId').css('border-color', 'red');
+                    $('#bankListBox').css('border', '1px solid red');
                 }
             }
             else {
