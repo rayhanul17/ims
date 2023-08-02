@@ -167,7 +167,11 @@ namespace IMS.Services
 
             foreach( var item in payment.PaymentDetails)
             {
-                var bank = await _bankDao.GetByIdAsync(item.Bank.Id);
+                Bank bank = null;
+                if (item.Bank != null)
+                {
+                    bank = await _bankDao.GetByIdAsync(item.Bank.Id);
+                }
                 paymentDetails.Add(
                     new PaymentInformation
                     {
@@ -175,7 +179,7 @@ namespace IMS.Services
                         Amount = item.Amount,
                         TransactionId = item.TransactionId,
                         PaymentDate = item.PaymentDate,
-                        Bank = bank.Name
+                        Bank = bank?.Name
                     });
             }
 
