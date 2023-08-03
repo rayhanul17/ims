@@ -1,7 +1,9 @@
 ﻿using IMS.BusinessModel.Dto;
 using IMS.Dao;
 using NHibernate;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace IMS.Services
@@ -10,6 +12,7 @@ namespace IMS.Services
     public interface IReportService
     {
         Task<DashboardDto> GetDashboardDataAsync();
+        Task<LoseProfitReportDto> GetLoseProfitReport(string dateFrom, string dateTo);
         Task<IEnumerable<MyModel>> ExecuteRawQueryAsync();
     }
     #endregion
@@ -29,12 +32,12 @@ namespace IMS.Services
      */
 
 
-    public class ReportService : IReportService
+    public class ReportService : BaseService, IReportService
     {
         #region Initializtion
         private readonly IReportDao _reportDao;
 
-        public ReportService(ISession session)
+        public ReportService(ISession session) : base(session)
         {
             _reportDao = new ReportDao(session);
         }
@@ -48,59 +51,67 @@ namespace IMS.Services
         #endregion
         public async Task<DashboardDto> GetDashboardDataAsync()
         {
-            var totalPurchaseSaleAmount = await _reportDao.ExecuteQueryAsync<PurchaseSaleAmountDto>(@"SELECT
-                                        OperationType,
-                                        SUM(TotalAmount) AS TotalAmount,
-                                        SUM(PaidAmount) AS TotalPaidAmount,
-                                        SUM(TotalAmount-PaidAmount) AS TotalDueAmount
-                                        FROM Payment
-                                        GROUP BY OperationType");
+            try
+            {
+                var totalPurchaseSaleAmount = (await _reportDao.ExecuteQueryAsync<TotalPurchaseSaleAmountDto>($"SELECT " +
+                    $"SUM(CASE WHEN [OperationType] = 0 THEN Payment.TotalAmount else 0 END) TotalPurchaseAmount, " +
+                    $"SUM(CASE WHEN [OperationType] = 0 THEN Payment.PaidAmount else 0 END) TotalPurchasePaidAmount, " +
+                    $"SUM(CASE WHEN [OperationType] = 1 THEN Payment.TotalAmount else 0 END) TotalSaleAmount, " +
+                    $"SUM(CASE WHEN [OperationType] = 1 THEN Payment.PaidAmount else 0 END) TotalSalePaidAmount " +
+                    $"FROM Payment")).FirstOrDefault();
 
-            var totalCustomer = await _reportDao.ExecuteQueryAsync<ActiveInactiveDto>(@"SELECT
-                                [Status],
-                                Count(CASE WHEN [Status] = 0 THEN 'I' WHEN [Status] = 1 THEN 'A' END) AS Count
-                                FROM Customer
-                                GROUP BY [Status]");
+                var totalCustomer = await _reportDao.GetCountAsync("Customer");
+                var totalSupplier = await _reportDao.GetCountAsync("Supplier");
 
-            var totalSuplier = await _reportDao.ExecuteQueryAsync<ActiveInactiveDto>(@"SELECT
-                                [Status],
-                                Count(CASE WHEN [Status] = 0 THEN 'I' WHEN [Status] = 1 THEN 'A' END) AS Count
-                                FROM Supplier
-                                GROUP BY [Status]");
+                var dashboard = new DashboardDto();
+                dashboard.ToatlPurchaseAmount = totalPurchaseSaleAmount.TotalPurchaseAmount;
+                dashboard.ToatlPurchasePaidAmount = totalPurchaseSaleAmount.TotalPurchasePaidAmount;
+                dashboard.ToatlPurchaseDueAmount = totalPurchaseSaleAmount.TotalPurchaseAmount - totalPurchaseSaleAmount.TotalPurchasePaidAmount;
+                dashboard.TotalSaleAmount = totalPurchaseSaleAmount.TotalSaleAmount;
+                dashboard.TotalSalePaidAmount = totalPurchaseSaleAmount.TotalSalePaidAmount;
+                dashboard.TotalSaleDueAmount = totalPurchaseSaleAmount.TotalSaleAmount - totalPurchaseSaleAmount.TotalSalePaidAmount;
+                dashboard.TotalActiveCustomer = totalCustomer.Active;
+                dashboard.TotalInActiveCustomer = totalCustomer.Inactive;
+                dashboard.TotalActiveSupplier = totalSupplier.Active;
+                dashboard.TotalInActiveSupplier = totalSupplier.Inactive;
+                
+                return dashboard;
+            }
+            catch(Exception ex)
+            {
+                _serviceLogger.Error(ex.Message, ex);
+                throw;
+            }
+        }
 
-            var totalBank = await _reportDao.ExecuteQueryAsync<ActiveInactiveDto>(@"SELECT
-                                [Status],
-                                Count(CASE WHEN [Status] = 0 THEN 'I' WHEN [Status] = 1 THEN 'A' END) AS Count
-                                FROM Bank
-                                GROUP BY [Status]");
+        public async Task<LoseProfitReportDto> GetLoseProfitReport(string dateFrom, string dateTo)
+        {
+            var saleInfo = (await _reportDao.ExecuteQueryAsync<PaymentDetailsDto>($"SELECT " +
+                $"COUNT(s.Id) AS Count, " +
+                $"SUM(s.GrandTotalPrice) AS TotalAmount, " +
+                $"SUM(pm.PaidAmount) AS PaidAmount, " +
+                $"SUM(TotalAmount - PaidAmount) AS DueAmount" +
+                $" FROM Sale s " +
+                $"JOIN Payment pm ON pm.Id = s.PaymentId " +
+                $"WHERE s.SaleDate BETWEEN '{dateFrom}' AND '{dateTo}'")).FirstOrDefault();
 
-            var dashboard = new DashboardDto();
-            dashboard.ToatlPurchaseAmount = totalPurchaseSaleAmount[0].TotalAmount;
-            dashboard.ToatlPurchasePaidAmount = totalPurchaseSaleAmount[0].TotalPaidAmount;
-            dashboard.ToatlPurchaseDueAmount = totalPurchaseSaleAmount[0].TotalDueAmount;
-            dashboard.TotalSaleAmount = totalPurchaseSaleAmount[1].TotalAmount;
-            dashboard.TotalSalePaidAmount = totalPurchaseSaleAmount[1].TotalPaidAmount;
-            dashboard.TotalSaleDueAmount = totalPurchaseSaleAmount[1].TotalDueAmount;
-            dashboard.TotalActiveCustomer = await _reportDao.GetTotalCount("Id", "Customer", "Status = 1");
-            dashboard.TotalInActiveCustomer = await _reportDao.GetTotalCount("Id", "Customer", "Status = 0");
-            dashboard.TotalActiveSupplier = await _reportDao.GetTotalCount("Id", "Supplier", "Status = 1");
-            dashboard.TotalInActiveSupplier = await _reportDao.GetTotalCount("Id", "Supplier", "Status = 0");
+            var purchaseInfo = (await _reportDao.ExecuteQueryAsync<PaymentDetailsDto>($"SELECT " +
+                $"COUNT(p.Id) AS Count, " +
+                $"SUM(p.GrandTotalPrice) AS TotalAmount, " +
+                $"SUM(pm.PaidAmount) AS PaidAmount, " +
+                $"SUM(TotalAmount - PaidAmount) AS DueAmount" +
+                $" FROM Purchase p " +
+                $"JOIN Payment pm ON pm.Id = p.PaymentId " +
+                $"WHERE p.PurchaseDate BETWEEN '{dateFrom}' AND '{dateTo}'")).FirstOrDefault();
+
+            var loseProfitReportDto = new LoseProfitReportDto
+            {
+                PurchasePaymentDetails = purchaseInfo,
+                SalePaymentDetails = saleInfo,
+            };
 
 
-            /*
-            dashboard.ToatlPurchasePrice = await _reportDao.GetSingleColumnTatal("GrandTotalPrice", "Purchase");
-            dashboard.TotalSalePrice = await _reportDao.GetSingleColumnTatal("GrandTotalPrice", "Sale");
-            dashboard.TotalActiveCustomer = await _reportDao.GetTotalCount("Id", "Customer", "Status = 1");
-            dashboard.TotalInActiveCustomer = await _reportDao.GetTotalCount("Id", "Customer", "Status = 0");
-            dashboard.TotalActiveSupplier = await _reportDao.GetTotalCount("Id", "Supplier", "Status = 1");
-            dashboard.TotalInActiveSupplier = await _reportDao.GetTotalCount("Id", "Supplier", "Status = 0");
-
-            dashboard.TotalActiveCustomer = totalCustomer[0] != null? totalCustomer[0].Count : 0;
-            dashboard.TotalInActiveCustomer = totalCustomer[1] != null ? totalCustomer[1].Count : 0;
-            dashboard.TotalActiveSupplier = totalSuplier[0] != null ? totalSuplier[0].Count : 0;
-            dashboard.TotalInActiveSupplier = totalSuplier[1] != null ? totalSuplier[0].Count : 0;
-            */
-            return dashboard;
+            return loseProfitReportDto;
         }
     }
 }

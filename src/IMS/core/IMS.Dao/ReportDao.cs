@@ -10,6 +10,7 @@ namespace IMS.Dao
     public interface IReportDao
     {
         Task<IList<T>> ExecuteQueryAsync<T>(string query);
+        Task<ActiveInactiveDto> GetCountAsync(string tableName);
         Task<decimal> GetSingleColumnTatal(string columnName, string tableName);
         Task<int> GetTotalCount(string columnName, string tableName, string expression = "1=1");
     }
@@ -29,7 +30,18 @@ namespace IMS.Dao
 
             return result;
         }
+        public async Task<ActiveInactiveDto> GetCountAsync(string tableName)
+        {
+            var sql = $"SELECT " +
+                $"SUM(CASE WHEN [Status] = 0 THEN 1 else 0 END) Inactive, " +
+                $"SUM(CASE WHEN [Status] = 1 THEN 1 else 0 END) Active " +
+                $"FROM {tableName}";
 
+            var query = _session.CreateSQLQuery(sql);
+            var result = await query.SetResultTransformer(Transformers.AliasToBean<ActiveInactiveDto>()).UniqueResultAsync<ActiveInactiveDto>();
+            
+            return result;
+        }
         public async Task<decimal> GetSingleColumnTatal(string columnName, string tableName)
         {
             var sql = $"SELECT SUM({columnName}) FROM {tableName}";

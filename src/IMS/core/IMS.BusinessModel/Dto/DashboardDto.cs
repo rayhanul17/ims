@@ -33,7 +33,16 @@ namespace IMS.BusinessModel.Dto
 
     public class ActiveInactiveDto
     {
-        public int Status { get; set;}
-        public int Count { get; set;}
+        public int Active { get; set;}
+        public int Inactive { get; set;}
     }
+
+    public class TotalPurchaseSaleAmountDto
+    {
+        public decimal TotalPurchaseAmount { get; set;}
+        public decimal TotalPurchasePaidAmount { get; set;}
+        public decimal TotalSaleAmount { get; set;}
+        public decimal TotalSalePaidAmount { get; set;}
+    }
+
 }
