@@ -2,6 +2,7 @@
 using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
+using IMS.BusinessRules.Exceptions;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
@@ -88,6 +89,11 @@ namespace IMS.Controllers
                     ViewResponse("Successfully purchase completed!", ResponseTypes.Success);
 
                 }
+                catch (CustomException ex)
+                {
+                    ViewResponse(ex.Message, ResponseTypes.Warning);
+                    _logger.Error(ex.Message, ex);
+                }
                 catch (Exception ex)
                 {
                     ViewResponse("Something went wrong", ResponseTypes.Danger);
@@ -105,7 +111,7 @@ namespace IMS.Controllers
         [HttpPost]
         public JsonResult UpdateProductList(long categoryId, long brandId)
         {
-            var products = _productService.LoadAllProducts(categoryId, brandId).Select(x => new { value = x.Id, text = x.Name, qty = x.InStockQuantity, price = x.SellingPrice });
+            var products = _productService.LoadActiveProducts(categoryId, brandId).Select(x => new { value = x.Id, text = x.Name, qty = x.InStockQuantity, price = x.SellingPrice });
             return Json(products);
         }
 
@@ -139,8 +145,14 @@ namespace IMS.Controllers
                         ).ToArray()
                 });
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex.Message, ex);
+            }
             catch (Exception ex)
             {
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
 

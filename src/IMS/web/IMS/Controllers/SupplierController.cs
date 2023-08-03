@@ -1,6 +1,7 @@
 ﻿using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
+using IMS.BusinessRules.Exceptions;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
@@ -62,10 +63,15 @@ namespace IMS.Controllers
                     return View(model);
                 }
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex.Message, ex);
+            }
             catch (Exception ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Danger);
-                _logger.Error(ex);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+                _logger.Error(ex.Message, ex);
             }
             return RedirectToAction("Index", "Supplier");
         }
@@ -85,9 +91,14 @@ namespace IMS.Controllers
                 var model = await _supplierService.GetByIdAsync(id);
                 return View(model);
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex.Message, ex);
+            }
             catch (Exception ex)
             {
-                ViewResponse("Invalid object id", ResponseTypes.Danger);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
             return RedirectToAction("Index", "Supplier");
@@ -108,10 +119,15 @@ namespace IMS.Controllers
                     ViewResponse("Something went wrong", ResponseTypes.Danger);
                 }
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex.Message, ex);
+            }
             catch (Exception ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Danger);
-                _logger.Error(ex);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+                _logger.Error(ex.Message, ex);
             }
 
             return RedirectToAction("Index", "Supplier");
@@ -125,10 +141,15 @@ namespace IMS.Controllers
                 var userId = User.Identity.GetUserId<long>();
                 await _supplierService.RemoveByIdAsync(id, userId);
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex.Message, ex);
+            }
             catch (Exception ex)
             {
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
-
             }
             return RedirectToAction("Index", "Supplier");
         }

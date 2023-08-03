@@ -110,7 +110,7 @@ namespace IMS.Controllers
         [HttpPost]
         public JsonResult UpdateProductList(long categoryId, long brandId)
         {
-            var products = _productService.LoadAllProducts(categoryId, brandId).Select(x => new { value = x.Id, text = x.Name, qty = x.InStockQuantity, price = x.SellingPrice });
+            var products = _productService.LoadAvailableProducts(categoryId, brandId).Select(x => new { value = x.Id, text = x.Name, qty = x.InStockQuantity, price = x.SellingPrice });
             return Json(products);
         }
 
@@ -144,8 +144,14 @@ namespace IMS.Controllers
                         ).ToArray()
                 });
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex.Message, ex);
+            }
             catch (Exception ex)
             {
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
 

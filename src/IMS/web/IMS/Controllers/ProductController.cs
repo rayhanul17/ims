@@ -54,7 +54,7 @@ namespace IMS.Controllers
             var enumList = Enum.GetValues(typeof(Status))
                        .Cast<Status>()
                        .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
-            ViewBag.StatusList = new SelectList(enumList, "Key", "Value", (int)Status.Active);
+            ViewBag.StatusList = new SelectList(enumList, "Key", "Value", Status.Active);
 
             var categoryList = _categoryService.LoadAllActiveCategories();
             ViewBag.CategoryList = categoryList.Select(x => new SelectListItem
@@ -77,7 +77,7 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken()]
         public async Task<ActionResult> Create(ProductAddModel model, HttpPostedFileBase image)
         {
 
@@ -98,10 +98,15 @@ namespace IMS.Controllers
                     ViewResponse("Provide data properly", ResponseTypes.Danger);
                 }
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex.Message, ex);
+            }
             catch (Exception ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Danger);
-                _logger.Error(ex);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+                _logger.Error(ex.Message, ex);
             }
             return RedirectToAction("Index", "Product");
         }
@@ -139,15 +144,21 @@ namespace IMS.Controllers
                 model.Image = "/UploadedFiles/" + model.Image;
                 return View(model);
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex.Message, ex);
+            }
             catch (Exception ex)
             {
-                ViewResponse("Invalid object id", ResponseTypes.Danger);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
             return RedirectToAction("Index", "Product");
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(ProductEditModel model, HttpPostedFileBase image)
         {
             try
@@ -168,11 +179,16 @@ namespace IMS.Controllers
                 {
                     ViewResponse("Fillup form properly", ResponseTypes.Danger);
                 }
-            }            
+            }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex.Message, ex);
+            }
             catch (Exception ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Danger);
-                _logger.Error(ex);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+                _logger.Error(ex.Message, ex);
             }
 
             return RedirectToAction("Index", "Product");
@@ -189,11 +205,12 @@ namespace IMS.Controllers
             catch (CustomException ex)
             {
                 ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex.Message, ex);
             }
             catch (Exception ex)
             {
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
-
             }
             return RedirectToAction("Index", "Product");
         }
@@ -235,6 +252,7 @@ namespace IMS.Controllers
             }
             catch (Exception ex)
             {
+                ViewResponse("Image saving failed", ResponseTypes.Warning);
                 _logger.Error(ex.Message, ex);
             }
 
@@ -262,7 +280,7 @@ namespace IMS.Controllers
         {            
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length<3 || model.Name.Length >100)
             {
-                ModelState.AddModelError("Name", "Name Invalid");
+                ModelState.AddModelError("Name", "Name Length Invalid");
             }
             if (model.Rank == 0)
             {

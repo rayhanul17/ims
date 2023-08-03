@@ -1,16 +1,18 @@
 ﻿using IMS.BusinessRules.Enum;
+using System.ComponentModel.DataAnnotations;
 
 namespace IMS.BusinessModel.ViewModel
 {
     public class ProductAddModel
     {
         public string Name { get; set; }
-        public virtual string Image { get; set; }
-        public virtual decimal BuyingPrice { get; set; }
-        public virtual decimal SellingPrice { get; set; }
-        public virtual decimal DiscountPrice { get; set; }
-        public virtual decimal ProfitMargin { get; set; }
-        public virtual int InStockQuantity { get; set; }
+        public string Image { get; set; }
+        public decimal BuyingPrice { get; set; }
+        public decimal SellingPrice { get; set; }
+        public decimal DiscountPrice { get; set; }
+        [Required]
+        public decimal ProfitMargin { get; set; }
+        public int InStockQuantity { get; set; }
         public long CategoryId { get; set; }
         public long BrandId { get; set; }
         public string Description { get; set; }

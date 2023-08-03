@@ -131,6 +131,10 @@ namespace IMS.Services
                 {
                     //await _customerDao.RemoveByIdAsync(id);
                     var customer = await _customerDao.GetByIdAsync(id);
+                    if (customer == null)
+                    {
+                        throw new CustomException("No object with this id");
+                    }
                     customer.Status = (int)Status.Delete;
                     customer.ModifyBy = userId;
                     customer.ModificationDate = _timeService.Now;
@@ -153,7 +157,7 @@ namespace IMS.Services
                 var customer = await _customerDao.GetByIdAsync(id);
                 if (customer == null)
                 {
-                    throw new ArgumentNullException(nameof(customer)); 
+                    throw new CustomException("No object with this id"); 
                 }
                 return new CustomerEditModel
                 {

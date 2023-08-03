@@ -1,6 +1,7 @@
 ﻿using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
+using IMS.BusinessRules.Exceptions;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
@@ -66,9 +67,14 @@ namespace IMS.Controllers
                     ViewResponse("Provide data properly", ResponseTypes.Danger);
                 }
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex);
+            }
             catch (Exception ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Danger);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex);
             }
             return RedirectToAction("Index", "Brand");
@@ -89,9 +95,14 @@ namespace IMS.Controllers
                 var model = await _brandService.GetByIdAsync(id);
                 return View(model);
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex.Message, ex);
+            }
             catch (Exception ex)
             {
-                ViewResponse("Invalid object id", ResponseTypes.Danger);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
             return RedirectToAction("Index", "Brand");
@@ -113,9 +124,14 @@ namespace IMS.Controllers
                     ViewResponse("Fillup form properly", ResponseTypes.Danger);
                 }
             }
-            catch (Exception ex)
+            catch (CustomException ex)
             {
                 ViewResponse(ex.Message, ResponseTypes.Danger);
+                _logger.Error(ex);
+            }
+            catch (Exception ex)
+            {
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex);
             }
 
@@ -130,10 +146,15 @@ namespace IMS.Controllers
                 var userId = User.Identity.GetUserId<long>();
                 await _brandService.RemoveByIdAsync(id, userId);
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Danger);
+                _logger.Error(ex);
+            }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message, ex);
-
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+                _logger.Error(ex);
             }
             return RedirectToAction("Index", "Brand");
         }

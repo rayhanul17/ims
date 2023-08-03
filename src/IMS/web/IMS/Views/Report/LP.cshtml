@@ -204,14 +204,14 @@
         $(function () {
             $("#Ptable").DataTable({
                 "responsive": true, "lengthChange": false, "autoWidth": false,
-                "buttons": ["print", "colvis"],
+                "buttons": ["colvis"],
                 "searching": false
                 //"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#Ptable_wrapper .col-md-6:eq(0)');
 
             $("#Stable").DataTable({
                 "responsive": true, "lengthChange": false, "autoWidth": false,
-                "buttons": ["print", "colvis"]
+                "buttons": ["colvis"]
                 //"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#Stable_wrapper .col-md-6:eq(0)');
 

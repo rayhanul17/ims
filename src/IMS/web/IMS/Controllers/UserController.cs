@@ -95,10 +95,15 @@ namespace IMS.Controllers
 
                 return View(model);
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex.Message, ex);
+            }
             catch (Exception ex)
             {
-                ViewResponse("Something went wrong!", ResponseTypes.Warning);
-                _logger.Error(ex);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+                _logger.Error(ex.Message, ex);
             }
             return View();
         }
@@ -119,10 +124,15 @@ namespace IMS.Controllers
                     await _userService.UpdateUserAsync(model.Name, model.Email, model.Id, userId);
                 }
 
+                catch (CustomException ex)
+                {
+                    ViewResponse(ex.Message, ResponseTypes.Warning);
+                    _logger.Error(ex.Message, ex);
+                }
                 catch (Exception ex)
                 {
-                    ViewResponse("Something went wrong during user update", ResponseTypes.Warning);
-                    _logger.Error(ex);
+                    ViewResponse("Something went wrong", ResponseTypes.Danger);
+                    _logger.Error(ex.Message, ex);
                 }
             }
             return View(model);
@@ -168,13 +178,18 @@ namespace IMS.Controllers
                     var s = await UserManager.RemoveFromRolesAsync(model.UserId, userRoles);                    
                     var r = await UserManager.AddToRolesAsync(model.UserId, addRoles);
                 }
-                catch(Exception ex)
+                catch (CustomException ex)
                 {
-                    _logger.Error(ex);
-                    ViewResponse("Something went wrong during role management", ResponseTypes.Warning);
+                    ViewResponse(ex.Message, ResponseTypes.Warning);
+                    _logger.Error(ex.Message, ex);
+                }
+                catch (Exception ex)
+                {
+                    ViewResponse("Something went wrong", ResponseTypes.Danger);
+                    _logger.Error(ex.Message, ex);
                 }
 
-                
+
             }
             else
             {

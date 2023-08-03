@@ -67,9 +67,14 @@ namespace IMS.Controllers
                     ViewResponse("Provide data properly", ResponseTypes.Danger);
                 }
             }
-            catch (Exception ex)
+            catch (CustomException ex)
             {
                 ViewResponse(ex.Message, ResponseTypes.Danger);
+                _logger.Error(ex);
+            }
+            catch (Exception ex)
+            {
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex);
             }
             return RedirectToAction("Index", "Category");
@@ -90,9 +95,14 @@ namespace IMS.Controllers
                 var model = await _categoryService.GetByIdAsync(id);
                 return View(model);
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex.Message, ex);
+            }
             catch (Exception ex)
             {
-                ViewResponse("Invalid object id", ResponseTypes.Danger);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
             return RedirectToAction("Index", "Category");
@@ -114,10 +124,15 @@ namespace IMS.Controllers
                     ViewResponse("Fillup form properly", ResponseTypes.Danger);
                 }
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                _logger.Error(ex.Message, ex);
+            }
             catch (Exception ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Danger);
-                _logger.Error(ex);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+                _logger.Error(ex.Message, ex);
             }
 
             return RedirectToAction("Index", "Category");

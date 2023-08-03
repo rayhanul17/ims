@@ -20,7 +20,8 @@ namespace IMS.Services
         Task RemoveByIdAsync(long id, long userId);
         Task<ProductEditModel> GetByIdAsync(long id);
         Task<ProductDto> GetPriceAndQuantityByIdAsync(long id);
-        IList<ProductDto> LoadAllProducts(long categoryId, long brandId);
+        IList<ProductDto> LoadActiveProducts(long categoryId, long brandId);
+        IList<ProductDto> LoadAvailableProducts(long categoryId, long brandId);
         IList<(long, string)> LoadAllActiveProducts(long categoryId, long productId);
         (int total, int totalDisplay, IList<ProductDto> records) LoadAllProducts(string searchBy, int length, int start, string sortBy, string sortDir);
     }
@@ -97,7 +98,7 @@ namespace IMS.Services
 
                     if (product == null)
                     {
-                        throw new InvalidOperationException("No record found with this id!");
+                        throw new CustomException("No record found with this id!");
                     }
                     if (namecount > 1)
                     {
@@ -274,9 +275,27 @@ namespace IMS.Services
             }
         }
         
-        public IList<ProductDto> LoadAllProducts(long categoryId, long brandId)
+        public IList<ProductDto> LoadActiveProducts(long categoryId, long brandId)
         {            
             var data = _productDao.GetProducts(x => x.Category.Id == categoryId && x.Brand.Id == brandId && x.Status == (int)Status.Active);
+            List<ProductDto> products = new List<ProductDto>();
+            foreach (Product product in data)
+            {
+                products.Add(
+                    new ProductDto
+                    {
+                        Id = product.Id,
+                        Name = product.Name,
+                        InStockQuantity = product.InStockQuantity,
+                        SellingPrice = product.SellingPrice,
+                    });
+            }
+            return products;
+        }
+
+        public IList<ProductDto> LoadAvailableProducts(long categoryId, long brandId)
+        {
+            var data = _productDao.GetProducts(x => x.Category.Id == categoryId && x.Brand.Id == brandId && x.Status == (int)Status.Active && x.InStockQuantity > 0);
             List<ProductDto> products = new List<ProductDto>();
             foreach (Product product in data)
             {

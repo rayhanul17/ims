@@ -85,7 +85,7 @@ namespace IMS.Services
 
                     if (objectcount < 1)
                     {
-                        throw new InvalidOperationException("No record found with this id!");
+                        throw new CustomException("No record found with this id!");
                     }
                     if (namecount > 1)
                     {

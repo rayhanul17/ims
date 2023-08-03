@@ -52,6 +52,7 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken()]
         public async Task<ActionResult> Create(PaymentModel model)
         {           
 

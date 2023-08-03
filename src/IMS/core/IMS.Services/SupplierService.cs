@@ -86,7 +86,7 @@ namespace IMS.Services
 
                     if (namecount < 1)
                     {
-                        throw new InvalidOperationException("No record found with this id!");
+                        throw new CustomException("No record found with this id!");
                     }
                     if (namecount > 1)
                     {
@@ -130,6 +130,10 @@ namespace IMS.Services
                 {
                     //await _supplierDao.RemoveByIdAsync(id);
                     var supplier = await _supplierDao.GetByIdAsync(id);
+                    if(supplier == null)
+                    {
+                        throw new CustomException("No object with this id");
+                    }
                     supplier.Status = (int)Status.Delete;
                     supplier.ModifyBy = userId;
                     supplier.ModificationDate = _timeService.Now;
@@ -141,6 +145,8 @@ namespace IMS.Services
                 {
                     _serviceLogger.Error(ex);
                     transaction.Rollback();
+
+                    throw;
                 }
             }
         }

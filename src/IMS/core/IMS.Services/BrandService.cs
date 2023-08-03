@@ -126,6 +126,10 @@ namespace IMS.Services
                 {
                     //await _brandDao.RemoveByIdAsync(id);
                     var brand = await _brandDao.GetByIdAsync(id);
+                    if (brand == null)
+                    {
+                        throw new CustomException("No object found with this id");
+                    }
                     brand.Status = (int)Status.Delete;
                     brand.ModifyBy = userId;
                     brand.ModificationDate = _timeService.Now;
@@ -137,6 +141,7 @@ namespace IMS.Services
                 {
                     _serviceLogger.Error(ex);
                     transaction.Rollback();
+                    throw;
                 }
             }
         }
@@ -148,7 +153,7 @@ namespace IMS.Services
                 var brand = await _brandDao.GetByIdAsync(id);
                 if (brand == null)
                 {
-                    throw new ArgumentNullException(nameof(brand));
+                    throw new CustomException("No object found with this id");
                 }
                 return new BrandEditModel
                 {

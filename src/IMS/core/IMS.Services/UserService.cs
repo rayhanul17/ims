@@ -126,7 +126,7 @@ namespace IMS.Services
                 Expression<Func<ApplicationUser, bool>> filter = null;
                 if (searchBy != null)
                 {
-                    filter = x => x.Name.Contains(searchBy) && x.Status != (int)Status.Delete;
+                    filter = x => x.Email.Contains(searchBy) && x.Status != (int)Status.Delete;
                 }
 
                 var result = _userDao.LoadAll(filter, null, start, length, sortBy, sortDir);
@@ -169,7 +169,6 @@ namespace IMS.Services
                     filter = x => x.AspNetUsersId.Equals(aspid);
 
                     var user = await Task.Run(() => _userDao.GetUser(filter));
-
                     user.Name = name;
                     user.Email = email;
                     user.ModificationDate = _timeService.Now;
