@@ -147,7 +147,10 @@ namespace IMS.Services
         public async Task<PaymentModel> GetPaymentByIdAsync(long paymentId)
         {
             var payment = await Task.Run(() => _paymentDao.Get(x => x.Id == paymentId).FirstOrDefault());
-
+            if(payment == null)
+            {
+                throw new CustomException("Invalid payment id");
+            }
             var model = new PaymentModel
             {
                 PaymentId = payment.Id,

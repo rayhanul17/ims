@@ -33,20 +33,17 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> LP(string dateRange)
+        public async Task<ActionResult> LP(LoseProfitReportDto model)
         {
-            var model = new LoseProfitReportDto();
+            
             try
             {
-                if (string.IsNullOrWhiteSpace(dateRange))
+                if (string.IsNullOrWhiteSpace(model.DateRange))
                 {
                     throw new CustomException("Empty DateTime Range Found");
                 }
-                var dates = dateRange.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
-
-                var startDate = DateTime.Parse(dates[0]).ToUniversalTime().ToString();
-                var endDate = DateTime.Parse(dates[1]).ToUniversalTime().ToString();
-                model = await _reportService.GetLoseProfitReport(startDate, endDate);
+                
+                model = await _reportService.GetLoseProfitReport(model);
 
                 return View(model);
             }

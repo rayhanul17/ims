@@ -5,6 +5,7 @@ namespace IMS.BusinessModel.Dto
 {
     public class LoseProfitReportDto
     {
+        public string DateRange { get; set; }
         public PaymentDetailsDto PurchasePaymentDetails { get; set; } = new PaymentDetailsDto();
         public PaymentDetailsDto SalePaymentDetails { get; set; } = new PaymentDetailsDto();
         public IList<ProductListDto> PurchaseProductList { get; set; } = new List<ProductListDto>();
@@ -17,8 +18,8 @@ namespace IMS.BusinessModel.Dto
         public decimal PaidAmount { get; set; }
         public decimal DueAmount { get; set; }
     }
-    public class ProductListDto
-    {
+    public class ProductListDto    {
+        
         public string Name { get; set; }
         public int Quantity { get; set; }
         public decimal TotalPrice { get; set; }

@@ -35,19 +35,31 @@ namespace IMS.Controllers
         [HttpGet]
         public async Task<ActionResult> Create(long id)
         {
-
-            var paymentMethodList = Enum.GetValues(typeof(PaymentMethod))
-                       .Cast<PaymentMethod>().ToDictionary(key => (int)key);
-            ViewBag.PaymentMethodList = new SelectList(paymentMethodList, "Key", "Value", PaymentMethod.Bank);
-
-            var bankList = _bankService.LoadAllActiveBanks();
-            ViewBag.BankList = bankList.Select(x => new SelectListItem
+            var model = new PaymentModel();
+            try
             {
-                Text = x.Item2,
-                Value = x.Item1.ToString()
-            }).ToList();
+                var paymentMethodList = Enum.GetValues(typeof(PaymentMethod))
+                           .Cast<PaymentMethod>().ToDictionary(key => (int)key);
+                ViewBag.PaymentMethodList = new SelectList(paymentMethodList, "Key", "Value", PaymentMethod.Bank);
 
-            var model = await _paymentService.GetPaymentByIdAsync(id);
+                var bankList = _bankService.LoadAllActiveBanks();
+                ViewBag.BankList = bankList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
+
+                model = await _paymentService.GetPaymentByIdAsync(id);
+            }
+            catch(CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+            }
+            catch(Exception ex)
+            {
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+                _logger.Error(ex.Message, ex);
+            }
             return View(model);
         }
 

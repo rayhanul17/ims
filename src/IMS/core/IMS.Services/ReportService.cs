@@ -4,6 +4,7 @@ using NHibernate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace IMS.Services
@@ -12,7 +13,7 @@ namespace IMS.Services
     public interface IReportService
     {
         Task<DashboardDto> GetDashboardDataAsync();
-        Task<LoseProfitReportDto> GetLoseProfitReport(string dateFrom, string dateTo);
+        Task<LoseProfitReportDto> GetLoseProfitReport(LoseProfitReportDto model);
         Task<IEnumerable<MyModel>> ExecuteRawQueryAsync();
     }
     #endregion
@@ -89,8 +90,13 @@ namespace IMS.Services
             }
         }
 
-        public async Task<LoseProfitReportDto> GetLoseProfitReport(string dateFrom, string dateTo)
+        public async Task<LoseProfitReportDto> GetLoseProfitReport(LoseProfitReportDto model)
         {
+            var dates = model.DateRange.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var startDate = DateTime.Parse(dates[0]).ToUniversalTime().ToString();
+            var endDate = DateTime.Parse(dates[1]).ToUniversalTime().ToString();
+
             var saleInfo = (await _reportDao.ExecuteQueryAsync<PaymentDetailsDto>($"SELECT " +
                 $"COUNT(s.Id) AS Count, " +
                 $"SUM(s.GrandTotalPrice) AS TotalAmount, " +
@@ -98,7 +104,7 @@ namespace IMS.Services
                 $"SUM(TotalAmount - PaidAmount) AS DueAmount" +
                 $" FROM Sale s " +
                 $"JOIN Payment pm ON pm.Id = s.PaymentId " +
-                $"WHERE s.SaleDate BETWEEN '{dateFrom}' AND '{dateTo}'")).FirstOrDefault();
+                $"WHERE s.SaleDate BETWEEN '{startDate}' AND '{endDate}'")).FirstOrDefault();
 
             var purchaseInfo = (await _reportDao.ExecuteQueryAsync<PaymentDetailsDto>($"SELECT " +
                 $"COUNT(p.Id) AS Count, " +
@@ -107,7 +113,7 @@ namespace IMS.Services
                 $"SUM(TotalAmount - PaidAmount) AS DueAmount" +
                 $" FROM Purchase p " +
                 $"JOIN Payment pm ON pm.Id = p.PaymentId " +
-                $"WHERE p.PurchaseDate BETWEEN '{dateFrom}' AND '{dateTo}'")).FirstOrDefault();
+                $"WHERE p.PurchaseDate BETWEEN '{startDate}' AND '{endDate}'")).FirstOrDefault();
 
             var saleProductList = await _reportDao.ExecuteQueryAsync<ProductListDto>($"SELECT " +
                 $"s.SaleDate AS Date, " +                
@@ -117,7 +123,7 @@ namespace IMS.Services
                 $"FROM Sale s " +
                 $"JOIN SaleDetails sd ON s.Id = sd.SaleId " +
                 $"LEFT JOIN Product p ON p.id = sd.ProductId " +
-                $"WHERE s.SaleDate BETWEEN '{dateFrom}' AND '{dateTo}'");
+                $"WHERE s.SaleDate BETWEEN '{startDate}' AND '{endDate}'");
 
             var purchaseProductList = await _reportDao.ExecuteQueryAsync<ProductListDto>($"SELECT " +
                 $"pr.PurchaseDate AS Date, " +
@@ -127,10 +133,11 @@ namespace IMS.Services
                 $"FROM Purchase pr " +
                 $"JOIN PurchaseDetails prd ON pr.Id = prd.PurchaseId " +
                 $"LEFT JOIN Product p ON p.id = prd.ProductId " +
-                $"WHERE pr.PurchaseDate BETWEEN '{dateFrom}' AND '{dateTo}'");
+                $"WHERE pr.PurchaseDate BETWEEN '{startDate} ' AND ' {endDate}'");
 
             var loseProfitReportDto = new LoseProfitReportDto
             {
+                DateRange = dates[0] + "-" + dates[1], 
                 PurchasePaymentDetails = purchaseInfo,
                 SalePaymentDetails = saleInfo,
                 PurchaseProductList = purchaseProductList,

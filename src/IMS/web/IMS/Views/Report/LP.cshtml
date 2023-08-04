@@ -20,8 +20,10 @@
                     {
                         <div class="row">
                             <div class="col-md-6 align-self-center">
-                                <div class="bg-gradient-primary">
-                                    Profit Amount(TK): 152636.00
+                                <div>
+                                    Date Range : @Model.DateRange
+                                </div>
+                                <div id="lp">                                    
                                 </div>
                             </div>
 
@@ -32,7 +34,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="far fa-clock"></i></span>
                                         </div>
-                                        <input type="text" name="dateRange" class="form-control float-right" id="reservationtime">                                       
+                                        <input type="text" name="DateRange" class="form-control float-right" id="reservationtime">                                       
                                     </div>
                                 </div>
                             </div>
@@ -50,7 +52,7 @@
                         <div class="col-md-6">
                             <table>
                                 <tr><td>Total Purchase</td><td>:</td><td>@Model.PurchasePaymentDetails.Count</td></tr>
-                                <tr><td>Total Amount(TK)</td><td>:</td><td>@Model.PurchasePaymentDetails.TotalAmount</td></tr>
+                                <tr><td>Total Amount(TK)</td><td>:</td><td id="totalPurchaseAmount">@Model.PurchasePaymentDetails.TotalAmount</td></tr>
                                 <tr><td>Total Paid(TK)</td><td>:</td><td>@Model.PurchasePaymentDetails.PaidAmount</td></tr>
                                 <tr><td>Total Due(TK)</td><td>:</td><td>@Model.PurchasePaymentDetails.DueAmount</td></tr>
                             </table>
@@ -83,7 +85,7 @@
                         <div class="col-md-6">
                             <table>
                                 <tr><td>Total Sale</td><td>:</td><td>@Model.SalePaymentDetails.Count</td></tr>
-                                <tr><td>Total Amount(TK)</td><td>:</td><td>@Model.SalePaymentDetails.TotalAmount</td></tr>
+                                <tr><td>Total Amount(TK)</td><td>:</td><td id="totalSaleAmount">@Model.SalePaymentDetails.TotalAmount</td></tr>
                                 <tr><td>Total Paid(TK)</td><td>:</td><td>@Model.SalePaymentDetails.PaidAmount</td></tr>
                                 <tr><td>Total Due(TK)</td><td>:</td><td>@Model.SalePaymentDetails.DueAmount</td></tr>
                             </table>
@@ -152,6 +154,20 @@
                     format: 'DD/MM/YYYY hh:mm A'
                 }
             });
+
+            let purchase = parseFloat($('#totalPurchaseAmount').text());
+            let sale = parseFloat($('#totalSaleAmount').text());
+            let v = sale - purchase;
+            console.log(v);
+            if (v > 0) {
+                $('#lp').append(`<span class="badge bg-success"><span class="h6">Profit amount is: ${v} Tk</span></span>`);
+            }                                 
+            else if (v == 0) {                
+                $('#lp').append(`<span class="badge bg-warning"><span class="h6">You have no profit or lose</span></span>`);
+            }                                 
+            else{                             
+                $('#lp').append(`<span class="badge bg-danger"><span class="h6">Lose amount is: ${Math.abs(v)} Tk</span></span>`);
+            }
         });
     </script>
     <script>
