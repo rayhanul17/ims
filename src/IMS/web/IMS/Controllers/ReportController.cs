@@ -1,8 +1,10 @@
 ﻿using IMS.BusinessModel.Dto;
 using IMS.BusinessRules;
+using IMS.BusinessRules.Exceptions;
 using IMS.Services;
 using IMS.Services.SessionFactories;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -24,24 +26,35 @@ namespace IMS.Controllers
         #endregion
         // GET: Report
         [HttpGet]
-        public ActionResult LP(LoseProfitReportDto id)
+        public ActionResult LP()
         {
-            //if(model == null)
-            //{
-            //    model = new LoseProfitReportDto();
-            //    return View(model);
-            //}
-
-            return View(new LoseProfitReportDto());
+            var model = new LoseProfitReportDto();
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<ActionResult> LP(string DateRange)
+        public async Task<ActionResult> LP(string dateRange)
         {
+            var model = new LoseProfitReportDto();
+            try
+            {
+                if (string.IsNullOrWhiteSpace(dateRange))
+                {
+                    throw new CustomException("Empty DateTime Range Found");
+                }
+                var dates = dateRange.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var model = await _reportService.GetLoseProfitReport("2023-08-02 03:21", "2023-08-03 04:26");
+                var startDate = DateTime.Parse(dates[0]).ToUniversalTime().ToString();
+                var endDate = DateTime.Parse(dates[1]).ToUniversalTime().ToString();
+                model = await _reportService.GetLoseProfitReport(startDate, endDate);
 
-            return View(model);
+                return View(model);
+            }
+            catch(CustomException ex)
+            {
+                ViewResponse(ex.Message, Models.ResponseTypes.Warning);
+                return View(model);
+            }
 
 
         }

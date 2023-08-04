@@ -17,18 +17,23 @@ namespace IMS.Services
     }
     #endregion
     /* 
-     ***===
+     === Active Inactive Count Query ===
      * SELECT
            SUM(CASE WHEN [Status] = 0 THEN 1 else 0 END) Inactive,
            SUM(CASE WHEN [Status] = 1 THEN 1 else 0 END) Active
            FROM Supplier
-     **** Purchase & Sale Amout according to date
+     === Purchase & Sale Amout according to date ===
      *   select 
 	     sum(case when p.OperationType = 1 Then pd.Amount else 0 end) Sale
 	    ,sum(case when p.OperationType = 0 Then pd.Amount else 0 end) Purchase
         from PaymentDetails pd
         join Payment p on p.Id = pd.PaymentId
         WHERE PaymentDate BETWEEN '2023-08-02 14:17:39.2373632' AND '2023-08-02 14:18:57.3401938'
+    === Sale/Purchase Product Details ===
+        SELECT s.Id, s.SaleDate, sd.ProductId, sd.Quantity, sd.TotalPrice, sd.SaleId
+	    FROM Sale s
+	    JOIN SaleDetails sd ON s.Id = sd.SaleId
+	    WHERE s.SaleDate BETWEEN '2023-08-02 03:22' AND '2023-08-02 09:46'
      */
 
 
@@ -104,10 +109,32 @@ namespace IMS.Services
                 $"JOIN Payment pm ON pm.Id = p.PaymentId " +
                 $"WHERE p.PurchaseDate BETWEEN '{dateFrom}' AND '{dateTo}'")).FirstOrDefault();
 
+            var saleProductList = await _reportDao.ExecuteQueryAsync<ProductListDto>($"SELECT " +
+                $"s.SaleDate AS Date, " +                
+                $"sd.Quantity, " +
+                $"sd.TotalPrice, " +
+                $"p.Name " +
+                $"FROM Sale s " +
+                $"JOIN SaleDetails sd ON s.Id = sd.SaleId " +
+                $"LEFT JOIN Product p ON p.id = sd.ProductId " +
+                $"WHERE s.SaleDate BETWEEN '{dateFrom}' AND '{dateTo}'");
+
+            var purchaseProductList = await _reportDao.ExecuteQueryAsync<ProductListDto>($"SELECT " +
+                $"pr.PurchaseDate AS Date, " +
+                $"prd.Quantity, " +
+                $"prd.TotalPrice, " +
+                $"p.Name " +
+                $"FROM Purchase pr " +
+                $"JOIN PurchaseDetails prd ON pr.Id = prd.PurchaseId " +
+                $"LEFT JOIN Product p ON p.id = prd.ProductId " +
+                $"WHERE pr.PurchaseDate BETWEEN '{dateFrom}' AND '{dateTo}'");
+
             var loseProfitReportDto = new LoseProfitReportDto
             {
                 PurchasePaymentDetails = purchaseInfo,
                 SalePaymentDetails = saleInfo,
+                PurchaseProductList = purchaseProductList,
+                SaleProductList = saleProductList
             };
 
 
