@@ -1,6 +1,8 @@
-﻿using IMS.BusinessRules;
+﻿using IMS.BusinessModel.Dto;
+using IMS.BusinessRules;
 using IMS.Services;
 using IMS.Services.SessionFactories;
+using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -21,16 +23,44 @@ namespace IMS.Controllers
 
         #endregion
         // GET: Report
-        public ActionResult LP()
+        [HttpGet]
+        public ActionResult LP(LoseProfitReportDto id)
         {
-            return View();
+            //if(model == null)
+            //{
+            //    model = new LoseProfitReportDto();
+            //    return View(model);
+            //}
+
+            return View(new LoseProfitReportDto());
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> LP(string DateRange)
+        {
+
+            var model = await _reportService.GetLoseProfitReport("2023-08-02 03:21", "2023-08-03 04:26");
+
+            return View(model);
+
+
         }
 
         public async Task<ActionResult> Dashboard()
         {
-            await _reportService.ExecuteRawQueryAsync();
-            var model = await _reportService.GetDashboardDataAsync();
-            return View(model);
+            try
+            {
+                await _reportService.ExecuteRawQueryAsync();
+                var model = await _reportService.GetDashboardDataAsync();
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+                var model = new DashboardDto();
+
+                return View(model);
+            }
         }
     }
 }
