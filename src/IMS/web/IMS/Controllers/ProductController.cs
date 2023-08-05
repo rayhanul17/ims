@@ -214,6 +214,12 @@ namespace IMS.Controllers
             }
             return RedirectToAction("Index", "Product");
         }
+
+        [HttpPost]
+        public async Task<ActionResult> UpdateRank(long Id, long TargetRank)
+        {
+            return RedirectToAction("Index", "Product");
+        }
         #endregion
 
         #region Ajax Call

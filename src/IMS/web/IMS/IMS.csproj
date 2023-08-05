@@ -2337,7 +2337,7 @@
     <Content Include="Views\User\ManageUserRole.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\User\Edit.cshtml" />
-    <Content Include="Views\Shared\_RankUpdatePartial.cshtml" />
+    <Content Include="Views\Shared\_RankModalPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
