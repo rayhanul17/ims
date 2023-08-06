@@ -15,6 +15,7 @@
                     <div class="card-body">
                         @using (Html.BeginForm("ManageUserRole", "User", FormMethod.Post, htmlAttributes: new { @id = "myform", @class = "nav-link cmxform" }))
                         {
+                            @Html.AntiForgeryToken()
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">

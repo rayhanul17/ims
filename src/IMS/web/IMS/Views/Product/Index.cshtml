@@ -124,7 +124,12 @@
                                                         <i class="fas fa-trash">
                                                         </i>
                                                         Delete
-                                                    </button>`;
+                                                    </button>
+                                                    <button type="submit" class="btn btn-warning btn-sm show-rank-modal" data-id='${data}' value= '${data}'>
+                                                            <i class="fas fa-info">
+                                                            </i>
+                                                            Rank
+                                                        </button>`;
                             }
                             else {
                                 return ``;
@@ -168,7 +173,19 @@
             m.find('.modal-body p').text('Are you sure you want to update this product Rank?');
             $("#updateId").val(id);
             $("#rankForm").attr("action", "/Product/UpdateRank");
-            console.log(m);
+            if (id != null) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/Product/GetRank',
+                    data: { productId: id },
+                    success: function (data) {
+                        console.log(data);
+                        $('#updateId').val(data.Id);
+                        $('#highestRank').val(data.Count);                        
+                        $('#currentRank').val(data.Rank);                        
+                    }
+                });
+            }
             m.modal('show');
         });
 

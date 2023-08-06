@@ -167,7 +167,7 @@ namespace IMS.Controllers
             return default(JsonResult);
         }
 
-        
+        [Authorize(Roles = "SA, Manager, Seller")]
         public async Task<ActionResult> Details(long id)
         {
             var model = await _saleService.GetSaleDetailsAsync(id);

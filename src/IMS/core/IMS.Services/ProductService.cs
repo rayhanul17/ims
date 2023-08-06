@@ -18,6 +18,8 @@ namespace IMS.Services
         Task AddAsync(ProductAddModel model, long userId);
         Task UpdateAsync(ProductEditModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
+        Task<RankUpdateDto> GetProductRankAsync(long productId);
+        Task UpdateRankAsync(long productId, long targetRank);
         Task<ProductEditModel> GetByIdAsync(long id);
         Task<ProductDto> GetPriceAndQuantityByIdAsync(long id);
         IList<ProductDto> LoadActiveProducts(long categoryId, long brandId);
@@ -226,6 +228,59 @@ namespace IMS.Services
             catch (Exception ex)
             {
                 _serviceLogger.Error(ex.Message, ex);
+                throw;
+            }
+        }
+
+        public async Task<RankUpdateDto> GetProductRankAsync(long productId)
+        {
+            try
+            {
+                var result = await _productDao.GetRankByIdAsync<RankUpdateDto>(productId, "Product");
+                return result;
+            }
+            catch(Exception ex)
+            { 
+                _serviceLogger.Error($"{ex.Message}", ex);
+                throw new CustomException("Error on getting product rank");
+            }
+           
+        }
+
+        public async Task UpdateRankAsync(long productId, long targetRank)
+        {
+            try
+            {
+                using(var transaction = _session.BeginTransaction())
+                {
+                    var result = await _productDao.GetRankByIdAsync<RankUpdateDto>(productId, "Product");
+                    if(result == null)
+                    {
+                        throw new CustomException("Invalid product id");
+                    }
+                    else if(targetRank < 1 || targetRank > result.Count)
+                    {
+                        throw new CustomException("Invalid Rank count");
+                    }
+                    else if( result.Rank == targetRank)
+                    {
+                        throw new CustomException("Present rank and target rank are same");
+                    }
+                    else if(targetRank > result.Rank)
+                    {
+                        await _productDao.RankUpAsync(result.Rank, targetRank, "Product");
+                    }
+                    else if(targetRank < result.Rank)
+                    {
+                        await _productDao.RankDownAsync(result.Rank, targetRank, "Product");
+                    }
+                    
+                    transaction.Commit();
+                }                
+            }
+            catch(Exception ex)
+            {
+                _serviceLogger.Error($"{ex.Message}", ex);
                 throw;
             }
         }

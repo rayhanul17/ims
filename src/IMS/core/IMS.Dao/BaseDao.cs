@@ -1,14 +1,12 @@
 ﻿using IMS.BusinessModel.Entity;
 using NHibernate;
+using NHibernate.Transform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using System.Runtime.Remoting.Contexts;
-using IMS.BusinessRules.Enum;
-using System.Collections;
 
 namespace IMS.Dao
 {
@@ -24,6 +22,9 @@ namespace IMS.Dao
         IList<TEntity> GetAll();
         int GetCount(Expression<Func<TEntity, bool>> filter = null);
         Task<int> ExecuteUpdateDeleteQuery(string query);
+        Task<T> GetRankByIdAsync<T>(long id, string tableName);
+        Task<int> RankUpAsync(long rankFrom, long rankTo, string tableName);
+        Task<int> RankDownAsync(long rankFrom, long rankTo, string tableName);
         (IList<TEntity> data, int total, int totalDisplay) GetDynamic(
             Expression<Func<TEntity, bool>> filter = null,
             string orderBy = null, int pageIndex = 1, int pageSize = 10);
@@ -123,6 +124,48 @@ namespace IMS.Dao
 
             return resut;
         }
+
+        public async Task<T> GetRankByIdAsync<T>(long id, string tableName)
+        {
+            var sql = $"  SELECT " +
+                $"Id, " +
+                $"[Rank]," +
+                $" (SELECT MAX([Rank]) FROM {tableName}) Count" +
+                $" FROM {tableName}" +
+                $" Where Id = {id}";
+
+            var query = _session.CreateSQLQuery(sql);
+            var result = (await query.SetResultTransformer(Transformers.AliasToBean<T>()).ListAsync<T>()).FirstOrDefault();
+
+            return result;
+        }
+
+        public async Task<int> RankDownAsync(long rankFrom, long rankTo, string tableName)
+        {
+            var sql = $"Update {tableName} " +
+                $"SET [Rank] = CASE " +
+                $"WHEN [Rank] < {rankFrom} AND [Rank] >= {rankTo} then [Rank]+1 " +
+                $"WHEN [Rank] = {rankFrom} THEN {rankTo} " +
+                $"ELSE [Rank] END";
+
+            var result = await ExecuteUpdateDeleteQuery(sql);
+
+            return result;
+        }
+
+        public async Task<int> RankUpAsync(long rankFrom, long rankTo, string tableName)
+        {
+            var sql = $"Update {tableName} " +
+                $"SET [Rank] = CASE " +
+                $"WHEN [Rank] > {rankFrom} AND [Rank] <= {rankTo} then [Rank]-1 " +
+                $"WHEN [Rank] = {rankFrom} THEN {rankTo} " +
+                $"ELSE [Rank] END";
+
+            var result = await ExecuteUpdateDeleteQuery(sql);
+
+            return result;
+        }
+
         public virtual IList<TEntity> Get(Expression<Func<TEntity, bool>> filter,
             int pageIndex = 1, int pageSize = 10)
         {
@@ -231,8 +274,8 @@ namespace IMS.Dao
         public (IList<TEntity> data, int total, int totalDisplay) LoadAll(Expression<Func<TEntity, bool>> filter = null,
             string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
         {
-            IQueryable<TEntity> query = _session.Query<TEntity>();        
-            
+            IQueryable<TEntity> query = _session.Query<TEntity>();
+
             var total = query.Count();
             var totalDisplay = query.Count();
 
@@ -240,13 +283,13 @@ namespace IMS.Dao
             {
                 query = query.Where(filter);
                 totalDisplay = query.Count();
-            }            
+            }
 
             var result = query.Skip(pageIndex).Take(pageSize);
 
             return (result.ToList(), total, totalDisplay);
         }
     }
-#endregion
+    #endregion
 
 }

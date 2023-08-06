@@ -1,4 +1,5 @@
-﻿using IMS.BusinessModel.ViewModel;
+﻿using IMS.BusinessModel.Entity;
+using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
@@ -224,11 +225,46 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "SA, Manager")]
-        public async Task<ActionResult> UpdateRank(long Id, long TargetRank)
+        [AllowAnonymous]
+        public async Task<JsonResult> GetRank(long productId)
         {
-            return RedirectToAction("Index", "Product");
+            try
+            {
+                var products = await _productService.GetProductRankAsync(productId);
+
+                return Json(products);
+            }
+            catch(CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Danger);                
+            }
+            catch(Exception ex)
+            {
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+                _logger.Error(ex.Message, ex);  
+            }
+            return default(JsonResult);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> UpdateRank(long id, long targetRank)
+        {
+            try
+            {
+                await _productService.UpdateRankAsync(id, targetRank);
+                return RedirectToAction("Index", "Product");
+            }
+            catch(CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Danger);
+            }
+            catch(Exception ex)
+            {
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+                _logger.Error(ex.Message, ex);
+            }
+            return RedirectToAction("Index");
         }
         #endregion
 
