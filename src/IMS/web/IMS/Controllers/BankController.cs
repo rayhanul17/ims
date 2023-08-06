@@ -119,6 +119,7 @@ namespace IMS.Controllers
                 {
                     var userId = User.Identity.GetUserId<long>();
                     await _bankService.UpdateAsync(model, userId);
+                    ViewResponse("Bank updated sucessfully", ResponseTypes.Success);
                 }
                 else
                 {
@@ -209,10 +210,6 @@ namespace IMS.Controllers
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 100)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
-            }
-            if (model.Rank == 0)
-            {
-                ModelState.AddModelError("Rank", "Rank Invalid");
             }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {

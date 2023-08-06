@@ -56,7 +56,7 @@ namespace IMS.Services
                         Name = model.Name,
                         Description = model.Description,
                         Status = (int)model.Status,
-                        Rank = model.Rank,
+                        Rank = await _categoryDao.GetMaxRank("Category") + 1,
                         CreateBy = userId,
                         CreationDate = _timeService.Now,
                     };
@@ -80,10 +80,10 @@ namespace IMS.Services
             {
                 try
                 {
-                    var objectcount = _categoryDao.GetCount(x => x.Id == model.Id);
+                    var category = await _categoryDao.GetByIdAsync(model.Id);
                     var namecount = _categoryDao.GetCount(x => x.Name == model.Name);
 
-                    if (objectcount < 1)
+                    if (category == null)
                     {
                         throw new CustomException("No record found with this id!");
                     }
@@ -92,17 +92,11 @@ namespace IMS.Services
                         throw new CustomException("Already exist category with this name");
                     }
 
-                    var category = new Category()
-                    {
-                        Id = model.Id,
-                        Name = model.Name,
-                        Description = model.Description,
-                        Status = (int)model.Status,
-                        CreateBy = model.CreateBy,
-                        CreationDate = model.CreationDate,
-                        ModifyBy = userId,
-                        ModificationDate = _timeService.Now
-                    };
+                    category.Name = model.Name;
+                    category.Description = model.Description;
+                    category.Status = (int)model.Status;
+                    category.ModifyBy = userId;
+                    category.ModificationDate = _timeService.Now;
 
                     await _categoryDao.EditAsync(category);
                     transaction.Commit();

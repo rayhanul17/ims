@@ -127,6 +127,8 @@ namespace IMS.Controllers
                     await UserManager.UpdateAsync(user);
                     var userId = User.Identity.GetUserId<long>();
                     await _userService.UpdateUserAsync(model.Name, model.Email, model.Id, userId);
+
+                    ViewResponse("Updated successfully", ResponseTypes.Success);
                 }
 
                 catch (CustomException ex)
@@ -185,6 +187,7 @@ namespace IMS.Controllers
                     
                     var s = await UserManager.RemoveFromRolesAsync(model.UserId, userRoles);                    
                     var r = await UserManager.AddToRolesAsync(model.UserId, addRoles);
+                    ViewResponse("Updated successfully", ResponseTypes.Success);
                 }
                 catch (CustomException ex)
                 {

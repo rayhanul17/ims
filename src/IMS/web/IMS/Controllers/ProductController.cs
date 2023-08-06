@@ -337,10 +337,6 @@ namespace IMS.Controllers
             {
                 ModelState.AddModelError("Name", "Name Length Invalid");
             }
-            if (model.Rank == 0)
-            {
-                ModelState.AddModelError("Rank", "Rank Invalid");
-            }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {
                 ModelState.AddModelError("Status", "Status must active or inactive");

@@ -12,6 +12,6 @@ namespace IMS.Services
     }
     public class TimeService : ITimeService
     {
-        public DateTime Now => DateTime.UtcNow;
+        public DateTime Now => DateTime.Now;
     }
 }

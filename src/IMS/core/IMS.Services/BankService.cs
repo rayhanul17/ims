@@ -56,7 +56,7 @@ namespace IMS.Services
                         Name = model.Name,
                         Description = model.Description,
                         Status = (int)model.Status,
-                        Rank = model.Rank,
+                        Rank = await _bankDao.GetMaxRank("Bank") + 1,
                         CreateBy = userId,
                         CreationDate = _timeService.Now,
                     };
@@ -80,10 +80,10 @@ namespace IMS.Services
             {
                 try
                 {
-                    var objectcount = _bankDao.GetCount(x => x.Id == model.Id);
+                    var bank = await _bankDao.GetByIdAsync(model.Id);
                     var namecount = _bankDao.GetCount(x => x.Name == model.Name);
 
-                    if (objectcount < 1)
+                    if (bank == null)
                     {
                         throw new CustomException("No record found with this id!");
                     }
@@ -92,17 +92,11 @@ namespace IMS.Services
                         throw new CustomException("Already exist Bank with this name");
                     }
 
-                    var bank = new Bank()
-                    {
-                        Id = model.Id,
-                        Name = model.Name,
-                        Description = model.Description,
-                        Status = (int)model.Status,
-                        CreateBy = model.CreateBy,
-                        CreationDate = model.CreationDate,
-                        ModifyBy = userId,
-                        ModificationDate = _timeService.Now
-                    };
+                    bank.Name = model.Name;
+                    bank.Description = model.Description;
+                    bank.Status = (int)model.Status;
+                    bank.ModifyBy = userId;
+                    bank.ModificationDate = _timeService.Now;                    
 
                     await _bankDao.EditAsync(bank);
                     transaction.Commit();

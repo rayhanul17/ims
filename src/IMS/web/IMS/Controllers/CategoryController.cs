@@ -92,9 +92,9 @@ namespace IMS.Controllers
                 return View();
             try
             {
-                var selectList = Enum.GetValues(typeof(IMS.BusinessRules.Enum.Status))
-                       .Cast<IMS.BusinessRules.Enum.Status>()
-                       .Where(e => e != IMS.BusinessRules.Enum.Status.Delete).ToDictionary(key => (int)key);
+                var selectList = Enum.GetValues(typeof(Status))
+                       .Cast<Status>()
+                       .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
                 ViewBag.StatusList = new SelectList(selectList, "Key", "Value");
 
                 var model = await _categoryService.GetByIdAsync(id);
@@ -125,6 +125,7 @@ namespace IMS.Controllers
                 {
                     var userId = User.Identity.GetUserId<long>();
                     await _categoryService.UpdateAsync(model, userId);
+                    ViewResponse("Updated successfully", ResponseTypes.Success);
                 }
                 else
                 {
@@ -214,10 +215,6 @@ namespace IMS.Controllers
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length<3 || model.Name.Length >100)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
-            }
-            if (model.Rank == 0)
-            {
-                ModelState.AddModelError("Rank", "Rank Invalid");
             }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {

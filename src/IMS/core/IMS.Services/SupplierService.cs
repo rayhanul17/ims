@@ -57,7 +57,7 @@ namespace IMS.Services
                         ContactNumber = model.ContactNumber,
                         Email = model.Email,
                         Status = (int)model.Status,
-                        Rank = model.Rank,
+                        Rank = await _supplierDao.GetMaxRank("Supplier") + 1,
                         CreateBy = userId,
                         CreationDate = _timeService.Now,
                     };
@@ -81,10 +81,10 @@ namespace IMS.Services
             {
                 try
                 {
-                    var objectcount = _supplierDao.GetCount(x => x.Id == model.Id);
+                    var supplier = _supplierDao.GetById(model.Id);
                     var namecount = _supplierDao.GetCount(x => x.Name == model.Name);
 
-                    if (namecount < 1)
+                    if (supplier == null)
                     {
                         throw new CustomException("No record found with this id!");
                     }
@@ -93,19 +93,14 @@ namespace IMS.Services
                         throw new CustomException("Already exist supplier with this name");
                     }
 
-                    var supplier = new Supplier()
-                    {
-                        Id = model.Id,
-                        Name = model.Name,
-                        Address = model.Address,
-                        ContactNumber = model.ContactNumber,
-                        Email = model.Email,
-                        Status = (int)model.Status,
-                        CreateBy = model.CreateBy,
-                        CreationDate = model.CreationDate,
-                        ModifyBy = userId,
-                        ModificationDate = _timeService.Now
-                    };
+                    supplier.Name = model.Name;
+                    supplier.Address = model.Address;
+                    supplier.ContactNumber = model.ContactNumber;
+                    supplier.Email = model.Email;
+                    supplier.Status = (int)model.Status;
+                    supplier.ModifyBy = userId;
+                    supplier.ModificationDate = _timeService.Now;
+                    
 
                     await _supplierDao.EditAsync(supplier);
                     transaction.Commit();

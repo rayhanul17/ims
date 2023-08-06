@@ -19,7 +19,6 @@ namespace IMS.BusinessModel.ViewModel
 
         [Required, EmailAddress, MaxLength(254)]
         public string Email { get; set; }
-        public long Rank { get; set; }
 
         [Required]
         public Status Status { get; set; }

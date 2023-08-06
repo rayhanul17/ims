@@ -48,17 +48,13 @@
                             <span>@Html.ValidationMessageFor(model => model.Email)</span>
                         </div>
                         <div class="form-group">
-                            <label> @Html.LabelFor(m => m.Rank)</label>
-                            @Html.TextBoxFor(m => m.Rank, new { @class = "form-control", @placeholder = "Rank", @type = "number" })
-                            <span>@Html.ValidationMessageFor(model => model.Rank)</span>
-                        </div>
-                        <div class="form-group">
                             <label> @Html.LabelFor(m => m.Status)</label>
                             @Html.DropDownListFor(m => m.Status, (SelectList)ViewBag.StatusList, new { @class = "form-control" })
                         </div>
                         @Html.HiddenFor(model => model.Id)
                         @Html.HiddenFor(model => model.CreateBy)
                         @Html.HiddenFor(model => model.CreationDate)
+                        @Html.HiddenFor(model => model.Rank)
                     </div>
                     <!-- /.card-body -->
 

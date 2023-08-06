@@ -121,6 +121,7 @@ namespace IMS.Controllers
                 {
                     var userId = User.Identity.GetUserId<long>();
                     await _supplierService.UpdateAsync(model, userId);
+                    ViewResponse("Updated successfully", ResponseTypes.Success);
                 }
                 else
                 {

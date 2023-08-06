@@ -11,8 +11,6 @@ namespace IMS.BusinessModel.ViewModel
 
         [Required, MinLength(3)]
         public string Description { get; set; }
-        [Required]
-        public long Rank { get; set; }
 
         [Required]
         public Status Status { get; set; }

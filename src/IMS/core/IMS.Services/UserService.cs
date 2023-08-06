@@ -45,7 +45,8 @@ namespace IMS.Services
                         Email = email,
                         CreateBy = creatorId,
                         CreationDate = _timeService.Now,
-                        Status = (int)Status.Active
+                        Status = (int)Status.Active,
+                        Rank = await _userDao.GetMaxRank("ApplicationUser") + 1,
                     };
 
                     await _userDao.AddAsync(user);
@@ -160,9 +161,9 @@ namespace IMS.Services
 
         public async Task UpdateUserAsync(string name, string email, long aspid, long creatorId)
         {
-            try
+            using (var transaction = _session.BeginTransaction())
             {
-                using(var transaction = _session.BeginTransaction())
+                try
                 {
 
                     Expression<Func<ApplicationUser, bool>> filter = null;
@@ -178,11 +179,13 @@ namespace IMS.Services
 
                     transaction.Commit();
                 }
-            }
-            catch (Exception ex)
-            {
-                _serviceLogger.Error($"{ex.Message}", ex);
-                throw new CustomException("User information failed to update"); 
+
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    _serviceLogger.Error($"{ex.Message}", ex);
+                    throw new CustomException("User information failed to update");
+                }
             }
         }
     }

@@ -54,7 +54,7 @@ namespace IMS.Services
                         Name = model.Name,
                         Description = model.Description,
                         Status = (int)model.Status,
-                        Rank = model.Rank,
+                        Rank = await _brandDao.GetMaxRank("Brand") + 1,
                         CreateBy = userId,
                         CreationDate = _timeService.Now,
                     };
@@ -78,30 +78,23 @@ namespace IMS.Services
             {
                 try
                 {
-                    var objectcount = _brandDao.GetCount(x => x.Id == model.Id);
+                    var brand = await _brandDao.GetByIdAsync(model.Id);
                     var namecount = _brandDao.GetCount(x => x.Name == model.Name);
 
-                    if (objectcount < 1)
+                    if (brand == null)
                     {
-                        throw new InvalidOperationException("No record found with this id!");
+                        throw new CustomException("No record found with this id!");
                     }
                     if (namecount > 1)
                     {
                         throw new CustomException("Already exist brand with this name");
                     }
 
-                    var brand = new Brand()
-                    {
-                        Id = model.Id,
-                        Name = model.Name,
-                        Description = model.Description,
-                        Status = (int)model.Status,
-                        Rank = model.Rank,
-                        CreateBy = model.CreateBy,
-                        CreationDate = model.CreationDate,
-                        ModifyBy = userId,
-                        ModificationDate = _timeService.Now
-                    };
+                    brand.Name = model.Name;
+                    brand.Description = model.Description;
+                    brand.Status = (int)model.Status;
+                    brand.ModifyBy = userId;
+                    brand.ModificationDate = _timeService.Now;
 
                     await _brandDao.EditAsync(brand);
                     transaction.Commit();

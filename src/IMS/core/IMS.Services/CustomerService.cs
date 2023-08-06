@@ -58,7 +58,7 @@ namespace IMS.Services
                         ContactNumber = model.ContactNumber,
                         Email = model.Email,
                         Status = (int)model.Status,
-                        Rank = model.Rank,
+                        Rank = await _customerDao.GetMaxRank("Customer") + 1,
                         CreateBy = userId,
                         CreationDate = _timeService.Now,
                     };
@@ -82,31 +82,25 @@ namespace IMS.Services
             {
                 try
                 {
-                    var objectcount = _customerDao.GetCount(x => x.Id == model.Id);
+                    var customer = await _customerDao.GetByIdAsync(model.Id);
                     var namecount = _customerDao.GetCount(x => x.Name == model.Name);
 
-                    if (namecount < 1)
+                    if (customer == null)
                     {
-                        throw new InvalidOperationException("No record found with this id!");
+                        throw new CustomException("No record found with this id!");
                     }
                     if (namecount > 1)
                     {
                         throw new CustomException("Already exist customer with this name");
                     }
 
-                    var customer = new Customer()
-                    {
-                        Id = model.Id,
-                        Name = model.Name,
-                        Address = model.Address,
-                        ContactNumber = model.ContactNumber,
-                        Email = model.Email,
-                        Status = (int)model.Status,
-                        CreateBy = model.CreateBy,
-                        CreationDate = model.CreationDate,
-                        ModifyBy = userId,
-                        ModificationDate = _timeService.Now
-                    };
+                    customer.Name = model.Name;
+                    customer.Address = model.Address;
+                    customer.ContactNumber = model.ContactNumber;
+                    customer.Email = model.Email;                    
+                    customer.Status = (int)model.Status;
+                    customer.ModifyBy = userId;
+                    customer.ModificationDate = _timeService.Now;
 
                     await _customerDao.EditAsync(customer);
                     transaction.Commit();

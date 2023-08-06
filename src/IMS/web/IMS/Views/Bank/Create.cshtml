@@ -40,10 +40,6 @@
                             @*<span>@Html.ValidationMessageFor(model => model.Description)</span>*@
                         </div>
                         <div class="form-group">
-                            <label> @Html.LabelFor(m => m.Rank)</label>
-                            @Html.TextBoxFor(m => m.Rank, new { @class = "form-control", @placeholder = "Rank", @type = "number" })
-                        </div>
-                        <div class="form-group">
                             <label> @Html.LabelFor(m => m.Status)</label>
                             @Html.DropDownListFor(m => m.Status, (SelectList)ViewBag.StatusList, new { @class = "form-control" })
                         </div>
