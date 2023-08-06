@@ -82,6 +82,7 @@
                 <div class="card-body overflow-y-scroll">
                     @using (Html.BeginForm("Create", "Purchase", FormMethod.Post, htmlAttributes: new { @id = "myform", @class = "nav-link cmxform" }))
                     {
+                        @Html.AntiForgeryToken()
                         <div class="row">
                             <div class="col-md-8">
                                 <label>Supplier</label>
@@ -97,7 +98,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label>Grand Total</label>
-                                <input readonly type="number" class = "form-control" id="grandTotal" name="grandTotal" value="0"/>
+                                <input readonly type="number" class="form-control" id="grandTotal" name="grandTotal" value="0" />
                             </div>
                         </div>
                         <div class="row">
@@ -113,12 +114,12 @@
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="itemRows">                                           
+                                        <tbody id="itemRows">
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="row">
-                                    <input type="submit" class="btn btn-primary btn-block" id="purchaseButton" value="Confirm Purchase"/>
+                                    <input type="submit" class="btn btn-primary btn-block" id="purchaseButton" value="Confirm Purchase" />
                                 </div>
                             </div>
                         </div>

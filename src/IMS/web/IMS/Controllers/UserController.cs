@@ -18,7 +18,7 @@ using System.Web.Security;
 
 namespace IMS.Controllers
 {
-    [Authorize(Roles = "SA")]
+    [Authorize(Roles = "SA, Manager")]
     public class UserController : AllBaseController
     {
         private readonly IUserService _userService;
@@ -75,6 +75,7 @@ namespace IMS.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(long id)
         {
             try
@@ -112,6 +113,7 @@ namespace IMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(UserEditModel model, long id)
         {
             if (ModelState.IsValid)
@@ -142,6 +144,7 @@ namespace IMS.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
         public ActionResult ManageUserRole()
         {
 
@@ -167,6 +170,7 @@ namespace IMS.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> ManageUserRole(UserRolesModel model)
         {
             if (ModelState.IsValid)

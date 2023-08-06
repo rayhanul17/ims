@@ -83,6 +83,7 @@
                 <div class="card-body overflow-y-scroll">
                     @using (Html.BeginForm("Create", "Sale", FormMethod.Post, htmlAttributes: new { @id = "myform", @class = "nav-link cmxform" }))
                     {
+                        @Html.AntiForgeryToken()
                         <div class="row">
                             <div class="col-md-8">
                                 <label>Customer</label>
