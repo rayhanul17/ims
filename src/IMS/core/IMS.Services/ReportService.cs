@@ -94,8 +94,13 @@ namespace IMS.Services
         {
             var dates = model.DateRange.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var startDate = DateTime.Parse(dates[0]).ToUniversalTime().ToString();
-            var endDate = DateTime.Parse(dates[1]).ToUniversalTime().ToString();
+            /* === If Timservice provide Utc time ===
+             * var startDate = DateTime.Parse(dates[0]).ToUniversalTime().ToString();
+             * var endDate = DateTime.Parse(dates[1]).ToUniversalTime().ToString();
+            */
+
+            var startDate = DateTime.Parse(dates[0]).ToString();
+            var endDate = DateTime.Parse(dates[1]).ToString();
 
             var saleInfo = (await _reportDao.ExecuteQueryAsync<PaymentDetailsDto>($"SELECT " +
                 $"COUNT(s.Id) AS Count, " +
