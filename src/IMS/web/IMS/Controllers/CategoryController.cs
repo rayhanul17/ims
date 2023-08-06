@@ -14,6 +14,7 @@ using System.Web.Mvc;
 
 namespace IMS.Controllers
 {
+    [Authorize]
     public class CategoryController : AllBaseController
     {
         #region Initialization
@@ -30,6 +31,7 @@ namespace IMS.Controllers
         #endregion
 
         #region Index
+        [Authorize(Roles = "SA, Manager, Seller")]
         public ActionResult Index()
         {
             return View();
@@ -38,6 +40,7 @@ namespace IMS.Controllers
 
         #region Operational Function
         [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
         public ActionResult Create()
         {
             var model = new CategoryAddModel();
@@ -52,6 +55,7 @@ namespace IMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Create(CategoryAddModel model)
         {
             try
@@ -81,6 +85,7 @@ namespace IMS.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(long id)
         {
             if (id == 0)
@@ -109,6 +114,8 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(CategoryEditModel model)
         {
             try
@@ -139,6 +146,8 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Delete(long id)
         {
             try
@@ -160,6 +169,7 @@ namespace IMS.Controllers
         #endregion
 
         #region Ajax Call
+        [AllowAnonymous]
         public JsonResult GetCategories()
         {
             try

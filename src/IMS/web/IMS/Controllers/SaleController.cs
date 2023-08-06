@@ -1,5 +1,4 @@
-﻿using IMS.BusinessModel.Dto;
-using IMS.BusinessModel.ViewModel;
+﻿using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
@@ -14,9 +13,10 @@ using System.Web.Mvc;
 
 namespace IMS.Controllers
 {
+    [Authorize]
     public class SaleController : AllBaseController
     {
-
+        #region Initialization
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
         private readonly IBrandService _brandService;
@@ -36,12 +36,16 @@ namespace IMS.Controllers
             _paymentService = new PaymentService(session);
             _userService = new UserService(session);
         }
+        #endregion
+
+        [Authorize(Roles = "SA, Manager, Seller")]
         public ActionResult Index()
         {
             return View();
         }
 
         [HttpGet]
+        [Authorize(Roles = "SA, Manager, Seller")]
         public ActionResult Create()
         {
             var categoryList = _categoryService.LoadAllActiveCategories();
@@ -69,6 +73,8 @@ namespace IMS.Controllers
         }        
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager, Seller")]
         public async Task<ActionResult> Create(SaleDetailsModel[] model, long customerId, decimal grandTotal)
         {
 
@@ -106,14 +112,17 @@ namespace IMS.Controllers
             return RedirectToAction("Create");
         }
 
-        #region JSON
+        #region Ajax Call
         [HttpPost]
+        [AllowAnonymous]
         public JsonResult UpdateProductList(long categoryId, long brandId)
         {
             var products = _productService.LoadAvailableProducts(categoryId, brandId).Select(x => new { value = x.Id, text = x.Name, qty = x.InStockQuantity, price = x.SellingPrice });
             return Json(products);
         }
 
+        [HttpPost]
+        [AllowAnonymous]
         public JsonResult GetSales()
         {
             try

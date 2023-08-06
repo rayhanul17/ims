@@ -15,6 +15,7 @@ using System.Web.Mvc;
 
 namespace IMS.Controllers
 {
+    [Authorize]
     public class ProductController : AllBaseController
     {
         #region Initialization
@@ -37,6 +38,7 @@ namespace IMS.Controllers
         #endregion
 
         #region Index
+        [Authorize(Roles = "SA, Manager, Seller")]
         public ActionResult Index()
         {
             return View();
@@ -45,6 +47,7 @@ namespace IMS.Controllers
 
         #region Operational Function
         [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
         public ActionResult Create()
         {
             var model = new ProductAddModel();
@@ -78,6 +81,7 @@ namespace IMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken()]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Create(ProductAddModel model, HttpPostedFileBase image)
         {
 
@@ -112,6 +116,7 @@ namespace IMS.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(long id)
         {
             if (id == 0)
@@ -159,6 +164,7 @@ namespace IMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(ProductEditModel model, HttpPostedFileBase image)
         {
             try
@@ -195,6 +201,8 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Delete(long id)
         {
             try
@@ -216,6 +224,8 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> UpdateRank(long Id, long TargetRank)
         {
             return RedirectToAction("Index", "Product");
@@ -223,6 +233,7 @@ namespace IMS.Controllers
         #endregion
 
         #region Ajax Call
+        [AllowAnonymous]
         public JsonResult GetProducts()
         {
             try
@@ -266,6 +277,7 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<JsonResult> GetProductBuyingPrice(long productId)
         {
             var product = await _productService.GetByIdAsync(productId);
@@ -273,6 +285,7 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<JsonResult> GetProductSellingPriceAndQuantiy(long productId)
         {
             var product = await _productService.GetPriceAndQuantityByIdAsync(productId);

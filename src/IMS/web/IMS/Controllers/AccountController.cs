@@ -1,4 +1,5 @@
-﻿using IMS.BusinessRules;
+﻿using IMS.BusinessModel.ViewModel;
+using IMS.BusinessRules;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
@@ -12,8 +13,7 @@ using System.Web;
 using System.Web.Mvc;
 
 namespace IMS.Controllers
-{
-    
+{  
     public class AccountController : AllBaseController
     {
         private ApplicationSignInManager _signInManager;
@@ -94,8 +94,7 @@ namespace IMS.Controllers
                 switch (result)
                 {
                     case SignInStatus.Success:
-                        return RedirectToAction("Dashboard", "Report");
-                        //return RedirectToLocal(returnUrl);
+                        return RedirectToAction("Dashboard", "Report");                        
                     case SignInStatus.LockedOut:
                         return View("Lockout");
                     case SignInStatus.RequiresVerification:
@@ -159,7 +158,7 @@ namespace IMS.Controllers
 
         //
         // GET: /Account/Register
-        //[Authorize(Roles = "SA")]
+        [Authorize(Roles = "SA")]
         public ActionResult Register()
         {
             return View();
@@ -168,7 +167,7 @@ namespace IMS.Controllers
         //
         // POST: /Account/Register
         [HttpPost]
-        //[Authorize(Roles = "SA")]
+        [Authorize(Roles = "SA")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {

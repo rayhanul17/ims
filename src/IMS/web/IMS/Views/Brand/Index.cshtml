@@ -17,11 +17,14 @@
                     <h3 class="card-title">Currently Available Brands</h3>
                 </div>
             </div>
-            <div class="col-6">
-                <div class="float-right">
-                    <a href="/brand/create" class="btn btn-success">Add Brand</a>
+            @if (User.IsInRole("SA") || User.IsInRole("Manager"))
+            {
+                <div class="col-6">
+                    <div class="float-right">
+                        <a href="/brand/create" class="btn btn-success">Add Brand</a>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
     <div class="card-body">
@@ -93,7 +96,8 @@
                         "orderable": false,
                         "targets": 6,
                         "render": function (data, type, row) {
-                            return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/brand/edit/${data}'">
+                            if ('@User.IsInRole("SA")' == 'True' || '@User.IsInRole("Manager")' == 'True') {
+                                return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/brand/edit/${data}'">
                                                         <i class="fas fa-pencil-alt">
                                                         </i>
                                                         Edit
@@ -103,6 +107,11 @@
                                                         </i>
                                                         Delete
                                                     </button>`;
+                            }
+                            else {
+                                return ``;
+                            }
+                            
                         }
                     },
                     { "orderable": false, "targets": [0, 3, 5, 6] }
@@ -120,10 +129,10 @@
             $("#deleteForm").attr("action", "/brand/delete");
             console.log(m);
             m.modal('show');
-            
+
         });
 
-        $("#deleteButton").click(function () {            
+        $("#deleteButton").click(function () {
             $("#deleteForm").submit();
         });
 

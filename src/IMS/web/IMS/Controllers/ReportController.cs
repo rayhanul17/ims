@@ -4,12 +4,12 @@ using IMS.BusinessRules.Exceptions;
 using IMS.Services;
 using IMS.Services.SessionFactories;
 using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace IMS.Controllers
 {
+    [Authorize]
     public class ReportController : AllBaseController
     {
         #region Initialization
@@ -33,21 +33,23 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> LP(LoseProfitReportDto model)
         {
-            
+
             try
             {
                 if (string.IsNullOrWhiteSpace(model.DateRange))
                 {
                     throw new CustomException("Empty DateTime Range Found");
                 }
-                
+
                 model = await _reportService.GetLoseProfitReport(model);
 
                 return View(model);
             }
-            catch(CustomException ex)
+            catch (CustomException ex)
             {
                 ViewResponse(ex.Message, Models.ResponseTypes.Warning);
                 return View(model);
@@ -56,6 +58,8 @@ namespace IMS.Controllers
 
         }
 
+        [HttpGet]
+        [Authorize(Roles = "SA, Manager, Seller")]
         public async Task<ActionResult> Dashboard()
         {
             try

@@ -14,21 +14,17 @@
     <div class="card-header">
         <div class="row">
             <div class="col-6">
-                @{
-                    if (Roles.IsUserInRole("Manager") || Roles.IsUserInRole("SA"))
-                    {
-                        <input hidden id="role" value="true" />
-                    }
-                }
                 <div class="float-left">
                     <h3 class="card-title">Currently Available Products</h3>
                 </div>
             </div>
-            <div class="col-6">
-                <div class="float-right">
-                    <a href="/Product/Create" class="btn btn-success">Add Product</a>
+            @if (User.IsInRole("SA") || User.IsInRole("Manager"))
+            {   <div class="col-6">
+                    <div class="float-right">
+                        <a href="/Product/Create" class="btn btn-success">Add Product</a>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
     <div class="card-body">
@@ -89,9 +85,9 @@
     <script src="~/Assets/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
     <script src="~/Assets/plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script src="~/Assets/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
-    <script>        
-        $(document).ready(function () {
-            var c = $("#role").val() == 'true';
+    <script>
+
+        $(document).ready(function () {            
             $('#table').DataTable({
                 "responsive": true,
                 "processing": true,
@@ -116,32 +112,23 @@
                     {
                         "responsive": true,
                         "orderable": false,
-                        "targets": 9,                        
+                        "targets": 9,
                         "render": function (data, type, row) {
-                            var b = `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/product/edit/${data}'">
-                                                            <i class="fas fa-pencil-alt">
-                                                            </i>
-                                                            Edit
-                                                        </button>
-                                                        <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value= '${data}'>
-                                                            <i class="fas fa-trash">
-                                                            </i>
-                                                            Delete
-                                                        </button>
-                                                        <button type="submit" class="btn btn-warning btn-sm show-rank-modal" data-id='${data}' value= '${data}'>
-                                                            <i class="fas fa-info">
-                                                            </i>
-                                                            Rank
-                                                        </button>`;
-                            
-                            if (c) {
-                                return b;
-
+                            if ('@User.IsInRole("SA")' == 'True' || '@User.IsInRole("Manager")' == 'True') {
+                                return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/product/edit/${data}'">
+                                                        <i class="fas fa-pencil-alt">
+                                                        </i>
+                                                        Edit
+                                                    </button>
+                                                    <button type="submit" class="btn btn-danger btn-sm delete-modal" data-id='${data}' value= '${data}'>
+                                                        <i class="fas fa-trash">
+                                                        </i>
+                                                        Delete
+                                                    </button>`;
                             }
                             else {
                                 return ``;
                             }
-                            
                         }
                     },
                     {

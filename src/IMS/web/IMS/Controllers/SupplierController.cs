@@ -29,6 +29,8 @@ namespace IMS.Controllers
         #endregion
 
         #region Index
+        [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
         public ActionResult Index()
         {
             return View();
@@ -37,6 +39,7 @@ namespace IMS.Controllers
 
         #region Operational Function
         [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
         public ActionResult Create()
         {
             var model = new SupplierAddModel();
@@ -48,6 +51,8 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Create(SupplierAddModel model)
         {
             try
@@ -77,6 +82,7 @@ namespace IMS.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(long id)
         {
             if (id == 0)
@@ -105,6 +111,8 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(SupplierEditModel model)
         {
             try
@@ -134,6 +142,8 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Delete(long id)
         {
             try
@@ -156,6 +166,8 @@ namespace IMS.Controllers
         #endregion
 
         #region Ajax Call
+        [HttpPost]
+        [AllowAnonymous]
         public JsonResult GetSuppliers()
         {
             try

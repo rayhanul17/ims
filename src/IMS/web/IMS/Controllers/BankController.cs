@@ -9,13 +9,12 @@ using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace IMS.Controllers
 {
-    
+    [Authorize]
     public class BankController : AllBaseController
     {
         #region Initialization
@@ -32,7 +31,7 @@ namespace IMS.Controllers
         #endregion
 
         #region Index
-        [Authorize(Roles = "Seller")]
+        [Authorize(Roles = "SA, Manager, Seller")]
         public ActionResult Index()
         {
             return View();
@@ -49,7 +48,7 @@ namespace IMS.Controllers
                        .Cast<Status>()
                        .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
             ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
-                       
+
             _logger.Info("Bank Creation Page");
             return View(model);
         }
@@ -72,7 +71,7 @@ namespace IMS.Controllers
                     ViewResponse("Provide data properly", ResponseTypes.Danger);
                 }
             }
-            catch(CustomException ex)
+            catch (CustomException ex)
             {
                 ViewResponse(ex.Message, ResponseTypes.Warning);
             }
@@ -109,6 +108,7 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(BankEditModel model)
         {
@@ -140,6 +140,7 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Delete(long id)
         {
@@ -148,7 +149,7 @@ namespace IMS.Controllers
                 var userId = User.Identity.GetUserId<long>();
                 await _bankService.RemoveByIdAsync(id, userId);
             }
-            catch(CustomException ex)
+            catch (CustomException ex)
             {
                 ViewResponse(ex.Message, ResponseTypes.Warning);
             }
@@ -165,7 +166,7 @@ namespace IMS.Controllers
         [AllowAnonymous]
         public JsonResult GetBanks()
         {
-            
+
             try
             {
                 var model = new DataTablesAjaxRequestModel(Request);
@@ -204,8 +205,8 @@ namespace IMS.Controllers
 
         #region Helper Function
         private void ValidateBankAddModel(BankAddModel model)
-        {            
-            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length<3 || model.Name.Length >100)
+        {
+            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 100)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
             }
@@ -221,11 +222,11 @@ namespace IMS.Controllers
 
         private void ValidateBankEditModel(BankEditModel model)
         {
-            if(model.Id == 0)
+            if (model.Id == 0)
             {
                 ModelState.AddModelError("Id", "Object id not found");
             }
-            if(model.CreateBy == 0)
+            if (model.CreateBy == 0)
             {
                 ModelState.AddModelError("CreateBy", "CreateBy id not found");
             }

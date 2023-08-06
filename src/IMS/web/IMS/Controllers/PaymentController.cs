@@ -1,12 +1,10 @@
-﻿using IMS.BusinessModel.Dto;
-using IMS.BusinessModel.ViewModel;
+﻿using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
-using Microsoft.AspNet.Identity;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,8 +12,10 @@ using System.Web.Mvc;
 
 namespace IMS.Controllers
 {
+    [Authorize]
     public class PaymentController : AllBaseController
     {
+        #region Initialization
         private readonly IPaymentService _paymentService;
         private readonly IBankService _bankService;
         private readonly IUserService _userService;
@@ -27,12 +27,17 @@ namespace IMS.Controllers
             _bankService = new BankService(session);
             _userService = new UserService(session);
         }
+        #endregion
+
+
+        [Authorize(Roles = "SA, Manager, Seller")]
         public ActionResult Index()
         {
             return View();
         }
 
         [HttpGet]
+        [Authorize(Roles = "SA, Manager, Seller")]
         public async Task<ActionResult> Create(long id)
         {
             var model = new PaymentModel();
@@ -51,11 +56,11 @@ namespace IMS.Controllers
 
                 model = await _paymentService.GetPaymentByIdAsync(id);
             }
-            catch(CustomException ex)
+            catch (CustomException ex)
             {
                 ViewResponse(ex.Message, ResponseTypes.Warning);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
@@ -65,18 +70,19 @@ namespace IMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken()]
+        [Authorize(Roles = "SA, Manager, Seller")]
         public async Task<ActionResult> Create(PaymentModel model)
-        {           
+        {
 
             if (model != null)
             {
                 try
-                {  
+                {
                     await _paymentService.MakePaymentAsync(model);
                     ViewResponse("Successfully Payment completed!", ResponseTypes.Success);
 
                 }
-                catch(CustomException ex)
+                catch (CustomException ex)
                 {
                     ViewResponse(ex.Message, ResponseTypes.Warning);
                 }
@@ -93,8 +99,9 @@ namespace IMS.Controllers
             return RedirectToAction("Index");
         }
 
-        #region JSON       
-
+        #region Ajax Call       
+        [HttpPost]
+        [AllowAnonymous]
         public JsonResult GetPayments()
         {
             try
@@ -130,7 +137,7 @@ namespace IMS.Controllers
 
             return default(JsonResult);
         }
-
+        [Authorize(Roles = "SA, Manager, Seller")]
         public async Task<ActionResult> Details(long id)
         {
             var model = await _paymentService.GetPaymentDetailsAsync(id);

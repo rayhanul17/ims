@@ -17,11 +17,14 @@
                     <h3 class="card-title">Available All Customers</h3>
                 </div>
             </div>
-            <div class="col-6">
-                <div class="float-right">
-                    <a href="/Customer/Create" class="btn btn-success">Add Customer</a>
+            @if (User.IsInRole("SA") || User.IsInRole("Manager"))
+            {
+                <div class="col-6">
+                    <div class="float-right">
+                        <a href="/Customer/Create" class="btn btn-success">Add Customer</a>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
     <div class="card-body">
@@ -101,7 +104,8 @@
                         "orderable": false,
                         "targets": 8,
                         "render": function (data, type, row) {
-                            return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/customer/edit/${data}'">
+                            if ('@User.IsInRole("SA")' == 'True' || '@User.IsInRole("Manager")' == 'True') {
+                                return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/customer/edit/${data}'">
                                                         <i class="fas fa-pencil-alt">
                                                         </i>
                                                         Edit
@@ -111,6 +115,10 @@
                                                         </i>
                                                         Delete
                                                     </button>`;
+                            }
+                            else {
+                                return ``;
+                            }
                         }
                     },
                     { "orderable": false, "targets": [0, 2, 3, 4, 5, 7, 8] }
@@ -130,7 +138,7 @@
         });
 
         $("#deleteButton").click(function () {
-            $("#deleteForm").submit();            
+            $("#deleteForm").submit();
 
         });
 

@@ -17,11 +17,14 @@
                     <h3 class="card-title">Currently Available Categories</h3>
                 </div>
             </div>
-            <div class="col-6">
-                <div class="float-right">
-                    <a href="/Category/Create" class="btn btn-success">Add Category</a>
+            @if (User.IsInRole("SA") || User.IsInRole("Manager"))
+            {
+                <div class="col-6">
+                    <div class="float-right">
+                        <a href="/Category/Create" class="btn btn-success">Add Category</a>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
     <div class="card-body">
@@ -69,7 +72,8 @@
     <script src="~/Assets/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
     <script src="~/Assets/plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script src="~/Assets/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
-    <script>        
+    <script>
+
         $(document).ready(function () {
             $('#table').DataTable({
                 "processing": true,
@@ -83,7 +87,7 @@
                     { "name": "SL" },
                     { "name": "Name" },
                     { "name": "Description" },
-                    { "name": "Status" },                    
+                    { "name": "Status" },
                     { "name": "Created By" },
                     { "name": "Created Date" }
                 ],
@@ -92,7 +96,8 @@
                         "orderable": false,
                         "targets": 6,
                         "render": function (data, type, row) {
-                            return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/category/edit/${data}'">
+                            if ('@User.IsInRole("SA")' == 'True' || '@User.IsInRole("Manager")' == 'True') {
+                                return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/category/edit/${data}'">
                                                         <i class="fas fa-pencil-alt">
                                                         </i>
                                                         Edit
@@ -102,9 +107,13 @@
                                                         </i>
                                                         Delete
                                                     </button>`;
+                            }
+                            else {
+                                return ``;
+                            }
                         }
                     },
-                    { "orderable": false, "targets": [0, 3, 5, 6] }                    
+                    { "orderable": false, "targets": [0, 3, 5, 6] }
                 ],
                 "order": [1, 'asc']
             });
@@ -128,7 +137,7 @@
             //m[0].style.display = "hidden";
 
         });
-       
+
     </script>
 }
 

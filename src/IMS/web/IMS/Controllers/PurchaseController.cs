@@ -14,9 +14,10 @@ using System.Web.Mvc;
 
 namespace IMS.Controllers
 {
+    [Authorize]
     public class PurchaseController : AllBaseController
     {
-
+        #region Initializtion
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
         private readonly IBrandService _brandService;
@@ -36,12 +37,17 @@ namespace IMS.Controllers
             _paymentService = new PaymentService(session);
             _userService = new UserService(session);
         }
+        #endregion
+
+        [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
         public ActionResult Index()
         {
             return View();
         }
 
         [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
         public ActionResult Create()
         {
             var categoryList = _categoryService.LoadAllActiveCategories();
@@ -69,6 +75,8 @@ namespace IMS.Controllers
         }        
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Create(PurchaseDetailsModel[] model, long supplierId, decimal grandTotal)
         {
 
@@ -107,14 +115,17 @@ namespace IMS.Controllers
             return RedirectToAction("Create");
         }
 
-        #region JSON
+        #region Ajax Call
         [HttpPost]
+        [AllowAnonymous]
         public JsonResult UpdateProductList(long categoryId, long brandId)
         {
             var products = _productService.LoadActiveProducts(categoryId, brandId).Select(x => new { value = x.Id, text = x.Name, qty = x.InStockQuantity, price = x.SellingPrice });
             return Json(products);
         }
 
+        [HttpPost]
+        [AllowAnonymous]
         public JsonResult GetPurchases()
         {
             try
@@ -158,8 +169,8 @@ namespace IMS.Controllers
 
             return default(JsonResult);
         }
-
-        
+        [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Details(long id)
         {
             var model = await _purchaseService.GetPurchaseDetailsAsync(id);
