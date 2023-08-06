@@ -11,8 +11,8 @@ namespace IMS.BusinessModel.Entity
         public virtual DateTime CreationDate { get; set; }        
         public virtual T ModifyBy { get; set; }
         public virtual DateTime? ModificationDate { get; set; }
-        public virtual int Rank { get; set; }
-        public virtual int? VersionNumber { get; set; }
+        public virtual T Rank { get; set; }
+        public virtual long? VersionNumber { get; set; }
         public virtual string BusinessId { get; set; }
     }
 }

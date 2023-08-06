@@ -13,8 +13,8 @@ namespace IMS.BusinessModel.Dto
         public DateTime CreationDate { get; set; }
         public long ModifyBy { get; set; }
         public DateTime? ModificationDate { get; set; }
-        public int Rank { get; set; }
-        public int? VersionNumber { get; set; }
+        public long Rank { get; set; }
+        public long? VersionNumber { get; set; }
         public string BusinessId { get; set; }
     }
 }

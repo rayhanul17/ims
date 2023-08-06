@@ -9,7 +9,7 @@ namespace IMS.BusinessModel.ViewModel
         [Required, MinLength(3)]
         public string Name { get; set; }
         public string Description { get; set; }
-        public int Rank { get; set; }
+        public long Rank { get; set; }
 
         [Required]
         public Status Status { get; set; }

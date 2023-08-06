@@ -2,6 +2,7 @@
 using NHibernate;
 using NHibernate.Transform;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -18,13 +19,14 @@ namespace IMS.Dao
         Task RemoveAsync(TEntity entityToDelete);
         Task EditAsync(TEntity entityToUpdate);
         Task<TEntity> GetByIdAsync(TKey id);
+        Task<long> GetMaxRank(string tableName);
         IList<TEntity> Get(Expression<Func<TEntity, bool>> filter);
         IList<TEntity> GetAll();
         int GetCount(Expression<Func<TEntity, bool>> filter = null);
         Task<int> ExecuteUpdateDeleteQuery(string query);
         Task<T> GetRankByIdAsync<T>(long id, string tableName);
-        Task<int> RankUpAsync(long rankFrom, long rankTo, string tableName);
-        Task<int> RankDownAsync(long rankFrom, long rankTo, string tableName);
+        Task<long> RankUpAsync(long rankFrom, long rankTo, string tableName);
+        Task<long> RankDownAsync(long rankFrom, long rankTo, string tableName);
         (IList<TEntity> data, int total, int totalDisplay) GetDynamic(
             Expression<Func<TEntity, bool>> filter = null,
             string orderBy = null, int pageIndex = 1, int pageSize = 10);
@@ -140,7 +142,7 @@ namespace IMS.Dao
             return result;
         }
 
-        public async Task<int> RankDownAsync(long rankFrom, long rankTo, string tableName)
+        public async Task<long> RankDownAsync(long rankFrom, long rankTo, string tableName)
         {
             var sql = $"Update {tableName} " +
                 $"SET [Rank] = CASE " +
@@ -153,7 +155,7 @@ namespace IMS.Dao
             return result;
         }
 
-        public async Task<int> RankUpAsync(long rankFrom, long rankTo, string tableName)
+        public async Task<long> RankUpAsync(long rankFrom, long rankTo, string tableName)
         {
             var sql = $"Update {tableName} " +
                 $"SET [Rank] = CASE " +
@@ -164,6 +166,15 @@ namespace IMS.Dao
             var result = await ExecuteUpdateDeleteQuery(sql);
 
             return result;
+        }   
+        
+        public async Task<long> GetMaxRank(string tableName)
+        {
+            var sql = $"SELECT MAX([Rank]) Rank FROM {tableName}";
+            var query = _session.CreateSQLQuery(sql);
+            var resut = Convert.ToInt64(await query.UniqueResultAsync());
+
+            return resut;
         }
 
         public virtual IList<TEntity> Get(Expression<Func<TEntity, bool>> filter,

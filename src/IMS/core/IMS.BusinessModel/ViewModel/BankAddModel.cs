@@ -6,8 +6,7 @@ namespace IMS.BusinessModel.ViewModel
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public int Rank { get; set; }
-
+        public long Rank { get; set; }
         public Status Status { get; set; }
 
     }

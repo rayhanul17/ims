@@ -15,8 +15,8 @@ namespace IMS.BusinessModel.ViewModel
         public virtual DateTime CreationDate { get; set; }
         public virtual long ModifyBy { get; set; }
         public virtual DateTime? ModificationDate { get; set; }
-        public virtual int Rank { get; set; }
-        public virtual int? VersionNumber { get; set; }
+        public virtual long Rank { get; set; }
+        public virtual long? VersionNumber { get; set; }
         public virtual string BusinessId { get; set; }
 
     }

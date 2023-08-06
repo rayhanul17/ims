@@ -57,7 +57,7 @@ namespace IMS.Services
                     if(count > 0)
                     {
                         throw new CustomException("Found another Product with this name");
-                    }
+                    }                    
 
                     var product = new Product()
                     {
@@ -70,7 +70,7 @@ namespace IMS.Services
                         Status = (int)model.Status,
                         ProfitMargin = model.ProfitMargin,
                         DiscountPrice = model.DiscountPrice,
-                        Rank = model.Rank,
+                        Rank = await _productDao.GetMaxRank("Product") + 1,
                         CreateBy = userId,
                         CreationDate = _timeService.Now,
                         Image = model.Image,
