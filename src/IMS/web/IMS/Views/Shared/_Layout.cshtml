@@ -37,16 +37,21 @@
                     <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="index3.html" class="nav-link">Home</a>
+                    <a href="/report/dashboard" class="nav-link">Home</a>
                 </li>
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="index3.html" class="nav-link">New Purchase</a>
-                </li>
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="index3.html" class="nav-link">New Sale</a>
-                </li>
+                @if (Roles.IsUserInRole("Manager") || Roles.IsUserInRole("SA"))
+                {
+                    <li class="nav-item d-none d-sm-inline-block">
+                        <a href="/purchase/create" class="nav-link">New Purchase</a>
+                    </li>
+                }
+                @if (Roles.IsUserInRole("Seller"))
+                {
+                    <li class="nav-item d-none d-sm-inline-block">
+                        <a href="/sale/create" class="nav-link">New Sale</a>
+                    </li>
+                }
             </ul>
-
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">

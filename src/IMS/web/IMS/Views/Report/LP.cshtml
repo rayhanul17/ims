@@ -24,7 +24,7 @@
                                 <div>
                                     Date Range : @Model.DateRange
                                 </div>
-                                <div id="lp">                                    
+                                <div id="lp">
                                 </div>
                             </div>
 
@@ -35,7 +35,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="far fa-clock"></i></span>
                                         </div>
-                                        <input type="text" name="DateRange" class="form-control float-right" id="reservationtime">                                       
+                                        <input type="text" name="DateRange" class="form-control float-right" id="reservationtime">
                                     </div>
                                 </div>
                             </div>
@@ -75,8 +75,8 @@
                                                 <td>@j</td>
                                                 <td>@Model.PurchaseProductList[i].Name</td>
                                                 <td>@Model.PurchaseProductList[i].Quantity</td>
-                                                <td>@Model.PurchaseProductList[i].TotalPrice</td>                                                
-                                                <td>@Model.PurchaseProductList[i].Date</td>                                                
+                                                <td>@Model.PurchaseProductList[i].TotalPrice</td>
+                                                <td>@Model.PurchaseProductList[i].Date</td>
                                             </tr>
                                         }
                                     </tbody>
@@ -131,20 +131,23 @@
     <script src="~/Assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
     <script src="~/Assets/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
     <script src="~/Assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/Assets/plugins/jszip/jszip.min.js"></script>
+    <script src="~/Assets/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/Assets/plugins/pdfmake/vfs_fonts.js"></script>
     <script src="~/Assets/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
     <script src="~/Assets/plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script src="~/Assets/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
     <script>
         $(function () {
             $("#Ptable").DataTable({
-                "responsive": true, "lengthChange": false, "autoWidth": false,                
-                "searching": false
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "searching": true
                 //"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#Ptable_wrapper .col-md-6:eq(0)');
 
             $("#Stable").DataTable({
                 "responsive": true, "lengthChange": false, "autoWidth": false,
-                "searching": false
+                "searching": true
                 //"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#Stable_wrapper .col-md-6:eq(0)');
 
@@ -162,11 +165,11 @@
             console.log(v);
             if (v > 0) {
                 $('#lp').append(`<span class="badge bg-success"><span class="h6">Profit amount is: ${v} Tk</span></span>`);
-            }                                 
-            else if (v == 0) {                
+            }
+            else if (v == 0) {
                 $('#lp').append(`<span class="badge bg-warning"><span class="h6">You have no profit or lose</span></span>`);
-            }                                 
-            else{                             
+            }
+            else {
                 $('#lp').append(`<span class="badge bg-danger"><span class="h6">Lose amount is: ${Math.abs(v)} Tk</span></span>`);
             }
         });

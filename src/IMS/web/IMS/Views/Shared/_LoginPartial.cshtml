@@ -6,8 +6,11 @@
         @Html.AntiForgeryToken()
 
         @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage", @class = "nav-link", style = "float:left" })
-        <a class="nav-link" style = "float:left" href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
-        @Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink", @class = "nav-link", style = "float:left" })
+        <a class="nav-link" style="float:left" href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+        if(Roles.IsUserInRole("SA"))
+        {
+            @Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink", @class = "nav-link", style = "float:left" })
+        }
     }
 }
 
