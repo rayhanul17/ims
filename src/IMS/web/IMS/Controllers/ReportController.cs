@@ -24,8 +24,8 @@ namespace IMS.Controllers
         }
 
         #endregion
-        // GET: Report
         [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
         public ActionResult LP()
         {
             var model = new LoseProfitReportDto();
@@ -58,8 +58,7 @@ namespace IMS.Controllers
 
         }
 
-        [HttpGet]
-        [Authorize(Roles = "SA, Manager, Seller")]
+        [HttpGet]        
         public async Task<ActionResult> Dashboard()
         {
             try

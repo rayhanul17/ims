@@ -10,7 +10,6 @@ namespace IMS.BusinessModel.ViewModel
         public decimal BuyingPrice { get; set; }
         public decimal SellingPrice { get; set; }
         public decimal DiscountPrice { get; set; }
-        [Required]
         public decimal ProfitMargin { get; set; }
         public int InStockQuantity { get; set; }
         public long CategoryId { get; set; }

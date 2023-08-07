@@ -1,4 +1,4 @@
-﻿@if (Request.IsAuthenticated)
+﻿@if (Roles.IsUserInRole("Manager") || Roles.IsUserInRole("SA") || Roles.IsUserInRole("Seller"))
 {
     <div class="sidebar">
         <nav class="mt-2">
@@ -43,7 +43,7 @@
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fab fa-product-hunt"></i>
+                        <i class="nav-icon fas fa-bars"></i>
                         <p>
                             Category
                             <i class="fas fa-angle-left right"></i>
@@ -69,7 +69,7 @@
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-product-hunt"></i>
+                        <i class="nav-icon fas fa-chart-bar"></i>
                         <p>
                             Brand
                             <i class="fas fa-angle-left right"></i>
@@ -145,12 +145,6 @@
                         </ul>
                     </li>
                 }
-                <li class="nav-item">
-                    <a href="/payment/index" class="nav-link">
-                        <i class="nav-icon fas fa-dollar-sign"></i>
-                        <p>Paymentt</p>
-                    </a>
-                </li>
                 @if (Roles.IsUserInRole("Manager") || Roles.IsUserInRole("SA"))
                 {
                     <li class="nav-item">
@@ -261,7 +255,12 @@
                             }
                         </ul>
                     </li>
-
+                    <li class="nav-item">
+                        <a href="/payment/index" class="nav-link">
+                            <i class="nav-icon fas fa-dollar-sign"></i>
+                            <p>Payment</p>
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a href="/report/lp" class="nav-link">
                             <i class="nav-icon fas fa-chart-pie"></i>
