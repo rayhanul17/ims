@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -19,8 +16,8 @@ namespace IMS.Services
         public string GetImage(string path, string fileName)
         {
             if (string.IsNullOrWhiteSpace(fileName))
-                return path+"NotFound.png";
-            
+                return path + "NotFound.png";
+
             return path + fileName;
         }
 
@@ -33,8 +30,8 @@ namespace IMS.Services
                 Directory.CreateDirectory(path);
 
             var extension = Path.GetExtension(file.FileName);
-            var fileName = Guid.NewGuid().ToString() + extension;            
-            await Task.Run(() => file.SaveAs(path+fileName));
+            var fileName = Guid.NewGuid().ToString() + extension;
+            await Task.Run(() => file.SaveAs(path + fileName));
 
             return fileName;
         }

@@ -39,7 +39,7 @@
                         </div>
                         <div class="form-group">
                             <label> @Html.LabelFor(m => m.ContactNumber)</label>
-                            @Html.TextBoxFor(m => m.ContactNumber, new { @class = "form-control", @placeholder = "Contact Number", @type = "text" })
+                            @Html.TextBoxFor(m => m.ContactNumber, new { @class = "form-control", @placeholder = "Contact Number", @type = "text", @pattern = "^(?:\\+?88)?01[13-9]\\d{8}$" })
                             <span>@Html.ValidationMessageFor(model => model.ContactNumber)</span>
                         </div>
                         <div class="form-group">
@@ -92,34 +92,24 @@
                         email: true
                     },
                     ContactNumber: {
-                        required: true,
-                        minlength: 10,
-                        maxlength: 200
-                    },
-                    Rank: {
-                        required: true,
-                        min: 1
+                        required: true
                     }
                 },
                 // In 'messages' user have to specify message as per rules
                 messages: {
                     Name: {
-                        required: " Please enter category name",
+                        required: " Please enter supplier name",
                         minlength: "At least 3 characters required",
                         maxlength: "At most 100 characters requird",
                     },
                     Address: {
-                        required: " Please enter category name",
-                        minlength: "At least 3 characters required",
+                        required: " Please enter address",
+                        minlength: "At least 10 characters required",
                         maxlength: "At most 100 characters requird",
                     },
                     Email: {
-                        required: " Please enter category name",
+                        required: " Please enter email",
                         email: " Enter valid email"
-                    },
-                    Rank: {
-                        required: "Please enter rank",
-                        min: "Minimum value 1"
                     }
                 }
             });            

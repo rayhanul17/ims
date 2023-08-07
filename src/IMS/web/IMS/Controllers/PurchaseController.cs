@@ -120,8 +120,16 @@ namespace IMS.Controllers
         [AllowAnonymous]
         public JsonResult UpdateProductList(long categoryId, long brandId)
         {
-            var products = _productService.LoadActiveProducts(categoryId, brandId).Select(x => new { value = x.Id, text = x.Name, qty = x.InStockQuantity, price = x.SellingPrice });
-            return Json(products);
+            try
+            {
+                var products = _productService.LoadActiveProducts(categoryId, brandId).Select(x => new { value = x.Id, text = x.Name, qty = x.InStockQuantity, price = x.SellingPrice });
+                return Json(products);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+                return default(JsonResult);
+            }
         }
 
         [HttpPost]

@@ -316,17 +316,33 @@ namespace IMS.Controllers
         [AllowAnonymous]
         public async Task<JsonResult> GetProductBuyingPrice(long productId)
         {
-            var product = await _productService.GetByIdAsync(productId);
-            return Json(new { UnitPrice = product.BuyingPrice});
+            try
+            {
+                var product = await _productService.GetByIdAsync(productId);
+                return Json(new { UnitPrice = product.BuyingPrice });
+            }
+            catch(Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+                return default(JsonResult);
+            }
         }
 
         [HttpPost]
         [AllowAnonymous]
         public async Task<JsonResult> GetProductSellingPriceAndQuantiy(long productId)
         {
-            var product = await _productService.GetPriceAndQuantityByIdAsync(productId);
-            var data = Json(new { UnitPrice = product.SellingPrice, Quantity = product.InStockQuantity });
-            return data;
+            try
+            {
+                var product = await _productService.GetPriceAndQuantityByIdAsync(productId);
+                var data = Json(new { UnitPrice = product.SellingPrice, Quantity = product.InStockQuantity });
+                return data;
+            }
+            catch(Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+                return default(JsonResult);
+            }
         }
         #endregion
 
@@ -349,21 +365,9 @@ namespace IMS.Controllers
             {
                 ModelState.AddModelError("Id", "Object id not found");
             }
-            if(model.CreateBy == 0)
-            {
-                ModelState.AddModelError("CreateBy", "CreateBy id not found");
-            }
-            if (model.CreationDate.GetType() == typeof(DateTime).GetType())
-            {
-                ModelState.AddModelError("CreationDate", "CreationDate invalid");
-            }
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 100)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
-            }
-            if (model.Rank == 0)
-            {
-                ModelState.AddModelError("Rank", "Rank Invalid");
             }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {

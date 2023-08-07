@@ -228,17 +228,9 @@ namespace IMS.Controllers
             {
                 ModelState.AddModelError("Id", "Object id not found");
             }
-            if(model.CreateBy == 0)
-            {
-                ModelState.AddModelError("CreateBy", "CreateBy id not found");
-            }
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 100)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
-            }
-            if (model.Rank == 0)
-            {
-                ModelState.AddModelError("Rank", "Rank Invalid");
             }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {

@@ -5,9 +5,11 @@ using IMS.BusinessRules.Exceptions;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -125,7 +127,7 @@ namespace IMS.Controllers
                 }
                 else
                 {
-                    ViewResponse("Something went wrong", ResponseTypes.Danger);
+                    ViewResponse("Provide data properly", ResponseTypes.Danger);
                 }
             }
             catch (CustomException ex)
@@ -206,6 +208,58 @@ namespace IMS.Controllers
             }
 
             return default(JsonResult);
+        }
+        #endregion
+
+        #region Helper Function
+        private void ValidateBankAddModel(CustomerAddModel model)
+        {
+            string pattern = @"^(?:\+?88)?01[13-9]\d{8}$";
+            Regex rgx = new Regex(pattern);
+
+            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 100)
+            {
+                ModelState.AddModelError("Name", "Name Invalid");
+            }
+            if (model.Address.IsNullOrWhiteSpace() || model.Address.Length < 10 || model.Address.Length > 100)
+            {
+                ModelState.AddModelError("Address", "Address Invalid");
+            }
+            if (model.ContactNumber.IsNullOrWhiteSpace() || rgx.IsMatch(model.ContactNumber))
+            {
+                ModelState.AddModelError("ContactNumber", "Contact Number Invalid");
+            }
+            if (!(model.Status == Status.Active || model.Status == Status.Inactive))
+            {
+                ModelState.AddModelError("Status", "Status must active or inactive");
+            }
+        }
+
+        private void ValidateBankEditModel(CustomerEditModel model)
+        {
+            string pattern = @"^(?:\+?88)?01[13-9]\d{8}$";
+            Regex rgx = new Regex(pattern);
+
+            if (model.Id == 0)
+            {
+                ModelState.AddModelError("Id", "Object id not found");
+            }
+            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 100)
+            {
+                ModelState.AddModelError("Name", "Name Invalid");
+            }
+            if (model.Address.IsNullOrWhiteSpace() || model.Address.Length < 10 || model.Address.Length > 100)
+            {
+                ModelState.AddModelError("Address", "Address Invalid");
+            }
+            if (model.ContactNumber.IsNullOrWhiteSpace() || rgx.IsMatch(model.ContactNumber))
+            {
+                ModelState.AddModelError("ContactNumber", "Contact Number Invalid");
+            }
+            if (!(model.Status == Status.Active || model.Status == Status.Inactive))
+            {
+                ModelState.AddModelError("Status", "Status must active or inactive");
+            }
         }
         #endregion
     }

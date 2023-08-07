@@ -42,9 +42,6 @@
                             @Html.DropDownListFor(m => m.Status, (SelectList)ViewBag.StatusList, new { @class = "form-control" })
                         </div>
                         @Html.HiddenFor(model => model.Id)
-                        @Html.HiddenFor(model => model.CreateBy)
-                        @Html.HiddenFor(model => model.CreationDate)
-                        @Html.HiddenFor(model => model.Rank)
                     </div>
                     <!-- /.card-body -->
 
@@ -75,10 +72,6 @@
                         required: true,
                         minlength: 3,
                         maxlength: 100
-                    },
-                    Rank: {
-                        required: true,
-                        min: 1
                     }
                 },
                 // In 'messages' user have to specify message as per rules
@@ -87,10 +80,6 @@
                         required: " Please enter category name",
                         minlength: "At least 3 characters required",
                         maxlength: "At most 100 characters requird",
-                    },
-                    Rank: {
-                        required: "Please enter rank",
-                        min: "Minimum value 1"
                     }
                 }
             });
