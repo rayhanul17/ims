@@ -87,10 +87,6 @@ namespace IMS.Services
             }
         }
 
-        #endregion
-
-        #region Single Instance Loading
-
         public async Task<PurchaseReportDto> GetPurchaseDetailsAsync(long id)
         {
             var purchase = await _purchaseDao.GetByIdAsync(id);
@@ -123,8 +119,10 @@ namespace IMS.Services
 
             return purchaseReport;
         }
-
         #endregion
+
+        #region Single Instance Loading
+        #endregion     
 
         #region List Loading Function
         public (int total, int totalDisplay, IList<PurchaseDto> records) LoadAllPurchases(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)

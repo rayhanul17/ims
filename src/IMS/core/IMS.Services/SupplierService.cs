@@ -8,7 +8,6 @@ using NHibernate;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace IMS.Services
@@ -100,7 +99,7 @@ namespace IMS.Services
                     supplier.Status = (int)model.Status;
                     supplier.ModifyBy = userId;
                     supplier.ModificationDate = _timeService.Now;
-                    
+
 
                     await _supplierDao.EditAsync(supplier);
                     transaction.Commit();
@@ -116,7 +115,7 @@ namespace IMS.Services
                 }
             }
         }
-        
+
         public async Task RemoveByIdAsync(long id, long userId)
         {
             using (var transaction = _session.BeginTransaction())
@@ -125,7 +124,7 @@ namespace IMS.Services
                 {
                     //await _supplierDao.RemoveByIdAsync(id);
                     var supplier = await _supplierDao.GetByIdAsync(id);
-                    if(supplier == null)
+                    if (supplier == null)
                     {
                         throw new CustomException("No object with this id");
                     }
@@ -153,7 +152,7 @@ namespace IMS.Services
                 var supplier = await _supplierDao.GetByIdAsync(id);
                 if (supplier == null)
                 {
-                    throw new ArgumentNullException(nameof(supplier)); 
+                    throw new ArgumentNullException(nameof(supplier));
                 }
                 return new SupplierEditModel
                 {
@@ -172,12 +171,12 @@ namespace IMS.Services
                     BusinessId = supplier.BusinessId,
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _serviceLogger.Error(ex.Message, ex);
                 throw;
             }
-            
+
         }
 
         public string GetNameById(long id)
@@ -216,7 +215,7 @@ namespace IMS.Services
                             ContactNumber = supplier.ContactNumber,
                             Email = supplier.Email,
                             CreateBy = supplier.CreateBy,
-                            CreationDate = supplier.CreationDate,                            
+                            CreationDate = supplier.CreationDate,
                             Status = (Status)supplier.Status,
                             Rank = supplier.Rank,
                             VersionNumber = supplier.VersionNumber,

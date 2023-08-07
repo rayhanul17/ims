@@ -5,14 +5,16 @@ using System.Web;
 
 namespace IMS.Services
 {
+    #region Interface
     public interface IImageService
     {
         Task<string> SaveImage(HttpPostedFileBase file, string path);
         string GetImage(string path, string fileName);
     }
-
+    #endregion
     public class ImageService : IImageService
     {
+        #region Operational Function
         public string GetImage(string path, string fileName)
         {
             if (string.IsNullOrWhiteSpace(fileName))
@@ -35,6 +37,7 @@ namespace IMS.Services
 
             return fileName;
         }
-    }
 
+        #endregion
+    }
 }

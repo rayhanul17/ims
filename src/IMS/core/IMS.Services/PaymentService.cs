@@ -143,7 +143,9 @@ namespace IMS.Services
         #endregion
 
         #region Single Instance Loading
+        #endregion
 
+        #region Operational Function
         public async Task<PaymentModel> GetPaymentByIdAsync(long paymentId)
         {
             var payment = await Task.Run(() => _paymentDao.Get(x => x.Id == paymentId).FirstOrDefault());

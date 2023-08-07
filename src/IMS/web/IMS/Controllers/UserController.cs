@@ -1,5 +1,4 @@
-﻿using IMS.BusinessModel.Entity;
-using IMS.BusinessModel.ViewModel;
+﻿using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
 using IMS.BusinessRules.Exceptions;
 using IMS.Models;
@@ -12,22 +11,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.ApplicationServices;
 using System.Web.Mvc;
-using System.Web.Security;
 
 namespace IMS.Controllers
 {
     [Authorize(Roles = "SA, Manager")]
     public class UserController : AllBaseController
     {
+        #region Initialization
         private readonly IUserService _userService;
         private ApplicationUserManager _userManager;
 
         public UserController()
         {
-            var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();            
-            _userService = new UserService(session);            
+            var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
+            _userService = new UserService(session);
         }
 
         public UserController(ApplicationUserManager userManager)
@@ -45,13 +43,17 @@ namespace IMS.Controllers
                 _userManager = value;
             }
         }
+        #endregion
 
+        #region Index
         [HttpGet]
         public ActionResult Index()
         {
             return View();
         }
+        #endregion
 
+        #region Operational Function
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Block(long id)
@@ -60,7 +62,7 @@ namespace IMS.Controllers
             {
                 await _userService.BlockAsync(id);
             }
-            catch(CustomException ex)
+            catch (CustomException ex)
             {
                 ViewResponse(ex.Message, ResponseTypes.Warning);
                 _logger.Error(ex);
@@ -162,13 +164,13 @@ namespace IMS.Controllers
                new Role {Text="SA",Value="SA",IsChecked=false },
                new Role {Text="Manager",Value="Manager",IsChecked=false },
                new Role {Text="Seller",Value="Seller",IsChecked=false },
-               
+
            };
             UserRolesModel model = new UserRolesModel();
             model.Roles = roles;
-            
+
             return View(model);
-            
+
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -184,8 +186,8 @@ namespace IMS.Controllers
                     //var userName = UserManager.FindById(model.UserId).UserName;
 
                     var userRoles = UserManager.GetRoles(model.UserId).ToArray();
-                    
-                    var s = await UserManager.RemoveFromRolesAsync(model.UserId, userRoles);                    
+
+                    var s = await UserManager.RemoveFromRolesAsync(model.UserId, userRoles);
                     var r = await UserManager.AddToRolesAsync(model.UserId, addRoles);
                     ViewResponse("Updated successfully", ResponseTypes.Success);
                 }
@@ -209,6 +211,9 @@ namespace IMS.Controllers
             return RedirectToAction("ManageUserRole");
         }
 
+        #endregion
+
+        #region Ajax call
         public JsonResult GetUsers()
         {
             try
@@ -246,5 +251,6 @@ namespace IMS.Controllers
 
             return default(JsonResult);
         }
+        #endregion
     }
 }

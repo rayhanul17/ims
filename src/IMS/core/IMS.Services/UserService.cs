@@ -8,10 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using static NHibernate.Engine.Query.CallableParser;
 
 namespace IMS.Services
 {
+    #region Interface
     public interface IUserService
     {
         Task CreateUserAsync(string name, string email, long aspid, long creatorId);
@@ -23,15 +23,20 @@ namespace IMS.Services
         (int total, int totalDisplay, IList<UserDto> records) LoadAllUsers(string searchBy = null,
             int length = 10, int start = 1, string sortBy = null, string sortDir = null);
     }
+    #endregion
+
     public class UserService : BaseService, IUserService
     {
+        #region Initialization
         private readonly IApplicationUserDao _userDao;
 
         public UserService(ISession session) : base(session)
         {
             _userDao = new ApplicationUserDao(session);
         }
+        #endregion
 
+        #region Operational Function
         public async Task CreateUserAsync(string name, string email, long id, long creatorId)
         {
             using (var transaction = _session.BeginTransaction())
@@ -67,7 +72,7 @@ namespace IMS.Services
             Expression<Func<ApplicationUser, bool>> filter = null;
             filter = x => x.AspNetUsersId.Equals(userId);
 
-            var user =  _userDao.GetUser(filter);
+            var user = _userDao.GetUser(filter);
 
             return user.Name;
         }
@@ -76,13 +81,13 @@ namespace IMS.Services
         {
             try
             {
-                using(var transaction = _session.BeginTransaction())
+                using (var transaction = _session.BeginTransaction())
                 {
                     Expression<Func<ApplicationUser, bool>> filter = null;
                     filter = x => x.AspNetUsersId.Equals(userId);
 
-                    var user = await Task.Run( () => _userDao.GetUser(filter));
-                    if(user  == null)
+                    var user = await Task.Run(() => _userDao.GetUser(filter));
+                    if (user == null)
                     {
                         throw new CustomException("No user found with this id");
                     }
@@ -97,65 +102,6 @@ namespace IMS.Services
             {
                 _serviceLogger.Error(ex.Message, ex);
                 throw ex;
-            }
-        }
-
-        public async Task<bool> IsActiveUserAsync(string email)
-        {
-            Expression<Func<ApplicationUser, bool>> filter = null;
-            filter = x => x.Email.Equals(email) && x.Status == 1;
-
-            var user = await Task.Run( () => _userDao.GetUser(filter));
-
-            return user == null? false : true;
-        }
-        public IList<(long, string)> LoadAllActiveUsers()
-        {
-            List<(long, string)> users = new List<(long, string)>();
-            var allUsers = _userDao.GetUsers(x => x.Status == (int)Status.Active);
-            foreach (var user in allUsers)
-            {
-                users.Add((user.AspNetUsersId, user.Name));
-            }
-            return users;
-        }
-
-        public (int total, int totalDisplay, IList<UserDto> records) LoadAllUsers(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
-        {
-            try
-            {
-                Expression<Func<ApplicationUser, bool>> filter = null;
-                if (searchBy != null)
-                {
-                    filter = x => x.Email.Contains(searchBy) && x.Status != (int)Status.Delete;
-                }
-
-                var result = _userDao.LoadAll(filter, null, start, length, sortBy, sortDir);
-
-                List<UserDto> users = new List<UserDto>();
-                foreach(ApplicationUser user in result.data)
-                {
-                    users.Add(
-                        new UserDto
-                        {
-                            Id = user.AspNetUsersId,
-                            Name = user.Name,
-                            Email = user.Email,
-                            CreateBy = user.CreateBy,
-                            CreationDate = user.CreationDate,
-                            Status = (Status)user.Status,
-                            Rank = user.Rank,
-                            VersionNumber = user.VersionNumber,
-                            BusinessId = user.BusinessId,
-                        });
-                }
-
-                return (result.total, result.totalDisplay, users);
-            }
-            catch (Exception ex)
-            {
-                _serviceLogger.Error(ex.Message, ex);
-                throw;
             }
         }
 
@@ -188,6 +134,70 @@ namespace IMS.Services
                 }
             }
         }
+
+        public async Task<bool> IsActiveUserAsync(string email)
+        {
+            Expression<Func<ApplicationUser, bool>> filter = null;
+            filter = x => x.Email.Equals(email) && x.Status == 1;
+
+            var user = await Task.Run(() => _userDao.GetUser(filter));
+
+            return user == null ? false : true;
+        }
+        #endregion
+
+        #region List Loading Function
+        public IList<(long, string)> LoadAllActiveUsers()
+        {
+            List<(long, string)> users = new List<(long, string)>();
+            var allUsers = _userDao.GetUsers(x => x.Status == (int)Status.Active);
+            foreach (var user in allUsers)
+            {
+                users.Add((user.AspNetUsersId, user.Name));
+            }
+            return users;
+        }
+
+        public (int total, int totalDisplay, IList<UserDto> records) LoadAllUsers(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
+        {
+            try
+            {
+                Expression<Func<ApplicationUser, bool>> filter = null;
+                if (searchBy != null)
+                {
+                    filter = x => x.Email.Contains(searchBy) && x.Status != (int)Status.Delete;
+                }
+
+                var result = _userDao.LoadAll(filter, null, start, length, sortBy, sortDir);
+
+                List<UserDto> users = new List<UserDto>();
+                foreach (ApplicationUser user in result.data)
+                {
+                    users.Add(
+                        new UserDto
+                        {
+                            Id = user.AspNetUsersId,
+                            Name = user.Name,
+                            Email = user.Email,
+                            CreateBy = user.CreateBy,
+                            CreationDate = user.CreationDate,
+                            Status = (Status)user.Status,
+                            Rank = user.Rank,
+                            VersionNumber = user.VersionNumber,
+                            BusinessId = user.BusinessId,
+                        });
+                }
+
+                return (result.total, result.totalDisplay, users);
+            }
+            catch (Exception ex)
+            {
+                _serviceLogger.Error(ex.Message, ex);
+                throw;
+            }
+        }
+
+        #endregion
     }
 }
 

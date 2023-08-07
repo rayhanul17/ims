@@ -38,12 +38,15 @@ namespace IMS.Controllers
         }
         #endregion
 
+        #region Index
         [Authorize(Roles = "SA, Manager, Seller")]
         public ActionResult Index()
         {
             return View();
         }
+        #endregion
 
+        #region Operational Function
         [HttpGet]
         [Authorize(Roles = "SA, Manager, Seller")]
         public ActionResult Create()
@@ -112,6 +115,15 @@ namespace IMS.Controllers
             return RedirectToAction("Create");
         }
 
+        [Authorize(Roles = "SA, Manager, Seller")]
+        public async Task<ActionResult> Details(long id)
+        {
+            var model = await _saleService.GetSaleDetailsAsync(id);
+            return View(model);
+        }
+
+        #endregion
+
         #region Ajax Call
         [HttpPost]
         [AllowAnonymous]
@@ -166,14 +178,6 @@ namespace IMS.Controllers
 
             return default(JsonResult);
         }
-
-        [Authorize(Roles = "SA, Manager, Seller")]
-        public async Task<ActionResult> Details(long id)
-        {
-            var model = await _saleService.GetSaleDetailsAsync(id);
-            return View(model);
-        }
-
         #endregion
     }
 }

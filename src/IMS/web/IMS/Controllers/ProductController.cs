@@ -1,5 +1,4 @@
-﻿using IMS.BusinessModel.Entity;
-using IMS.BusinessModel.ViewModel;
+﻿using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
@@ -91,7 +90,7 @@ namespace IMS.Controllers
                 ValidateProductAddModel(model);
                 if (ModelState.IsValid)
                 {
-                    string path = Server.MapPath("~/UploadedFiles/");                  
+                    string path = Server.MapPath("~/UploadedFiles/");
 
                     model.Image = await _imageService.SaveImage(image, path);
 
@@ -234,14 +233,14 @@ namespace IMS.Controllers
 
                 return Json(products);
             }
-            catch(CustomException ex)
+            catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Danger);                
+                ViewResponse(ex.Message, ResponseTypes.Danger);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
-                _logger.Error(ex.Message, ex);  
+                _logger.Error(ex.Message, ex);
             }
             return default(JsonResult);
         }
@@ -255,11 +254,11 @@ namespace IMS.Controllers
                 await _productService.UpdateRankAsync(id, targetRank);
                 return RedirectToAction("Index", "Product");
             }
-            catch(CustomException ex)
+            catch (CustomException ex)
             {
                 ViewResponse(ex.Message, ResponseTypes.Danger);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
@@ -279,7 +278,7 @@ namespace IMS.Controllers
                 var model = new DataTablesAjaxRequestModel(Request);
                 var data = _productService.LoadAllProducts(model.SearchText, model.Length, model.Start, model.SortColumn,
                     model.SortDirection);
-                
+
 
                 return Json(new
                 {
@@ -288,12 +287,12 @@ namespace IMS.Controllers
                     recordsFiltered = data.totalDisplay,
                     data = (from record in data.records
                             select new string[]
-                            {                                
+                            {
                                 record.Name,
                                 record.Category,
                                 record.Brand,
                                 record.Description,
-                                record.Status.ToString(),                                
+                                record.Status.ToString(),
                                 record.DiscountPrice.ToString(),
                                 record.SellingPrice.ToString(),
                                 record.InStockQuantity.ToString(),
@@ -321,7 +320,7 @@ namespace IMS.Controllers
                 var product = await _productService.GetByIdAsync(productId);
                 return Json(new { UnitPrice = product.BuyingPrice });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error(ex.Message, ex);
                 return default(JsonResult);
@@ -338,7 +337,7 @@ namespace IMS.Controllers
                 var data = Json(new { UnitPrice = product.SellingPrice, Quantity = product.InStockQuantity });
                 return data;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error(ex.Message, ex);
                 return default(JsonResult);
@@ -348,8 +347,8 @@ namespace IMS.Controllers
 
         #region Helper Function
         private void ValidateProductAddModel(ProductAddModel model)
-        {            
-            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length<3 || model.Name.Length >100)
+        {
+            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 100)
             {
                 ModelState.AddModelError("Name", "Name Length Invalid");
             }
@@ -361,7 +360,7 @@ namespace IMS.Controllers
 
         private void ValidateProductEditModel(ProductEditModel model)
         {
-            if(model.Id == 0)
+            if (model.Id == 0)
             {
                 ModelState.AddModelError("Id", "Object id not found");
             }

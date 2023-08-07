@@ -1,5 +1,4 @@
-﻿using IMS.BusinessModel.Dto;
-using IMS.BusinessModel.ViewModel;
+﻿using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
@@ -39,12 +38,16 @@ namespace IMS.Controllers
         }
         #endregion
 
+        #region Index
         [HttpGet]
         [Authorize(Roles = "SA, Manager")]
         public ActionResult Index()
         {
             return View();
         }
+        #endregion
+
+        #region Operational Function
 
         [HttpGet]
         [Authorize(Roles = "SA, Manager")]
@@ -72,7 +75,7 @@ namespace IMS.Controllers
             }).ToList();
 
             return View();
-        }        
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -115,6 +118,17 @@ namespace IMS.Controllers
             return RedirectToAction("Create");
         }
 
+
+        [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
+        public async Task<ActionResult> Details(long id)
+        {
+            var model = await _purchaseService.GetPurchaseDetailsAsync(id);
+            return View(model);
+        }
+
+        #endregion
+
         #region Ajax Call
         [HttpPost]
         [AllowAnonymous]
@@ -155,7 +169,7 @@ namespace IMS.Controllers
                                 count++.ToString(),
                                 _supplierService.GetNameById(record.SupplierId),
                                 _userService.GetUserName(record.CreateBy),
-                                record.PurchaseDate.ToString(),                                
+                                record.PurchaseDate.ToString(),
                                 record.GrandTotalPrice.ToString(),
                                 record.Id.ToString(),
                                 record.IsPaid.ToString(),
@@ -176,13 +190,6 @@ namespace IMS.Controllers
             }
 
             return default(JsonResult);
-        }
-        [HttpGet]
-        [Authorize(Roles = "SA, Manager")]
-        public async Task<ActionResult> Details(long id)
-        {
-            var model = await _purchaseService.GetPurchaseDetailsAsync(id);
-            return View(model);
         }
 
         #endregion

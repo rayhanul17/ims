@@ -17,26 +17,6 @@ namespace IMS.Services
         Task<IEnumerable<MyModel>> ExecuteRawQueryAsync();
     }
     #endregion
-    /* 
-     === Active Inactive Count Query ===
-     * SELECT
-           SUM(CASE WHEN [Status] = 0 THEN 1 else 0 END) Inactive,
-           SUM(CASE WHEN [Status] = 1 THEN 1 else 0 END) Active
-           FROM Supplier
-     === Purchase & Sale Amout according to date ===
-     *   select 
-	     sum(case when p.OperationType = 1 Then pd.Amount else 0 end) Sale
-	    ,sum(case when p.OperationType = 0 Then pd.Amount else 0 end) Purchase
-        from PaymentDetails pd
-        join Payment p on p.Id = pd.PaymentId
-        WHERE PaymentDate BETWEEN '2023-08-02 14:17:39.2373632' AND '2023-08-02 14:18:57.3401938'
-    === Sale/Purchase Product Details ===
-        SELECT s.Id, s.SaleDate, sd.ProductId, sd.Quantity, sd.TotalPrice, sd.SaleId
-	    FROM Sale s
-	    JOIN SaleDetails sd ON s.Id = sd.SaleId
-	    WHERE s.SaleDate BETWEEN '2023-08-02 03:22' AND '2023-08-02 09:46'
-     */
-
 
     public class ReportService : BaseService, IReportService
     {
@@ -55,6 +35,8 @@ namespace IMS.Services
         }
 
         #endregion
+
+        #region Operational Function
         public async Task<DashboardDto> GetDashboardDataAsync()
         {
             try
@@ -152,5 +134,7 @@ namespace IMS.Services
 
             return loseProfitReportDto;
         }
+
+        #endregion
     }
 }

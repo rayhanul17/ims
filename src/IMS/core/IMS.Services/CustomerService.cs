@@ -234,7 +234,7 @@ namespace IMS.Services
         {
             throw new NotImplementedException();
         }
-        #endregion
+        
 
         public IList<(long, string)> LoadAllActiveCustomers()
         {
@@ -246,6 +246,6 @@ namespace IMS.Services
             }
             return customers;
         }
-
+        #endregion
     }
 }

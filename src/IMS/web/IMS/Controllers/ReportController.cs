@@ -24,6 +24,8 @@ namespace IMS.Controllers
         }
 
         #endregion
+
+        #region Operational Function
         [HttpGet]
         [Authorize(Roles = "SA, Manager")]
         public ActionResult LP()
@@ -75,5 +77,7 @@ namespace IMS.Controllers
                 return View(model);
             }
         }
+
+        #endregion
     }
 }
