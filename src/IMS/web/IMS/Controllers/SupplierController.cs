@@ -217,11 +217,11 @@ namespace IMS.Controllers
             string pattern = @"^(?:\+?88)?01[13-9]\d{8}$";
             Regex rgx = new Regex(pattern);
 
-            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 100)
+            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 255)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
             }
-            if (model.Address.IsNullOrWhiteSpace() || model.Address.Length < 10 || model.Address.Length > 100)
+            if (model.Address.IsNullOrWhiteSpace() || model.Address.Length < 10 || model.Address.Length > 255)
             {
                 ModelState.AddModelError("Address", "Address Invalid");
             }
@@ -244,11 +244,11 @@ namespace IMS.Controllers
             {
                 ModelState.AddModelError("Id", "Object id not found");
             }
-            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 100)
+            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 255)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
             }
-            if (model.Address.IsNullOrWhiteSpace() || model.Address.Length < 10 || model.Address.Length > 100)
+            if (model.Address.IsNullOrWhiteSpace() || model.Address.Length < 10 || model.Address.Length > 255)
             {
                 ModelState.AddModelError("Address", "Address Invalid");
             }

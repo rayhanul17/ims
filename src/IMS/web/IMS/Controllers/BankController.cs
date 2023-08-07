@@ -207,9 +207,13 @@ namespace IMS.Controllers
         #region Helper Function
         private void ValidateBankAddModel(BankAddModel model)
         {
-            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 100)
+            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 255)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
+            }
+            if (model.Description.Length > 255)
+            {
+                ModelState.AddModelError("Description", "Description Length Invalid");
             }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {
@@ -223,9 +227,13 @@ namespace IMS.Controllers
             {
                 ModelState.AddModelError("Id", "Object id not found");
             }            
-            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 100)
+            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 255)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
+            }
+            if (model.Description.Length > 255)
+            {
+                ModelState.AddModelError("Description", "Description Length Invalid");
             }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {

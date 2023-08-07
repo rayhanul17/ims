@@ -103,7 +103,10 @@
                     Name: {
                         required: true,
                         minlength: 3,
-                        maxlength: 100
+                        maxlength: 255
+                    },
+                    Description: {
+                        maxlength: 255
                     }
                 },
                 // In 'messages' user have to specify message as per rules
@@ -111,7 +114,10 @@
                     Name: {
                         required: " Please enter Product name",
                         minlength: "At least 3 characters required",
-                        maxlength: "At most 100 characters requird",
+                        maxlength: "At most 255 characters valid",
+                    },
+                    Description: {
+                        maxlength: "At most 255 characters valid"
                     }
                 }
             });
