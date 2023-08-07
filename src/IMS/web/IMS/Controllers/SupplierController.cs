@@ -214,10 +214,12 @@ namespace IMS.Controllers
         #region Helper Function
         private void ValidateBankAddModel(CustomerAddModel model)
         {
-            string pattern = @"^(?:\+?88)?01[13-9]\d{8}$";
-            Regex rgx = new Regex(pattern);
+            string phone = @"^(?:\+?88)?01[13-9]\d{8}$";
+            string mail = @"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$";
+            Regex phone_rgx = new Regex(phone);
+            Regex mail_rgx = new Regex(mail);
 
-            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 255)
+            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 30)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
             }
@@ -225,9 +227,13 @@ namespace IMS.Controllers
             {
                 ModelState.AddModelError("Address", "Address Invalid");
             }
-            if (model.ContactNumber.IsNullOrWhiteSpace() || rgx.IsMatch(model.ContactNumber))
+            if (model.ContactNumber.IsNullOrWhiteSpace() || phone_rgx.IsMatch(model.ContactNumber))
             {
                 ModelState.AddModelError("ContactNumber", "Contact Number Invalid");
+            }
+            if (model.Email.IsNullOrWhiteSpace() || model.Email.Length > 255 || mail_rgx.IsMatch(model.Email))
+            {
+                ModelState.AddModelError("Email", "Email Invalid");
             }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {
@@ -237,14 +243,16 @@ namespace IMS.Controllers
 
         private void ValidateBankEditModel(CustomerEditModel model)
         {
-            string pattern = @"^(?:\+?88)?01[13-9]\d{8}$";
-            Regex rgx = new Regex(pattern);
+            string phone = @"^(?:\+?88)?01[13-9]\d{8}$";
+            string mail = @"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$";
+            Regex phone_rgx = new Regex(phone);
+            Regex mail_rgx = new Regex(mail);
 
             if (model.Id == 0)
             {
                 ModelState.AddModelError("Id", "Object id not found");
             }
-            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 255)
+            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 30)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
             }
@@ -252,9 +260,13 @@ namespace IMS.Controllers
             {
                 ModelState.AddModelError("Address", "Address Invalid");
             }
-            if (model.ContactNumber.IsNullOrWhiteSpace() || rgx.IsMatch(model.ContactNumber))
+            if (model.ContactNumber.IsNullOrWhiteSpace() || phone_rgx.IsMatch(model.ContactNumber))
             {
                 ModelState.AddModelError("ContactNumber", "Contact Number Invalid");
+            }
+            if (model.Email.IsNullOrWhiteSpace() || model.Email.Length > 255 || mail_rgx.IsMatch(model.Email))
+            {
+                ModelState.AddModelError("Email", "Email Invalid");
             }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {

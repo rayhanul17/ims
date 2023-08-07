@@ -80,7 +80,7 @@
                     Name: {
                         required: true,
                         minlength: 3,
-                        maxlength: 255
+                        maxlength: 30
                     },
                     Address: {
                         required: true,
@@ -89,7 +89,8 @@
                     },
                     Email: {
                         required: true,
-                        email: true
+                        email: true,
+                        maxlength: 255
                     },
                     ContactNumber: {
                         required: true
@@ -100,7 +101,7 @@
                     Name: {
                         required: " Please enter category name",
                         minlength: "At least 3 characters required",
-                        maxlength: "At most 255 characters valid",
+                        maxlength: "At most 30 characters valid",
                     },
                     Address: {
                         required: " Please enter category name",
@@ -109,7 +110,8 @@
                     },
                     Email: {
                         required: " Please enter category name",
-                        email: " Enter valid email"
+                        email: " Enter valid email",
+                        maxlength: "At most 255 characters valid",
                     }
                 }
             });

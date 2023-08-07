@@ -51,12 +51,13 @@ namespace IMS.Models
         [Required]
         [Display(Name = "Email")]
         [EmailAddress]
+        [MaxLength(255)]
         public string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
-        [MinLength(6), MaxLength(12)]
+        [StringLength(12, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         public string Password { get; set; }
 
         [Display(Name = "Remember me?")]
@@ -72,6 +73,7 @@ namespace IMS.Models
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
+        [MaxLength(255)]
         public string Email { get; set; }
 
         [Required]
@@ -81,7 +83,7 @@ namespace IMS.Models
         public string Password { get; set; }
 
         [Required]
-        [StringLength(255, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 3)]
+        [StringLength(30, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 3)]
         [DataType(DataType.Text)]
         [Display(Name = "Name")]
         public string Name { get; set; }
@@ -100,11 +102,12 @@ namespace IMS.Models
 
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
+        [MaxLength(255)]
+        [Display(Name = "Email")]        
         public string Email { get; set; }
 
         [Required]
-        [StringLength(255, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 3)]
+        [StringLength(30, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 3)]
         [DataType(DataType.Text)]
         [Display(Name = "Name")]
         public string Name { get; set; }
