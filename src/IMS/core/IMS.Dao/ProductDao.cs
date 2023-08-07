@@ -51,6 +51,9 @@ namespace IMS.Dao
 
             switch (sortBy)
             {
+                case "Rank":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.Rank) : query.OrderByDescending(c => c.Rank);
+                    break;
                 case "Name":
                     query = sortDir == "asc" ? query.OrderBy(c => c.Name) : query.OrderByDescending(c => c.Name);
                     break;                

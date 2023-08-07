@@ -14,5 +14,6 @@ namespace IMS.BusinessModel.Dto
         public int InStockQuantity { get; set; }
         public string Category { get; set; } 
         public string Brand { get; set; } 
+        public long Rank { get; set; }
     }
 }

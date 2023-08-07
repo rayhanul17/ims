@@ -318,6 +318,7 @@ namespace IMS.Services
                             SellingPrice = product.SellingPrice,
                             Image = product.Image, 
                             InStockQuantity = product.InStockQuantity,
+                            Rank = product.Rank,
                         });
                 }
 

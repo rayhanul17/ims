@@ -288,6 +288,7 @@ namespace IMS.Controllers
                     data = (from record in data.records
                             select new string[]
                             {
+                                record.Rank.ToString(),
                                 record.Name,
                                 record.Category,
                                 record.Brand,

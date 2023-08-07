@@ -33,6 +33,9 @@
                 <thead>
                     <tr>
                         <th>
+                            Rank
+                        </th>
+                        <th>
                             Name
                         </th>
                         <th>
@@ -98,6 +101,7 @@
                     "datatype": "json",
                 },
                 "columns": [
+                    { "name": "Rank" },
                     { "name": "Name" },
                     { "name": "Category" },
                     { "name": "Brand" },
@@ -112,7 +116,7 @@
                     {
                         "responsive": true,
                         "orderable": false,
-                        "targets": 9,
+                        "targets": 10,
                         "render": function (data, type, row) {
                             if ('@User.IsInRole("SA")' == 'True' || '@User.IsInRole("Manager")' == 'True') {
                                 return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/product/edit/${data}'">
@@ -120,7 +124,7 @@
                                                         </i>
                                                         Edit
                                                     </button>
-                                                    <button type="submit" class="btn btn-danger btn-sm delete-modal" data-id='${data}' value= '${data}'>
+                                                    <button type="submit" class="btn btn-danger btn-sm delete-modal m-1" data-id='${data}' value= '${data}'>
                                                         <i class="fas fa-trash">
                                                         </i>
                                                         Delete
@@ -138,18 +142,18 @@
                     },
                     {
                         "responsive": true,
-                        "targets": 8,
+                        "targets": 9,
                         "render": function (data, type, row) {
                             return `<img src='${data}' width=100px, height=100px/>`;
                         }
                     },
-                    { "orderable": false, "targets": [ 1, 2, 4, 5, 6, 7, 8 ] }
+                    { "orderable": false, "targets": [ 2, 3, 5, 6, 7, 8, 9 ] }
                 ],
-                "order": [1, 'asc']
+                "order": [0, 'asc']
             });
         });
 
-        $('#table').on('click', '.show-bs-modal', function (event) {
+        $('#table').on('click', '.delete-modal', function (event) {
             var id = $(this).data("id");
             console.log(id);
             var m = $("#modal-default");
