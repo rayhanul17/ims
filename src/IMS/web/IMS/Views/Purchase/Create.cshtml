@@ -75,7 +75,7 @@
             </div>
         </div>
         <div class="col-md-7">
-            <div class="card card-primary">
+            <div class="card card-info">
                 <div class="card-header">
                     <h3 class="card-title">Item List</h3>
                 </div>
@@ -119,7 +119,7 @@
                                     </table>
                                 </div>
                                 <div class="row">
-                                    <input type="submit" class="btn btn-primary btn-block" id="purchaseButton" value="Confirm Purchase" />
+                                    <input disabled type="submit" class="btn btn-info btn-block" id="purchaseButton" value="Confirm Purchase" />
                                 </div>
                             </div>
                         </div>
@@ -133,6 +133,7 @@
 @section Scripts{
     <script>
         var rowNum = 0;
+        var delNum = 0;
         $(document).ready(function () {
             $('.loadProduct').change(function () {
                 let cid = $('#categorySelectBox').val();
@@ -207,6 +208,7 @@
                         console.log(v);
                         $('#grandTotal').val(v);
                         rowNum++;
+                        $('#purchaseButton').prop('disabled', false);
                     }
                 }
                 else {
@@ -216,10 +218,15 @@
 
         });
         function removeRow(rnum) {
+            delNum++;
             console.log($(`#rowNum${rnum}`));
             $(`#model${rnum}`).val(true);            
             $('#grandTotal').val(parseFloat($('#grandTotal').val()) - $(`#total${rnum}`).val());
             $(`#rowNum${rnum}`).hide();
+
+            if (rowNum == delNum) {
+                $('#purchaseButton').prop('disabled', true);
+            }
         }
 
     </script>

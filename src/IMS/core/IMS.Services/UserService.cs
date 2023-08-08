@@ -138,7 +138,7 @@ namespace IMS.Services
         public async Task<bool> IsActiveUserAsync(string email)
         {
             Expression<Func<ApplicationUser, bool>> filter = null;
-            filter = x => x.Email.Equals(email) && x.Status == 1;
+            filter = x => x.Email.Equals(email) && x.Status == (int)Status.Active;
 
             var user = await Task.Run(() => _userDao.GetUser(filter));
 
