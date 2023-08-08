@@ -196,7 +196,8 @@ namespace IMS.Services
                 Expression<Func<Customer, bool>> filter = null;
                 if (searchBy != null)
                 {
-                    filter = x => x.Name.Contains(searchBy) && x.Status != (int)Status.Delete;
+                    filter = x => x.Name.Contains(searchBy) || x.Email.Contains(searchBy) || x.ContactNumber.Contains(searchBy)
+                                    || x.Address.Contains(searchBy);
                 }
 
                 var result = _customerDao.LoadAllCustomers(filter, null, start, length, sortBy, sortDir);

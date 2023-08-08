@@ -165,10 +165,10 @@ namespace IMS.Services
                 Expression<Func<ApplicationUser, bool>> filter = null;
                 if (searchBy != null)
                 {
-                    filter = x => x.Email.Contains(searchBy) && x.Status != (int)Status.Delete;
+                    filter = x => x.Email.Contains(searchBy) || x.Name.Contains(searchBy);
                 }
 
-                var result = _userDao.LoadAll(filter, null, start, length, sortBy, sortDir);
+                var result = _userDao.LoadAllUsers(filter, null, start, length, sortBy, sortDir);
 
                 List<UserDto> users = new List<UserDto>();
                 foreach (ApplicationUser user in result.data)

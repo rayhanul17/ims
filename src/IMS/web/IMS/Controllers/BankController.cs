@@ -211,7 +211,7 @@ namespace IMS.Controllers
             {
                 ModelState.AddModelError("Name", "Name Invalid");
             }
-            if (model.Description.Length > 255)
+            if (model.Description?.Length > 255)
             {
                 ModelState.AddModelError("Description", "Description Length Invalid");
             }
@@ -231,7 +231,7 @@ namespace IMS.Controllers
             {
                 ModelState.AddModelError("Name", "Name Invalid");
             }
-            if (model.Description.Length > 255)
+            if (model.Description?.Length > 255)
             {
                 ModelState.AddModelError("Description", "Description Length Invalid");
             }

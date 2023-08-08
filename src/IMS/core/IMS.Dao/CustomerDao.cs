@@ -45,8 +45,8 @@ namespace IMS.Dao
                 case "Name":
                     query = sortDir == "asc" ? query.OrderBy(c => c.Name) : query.OrderByDescending(c => c.Name);
                     break;
-                case "Created By":
-                    query = sortDir == "asc" ? query.OrderBy(c => c.CreateBy) : query.OrderByDescending(c => c.CreateBy);
+                case "Created Date":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.CreationDate) : query.OrderByDescending(c => c.CreationDate);
                     break;                    
             }
 

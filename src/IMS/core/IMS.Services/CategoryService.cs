@@ -190,7 +190,7 @@ namespace IMS.Services
                 Expression<Func<Category, bool>> filter = null;
                 if (searchBy != null)
                 {
-                    filter = x => x.Name.Contains(searchBy) && x.Status != (int)Status.Delete;
+                    filter = x => x.Name.Contains(searchBy) || x.Description.Contains(searchBy);
                 }
 
                 var result = _categoryDao.LoadAllCategories(filter, null, start, length, sortBy, sortDir);

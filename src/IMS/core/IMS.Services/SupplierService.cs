@@ -198,7 +198,8 @@ namespace IMS.Services
                 Expression<Func<Supplier, bool>> filter = null;
                 if (searchBy != null)
                 {
-                    filter = x => x.Name.Contains(searchBy) && x.Status != (int)Status.Delete;
+                    filter = x => x.Name.Contains(searchBy) || x.Email.Contains(searchBy) || x.ContactNumber.Contains(searchBy)
+                                    || x.Address.Contains(searchBy);
                 }
 
                 var result = _supplierDao.LoadAllSuppliers(filter, null, start, length, sortBy, sortDir);
