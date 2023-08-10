@@ -64,6 +64,10 @@ namespace IMS.Services
                     await _bankDao.AddAsync(bank);
                     transaction.Commit();
                 }
+                catch(CustomException ex)
+                {
+                    throw ex;
+                }
                 catch (Exception ex)
                 {
                     transaction.Rollback();

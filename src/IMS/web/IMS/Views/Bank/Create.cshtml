@@ -1,5 +1,4 @@
-﻿@using IMS.Models
-@model IMS.BusinessModel.ViewModel.BankAddModel
+﻿@model IMS.BusinessModel.ViewModel.BankAddModel
 @{
     ViewData["Title"] = "Product Create";
 }
@@ -11,7 +10,7 @@
         }
     </style>
 }
-
+<script src="~/Assets/ckeditor/ckeditor.js"></script>
 <div class="container-fluid">
     <div class="row">
         <!-- left column -->
@@ -35,9 +34,11 @@
 
                         </div>
                         <div class="form-group">
-                            <label> @Html.LabelFor(m => m.Description)</label>
-                            @Html.TextBoxFor(m => m.Description, new { @class = "form-control", @placeholder = "Description", @type = "text" })
-                            @*<span>@Html.ValidationMessageFor(model => model.Description)</span>*@
+                            @Html.DisplayNameFor(m => m.Description)
+                            @Html.TextAreaFor(m => m.Description, new { @id = "Description", @class = "form-control", @placeholder = "Description" })
+                            <script>
+                                CKEDITOR.replace("Description");
+                            </script>
                         </div>
                         <div class="form-group">
                             <label> @Html.LabelFor(m => m.Status)</label>
@@ -72,9 +73,6 @@
                         required: true,
                         minlength: 3,
                         maxlength: 30
-                    },
-                    Description: {
-                        maxlength: 255
                     }
                 },
                 // In 'messages' user have to specify message as per rules
@@ -83,9 +81,6 @@
                         required: " Please enter category name",
                         minlength: "At least 3 characters required",
                         maxlength: "At most 30 characters valid",
-                    },
-                    Description: {
-                        maxlength: "At most 255 characters valid"
                     }
                 }
             });

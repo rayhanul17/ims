@@ -75,7 +75,7 @@ namespace IMS.Controllers
 
             #endregion
 
-            _logger.Info("Product Creation Page");
+            
             return View(model);
         }
 

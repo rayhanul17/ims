@@ -124,7 +124,7 @@ namespace IMS.Services
                     await _productDao.EditAsync(product);
                     transaction.Commit();
 
-                    _serviceLogger.Info("Data Saved!");
+                    
                 }
                 catch (Exception ex)
                 {
@@ -144,7 +144,7 @@ namespace IMS.Services
                 {
                     //await _productDao.RemoveByIdAsync(id);
                     var product = await _productDao.GetByIdAsync(id);
-                    if (product != null)
+                    if (product == null)
                     {
                         throw new CustomException("No object found with this id");
                     }

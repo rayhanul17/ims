@@ -56,8 +56,7 @@ namespace IMS.Services
 
                     await _userDao.AddAsync(user);
                     transaction.Commit();
-
-                    _serviceLogger.Info("Data Saved!");
+                    
                 }
                 catch (Exception ex)
                 {

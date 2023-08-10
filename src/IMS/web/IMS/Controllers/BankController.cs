@@ -54,10 +54,11 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Create(BankAddModel model)
-        {
+        {            
             try
             {
                 ValidateBankAddModel(model);
@@ -108,6 +109,7 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(BankEditModel model)
@@ -210,11 +212,7 @@ namespace IMS.Controllers
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 30)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
-            }
-            if (model.Description?.Length > 255)
-            {
-                ModelState.AddModelError("Description", "Description Length Invalid");
-            }
+            }            
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {
                 ModelState.AddModelError("Status", "Status must active or inactive");
@@ -230,10 +228,6 @@ namespace IMS.Controllers
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 30)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
-            }
-            if (model.Description?.Length > 255)
-            {
-                ModelState.AddModelError("Description", "Description Length Invalid");
             }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {
