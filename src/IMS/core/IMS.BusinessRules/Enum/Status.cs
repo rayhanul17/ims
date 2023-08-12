@@ -3,7 +3,7 @@
     public enum Status
     {
         Active = 1,
-        Inactive = 0,
-        Delete = 404
+        Inactive = -1,
+        Delete = -404
     }
 }

@@ -2,7 +2,7 @@
 {
     public enum OperationType
     {
-        Purchase,
-        Sale
+        Purchase = 10,
+        Sale = 20
     }
 }
