@@ -22,8 +22,7 @@ namespace IMS.Controllers
         private readonly IBrandService _brandService;
         private readonly ISupplierService _supplierService;
         private readonly IPurchaseService _purchaseService;
-        private readonly IPaymentService _paymentService;
-        private readonly IUserService _userService;
+        private readonly IPaymentService _paymentService;       
 
         public PurchaseController()
         {
@@ -33,8 +32,7 @@ namespace IMS.Controllers
             _brandService = new BrandService(session);
             _supplierService = new SupplierService(session);
             _purchaseService = new PurchaseService(session);
-            _paymentService = new PaymentService(session);
-            _userService = new UserService(session);
+            _paymentService = new PaymentService(session);            
         }
         #endregion
 
@@ -167,8 +165,8 @@ namespace IMS.Controllers
                             select new string[]
                             {
                                 count++.ToString(),
-                                _supplierService.GetNameById(record.SupplierId),
-                                _userService.GetUserName(record.CreateBy),
+                                record.SupplierName,
+                                record.CreateBy,
                                 record.PurchaseDate.ToString(),
                                 record.GrandTotalPrice.ToString(),
                                 record.Id.ToString(),

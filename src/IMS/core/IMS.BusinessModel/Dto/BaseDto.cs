@@ -1,21 +1,12 @@
-﻿using IMS.BusinessRules.Enum;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace IMS.BusinessModel.Dto
+﻿namespace IMS.BusinessModel.Dto
 {
-    public abstract class BaseDto<T>
+    public abstract class BaseDto
     {
-        public virtual T Id { get; set; }
-        public virtual string Name { get; set; }
-        public virtual Status Status { get; set; }
-        public virtual T CreateBy { get; set; }
-        public virtual DateTime CreationDate { get; set; }
-        public virtual T ModifyBy { get; set; }
-        public virtual DateTime? ModificationDate { get; set; }
-        public virtual long Rank { get; set; }
-        public virtual long? VersionNumber { get; set; }
-        public virtual string BusinessId { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Status { get; set; }
+        public string Rank { get; set; }
+        public string CreateBy { get; set; }
+        public string CreationDate { get; set; }
     }
 }

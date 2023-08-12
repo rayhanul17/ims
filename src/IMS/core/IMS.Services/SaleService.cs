@@ -27,12 +27,14 @@ namespace IMS.Services
         private readonly ISaleDao _saleDao;
         private readonly IProductDao _productDao;
         private readonly ICustomerDao _customerDao;
+        private readonly ICustomerService _customerService;
 
         public SaleService(ISession session) : base(session)
         {
             _saleDao = new SaleDao(session);
             _productDao = new ProductDao(session);
             _customerDao = new CustomerDao(session);
+            _customerService = new CustomerService(session);
         }
         #endregion
 
@@ -140,27 +142,23 @@ namespace IMS.Services
         {
             try
             {
-                Expression<Func<Sale, bool>> filter = null;
-                //if (searchBy != null)
-                //{
-                //    filter = x => x.GrandTotalPrice.Equals(searchBy);
-                //}
+                Expression<Func<Sale, bool>> filter = null;                
 
                 var result = _saleDao.LoadAllSales(filter, null, start, length, sortBy, sortDir);
 
                 List<SaleDto> categories = new List<SaleDto>();
-                foreach (Sale Sale in result.data)
+                foreach (Sale sale in result.data)
                 {
                     categories.Add(
                         new SaleDto
                         {
-                            Id = Sale.Id,
-                            CustomerId = Sale.CustomerId,
-                            CreateBy = Sale.CreateBy,
-                            SaleDate = Sale.SaleDate,
-                            GrandTotalPrice = Math.Round(Sale.GrandTotalPrice, 2),
-                            IsPaid = Sale.IsPaid,
-                            PaymentId=Sale.PaymentId,
+                            Id = sale.Id.ToString(),
+                            CustomerName = _customerService.GetNameById(sale.CustomerId),
+                            CreateBy = _userService.GetUserName(sale.CreateBy),
+                            SaleDate = sale.SaleDate.ToString(),
+                            GrandTotalPrice = sale.GrandTotalPrice.ToString(),
+                            IsPaid = sale.IsPaid.ToString(),
+                            PaymentId= sale.PaymentId.ToString(),
                         });
                 }
 

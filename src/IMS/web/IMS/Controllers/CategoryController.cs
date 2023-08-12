@@ -18,14 +18,12 @@ namespace IMS.Controllers
     public class CategoryController : AllBaseController
     {
         #region Initialization
-        private readonly ICategoryService _categoryService;
-        private readonly IUserService _userService;
+        private readonly ICategoryService _categoryService;        
 
         public CategoryController()
         {
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
-            _categoryService = new CategoryService(session);
-            _userService = new UserService(session);
+            _categoryService = new CategoryService(session);            
         }
 
         #endregion
@@ -192,10 +190,10 @@ namespace IMS.Controllers
                                 count++.ToString(),
                                 record.Name,
                                 record.Description,
-                                record.Status.ToString(),
-                                _userService.GetUserName(record.CreateBy),
-                                record.CreationDate.ToString(),
-                                record.Id.ToString()
+                                record.Status,
+                                record.CreateBy,
+                                record.CreationDate,
+                                record.Id
                             }
                         ).ToArray()
                 });

@@ -1,6 +1,6 @@
 ﻿namespace IMS.BusinessModel.Dto
 {
-    public class SupplierDto : BaseDto<long>
+    public class SupplierDto : BaseDto
     {
         public string Address { get; set; }
         public string ContactNumber { get; set; }

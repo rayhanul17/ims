@@ -208,17 +208,15 @@ namespace IMS.Services
                     customers.Add(
                         new CustomerDto
                         {
-                            Id = customer.Id,
+                            Id = customer.Id.ToString(),
                             Name = customer.Name,
                             Address = customer.Address,
                             ContactNumber = customer.ContactNumber,
                             Email = customer.Email,
-                            CreateBy = customer.CreateBy,
-                            CreationDate = customer.CreationDate,                            
-                            Status = (Status)customer.Status,
-                            Rank = customer.Rank,
-                            VersionNumber = customer.VersionNumber,
-                            BusinessId = customer.BusinessId,
+                            CreateBy = _userService.GetUserName(customer.CreateBy),
+                            CreationDate = customer.CreationDate.ToString(),                            
+                            Status = ((Status)customer.Status).ToString(),
+                            Rank = customer.Rank.ToString()                            
                         });
                 }
 

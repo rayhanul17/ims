@@ -9,8 +9,6 @@
         public virtual decimal DiscountPrice { get; set; }
         public virtual decimal ProfitMargin { get; set; }
         public virtual int InStockQuantity { get; set; }
-        public virtual long CategoryId { get; set; }
-        public virtual long BrandId { get; set; }
         public virtual Category Category { get; set; }
         public virtual Brand Brand { get; set; }
     }

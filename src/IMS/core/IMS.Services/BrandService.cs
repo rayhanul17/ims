@@ -193,15 +193,14 @@ namespace IMS.Services
                     categories.Add(
                         new BrandDto
                         {
-                            Id = brand.Id,
+                            Id = brand.Id.ToString(),
                             Name = brand.Name,
                             Description = brand.Description,
-                            CreateBy = brand.CreateBy,
-                            CreationDate = brand.CreationDate,                            
-                            Status = (Status)brand.Status,
-                            Rank = brand.Rank,
-                            VersionNumber = brand.VersionNumber,
-                            BusinessId = brand.BusinessId,
+                            CreateBy = _userService.GetUserName(brand.CreateBy),
+                            CreationDate = brand.CreationDate.ToString(),                            
+                            Status = ((Status)brand.Status).ToString(),
+                            Rank = brand.Rank.ToString()
+                            
                         });
                 }
 

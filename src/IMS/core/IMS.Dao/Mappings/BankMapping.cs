@@ -6,7 +6,8 @@ namespace IMS.Dao.Mappings
     {
         public BankMapping() : base()
         {
-            Table("Bank");            
+            Table("Bank");
+            Map(x => x.Name).Not.Nullable();
             Map(x => x.Description);
             HasMany(x => x.PaymentDetails)
                 .KeyColumn("BankId")

@@ -23,8 +23,7 @@ namespace IMS.Controllers
         private readonly ICustomerService _customerService;
         private readonly ISaleService _saleService;
         private readonly IPaymentService _paymentService;
-        private readonly IUserService _userService;
-
+        
         public SaleController()
         {
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
@@ -33,8 +32,7 @@ namespace IMS.Controllers
             _brandService = new BrandService(session);
             _customerService = new CustomerService(session);
             _saleService = new SaleService(session);
-            _paymentService = new PaymentService(session);
-            _userService = new UserService(session);
+            _paymentService = new PaymentService(session);            
         }
         #endregion
 
@@ -154,13 +152,13 @@ namespace IMS.Controllers
                             select new string[]
                             {
                                 count++.ToString(),
-                                _customerService.GetNameById(record.CustomerId),
-                                _userService.GetUserName(record.CreateBy),
-                                record.SaleDate.ToString(),
-                                record.GrandTotalPrice.ToString(),
-                                record.Id.ToString(),
-                                record.IsPaid.ToString(),
-                                record.PaymentId.ToString(),
+                                record.CustomerName,
+                                record.CreateBy,
+                                record.SaleDate,
+                                record.GrandTotalPrice,
+                                record.Id,
+                                record.IsPaid,
+                                record.PaymentId,
                             }
                         ).ToArray()
                 });

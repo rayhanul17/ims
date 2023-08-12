@@ -2,7 +2,7 @@
 
 namespace IMS.BusinessModel.Entity
 {
-    public abstract class BaseEntity<T> : IEntity<T>
+    public abstract class BaseEntity<T>
     {
         public virtual T Id { get; set; }
         public virtual string Name { get; set; }

@@ -1,15 +1,13 @@
-﻿using System;
-
-namespace IMS.BusinessModel.Dto
+﻿namespace IMS.BusinessModel.Dto
 {
     public class SaleDto
     {
-        public long Id { get; set; }
-        public long CustomerId { get; set; }
-        public long CreateBy { get; set; }
-        public DateTime SaleDate { get; set; }
-        public decimal GrandTotalPrice { get; set; }
-        public bool IsPaid { get; set; }
-        public long PaymentId { get; set; }
+        public string Id { get; set; }
+        public string CustomerName { get; set; }
+        public string CreateBy { get; set; }
+        public string SaleDate { get; set; }
+        public string GrandTotalPrice { get; set; }
+        public string IsPaid { get; set; }
+        public string PaymentId { get; set; }
     }
 }

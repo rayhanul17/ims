@@ -35,14 +35,14 @@ namespace IMS.Services
         private readonly IProductDao _productDao;
         private readonly ICategoryDao _categoryDao;
         private readonly IBrandDao _brandDao;
-        private readonly IImageService _imageService;
+        private readonly IImageService _imageService;        
 
         public ProductService(ISession session) : base(session)
         {
             _productDao = new ProductDao(session);
             _categoryDao = new CategoryDao(session);
             _brandDao = new BrandDao(session);
-            _imageService = new ImageService();
+            _imageService = new ImageService();            
         }
         #endregion
 
@@ -61,10 +61,8 @@ namespace IMS.Services
 
                     var product = new Product()
                     {
-                        Name = model.Name,
-                        CategoryId = model.CategoryId,
-                        Category = await _categoryDao.GetByIdAsync(model.CategoryId),
-                        BrandId = model.BrandId,
+                        Name = model.Name,                        
+                        Category = await _categoryDao.GetByIdAsync(model.CategoryId),                        
                         Brand = await _brandDao.GetByIdAsync(model.BrandId),
                         Description = model.Description,
                         Status = (int)model.Status,
@@ -107,10 +105,8 @@ namespace IMS.Services
                         throw new CustomException("Already exist Product with this name");
                     }                    
                     
-                    product.Name = model.Name;
-                    product.CategoryId = model.CategoryId;
-                    product.Category = await _categoryDao.GetByIdAsync(model.CategoryId);
-                    product.BrandId = model.BrandId;
+                    product.Name = model.Name;                   
+                    product.Category = await _categoryDao.GetByIdAsync(model.CategoryId);                    
                     product.Brand = await _brandDao.GetByIdAsync(model.BrandId);
                     product.Description = model.Description;
                     product.Status = (int)model.Status;
@@ -221,8 +217,8 @@ namespace IMS.Services
                 }
                 return new ProductDto
                 {
-                    SellingPrice = product.SellingPrice,
-                    InStockQuantity = product.InStockQuantity
+                    SellingPrice = product.SellingPrice.ToString(),
+                    InStockQuantity = product.InStockQuantity.ToString()
                 };
             }
             catch (Exception ex)
@@ -308,17 +304,17 @@ namespace IMS.Services
                     products.Add(
                         new ProductDto
                         {
-                            Id = product.Id,
+                            Id = product.Id.ToString(),
                             Name = product.Name,
                             Category = product.Category.Name,
                             Brand = product.Brand.Name,
                             Description = product.Description,                                                       
-                            Status = (Status)product.Status,                            
-                            DiscountPrice = product.DiscountPrice,
-                            SellingPrice = product.SellingPrice,
+                            Status = ((Status)product.Status).ToString(),                            
+                            DiscountPrice = product.DiscountPrice.ToString(),
+                            SellingPrice = product.SellingPrice.ToString(),
                             Image = product.Image, 
-                            InStockQuantity = product.InStockQuantity,
-                            Rank = product.Rank,
+                            InStockQuantity = product.InStockQuantity.ToString(),
+                            Rank = product.Rank.ToString()
                         });
                 }
 
@@ -340,10 +336,10 @@ namespace IMS.Services
                 products.Add(
                     new ProductDto
                     {
-                        Id = product.Id,
+                        Id = product.Id.ToString(),
                         Name = product.Name,
-                        InStockQuantity = product.InStockQuantity,
-                        SellingPrice = product.SellingPrice,
+                        InStockQuantity = product.InStockQuantity.ToString(),
+                        SellingPrice = product.SellingPrice.ToString(),
                     });
             }
             return products;
@@ -358,10 +354,10 @@ namespace IMS.Services
                 products.Add(
                     new ProductDto
                     {
-                        Id = product.Id,
+                        Id = product.Id.ToString(),
                         Name = product.Name,
-                        InStockQuantity = product.InStockQuantity,
-                        SellingPrice = product.SellingPrice,
+                        InStockQuantity = product.InStockQuantity.ToString(),
+                        SellingPrice = product.SellingPrice.ToString(),
                     });
             }
             return products;
@@ -371,7 +367,7 @@ namespace IMS.Services
         { 
             
             List<(long, string)> products = new List<(long, string)>();
-            var allProducts = _productDao.GetProducts(x => x.CategoryId == categoyId && x.Status == (int)Status.Active);
+            var allProducts = _productDao.GetProducts(x => x.Category.Id == categoyId && x.Status == (int)Status.Active);
             foreach (var product in allProducts)
             {
                 products.Add((product.Id, product.Name));

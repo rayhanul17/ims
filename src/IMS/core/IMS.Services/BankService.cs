@@ -28,13 +28,12 @@ namespace IMS.Services
     public class BankService : BaseService, IBankService
     {
         #region Initializtion
-        private readonly IBankDao _bankDao;  
-        private readonly IPaymentDao _paymentDao;
+        private readonly IBankDao _bankDao;       
 
         public BankService(ISession session) : base(session)
         {
-            _bankDao = new BankDao(session);  
-            _paymentDao = new PaymentDao(session);
+            _bankDao = new BankDao(session); 
+            
         }
         #endregion
 
@@ -203,15 +202,14 @@ namespace IMS.Services
                     banks.Add(
                         new BankDto
                         {
-                            Id = bank.Id,
+                            Id = bank.Id.ToString(),
                             Name = bank.Name,
                             Description =bank.Description,
-                            CreateBy = bank.CreateBy,
-                            CreationDate = bank.CreationDate,                            
-                            Status = (Status)bank.Status,
-                            Rank = bank.Rank,
-                            VersionNumber = bank.VersionNumber,
-                            BusinessId = bank.BusinessId,
+                            CreateBy = _userService.GetUserName(bank.CreateBy),
+                            CreationDate = bank.CreationDate.ToString(),                           
+                            Status = ((Status)bank.Status).ToString(),
+                            Rank = bank.Rank.ToString(),
+                            
                         });
                 }
 

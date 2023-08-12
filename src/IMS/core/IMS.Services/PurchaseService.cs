@@ -26,12 +26,14 @@ namespace IMS.Services
         private readonly IPurchaseDao _purchaseDao;
         private readonly IProductDao _productDao;
         private readonly ISupplierDao _supplierDao;
+        private readonly ISupplierService _supplierService;
 
         public PurchaseService(ISession session) : base(session)
         {
             _purchaseDao = new PurchaseDao(session);
             _productDao = new ProductDao(session);
             _supplierDao = new SupplierDao(session);
+            _supplierService = new SupplierService(session);
         }
         #endregion
 
@@ -143,13 +145,13 @@ namespace IMS.Services
                     categories.Add(
                         new PurchaseDto
                         {
-                            Id = purchase.Id,
-                            SupplierId = purchase.SupplierId,
-                            CreateBy = purchase.CreateBy,
-                            PurchaseDate = purchase.PurchaseDate,
-                            GrandTotalPrice = Math.Round(purchase.GrandTotalPrice, 2),
-                            IsPaid = purchase.IsPaid,
-                            PaymentId= purchase.PaymentId,
+                            Id = purchase.Id.ToString(),
+                            SupplierName = _supplierService.GetNameById(purchase.SupplierId),
+                            CreateBy = _userService.GetUserName(purchase.CreateBy),
+                            PurchaseDate = purchase.PurchaseDate.ToString(),
+                            GrandTotalPrice = purchase.GrandTotalPrice.ToString(),
+                            IsPaid = purchase.IsPaid.ToString(),
+                            PaymentId= purchase.PaymentId.ToString(),
                         });
                 }
 

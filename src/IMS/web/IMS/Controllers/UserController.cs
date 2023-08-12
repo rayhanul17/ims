@@ -235,11 +235,11 @@ namespace IMS.Controllers
                                 count++.ToString(),
                                 record.Name,
                                 record.Email,
-                                string.Join(", ", UserManager.GetRoles(record.Id)),
-                                record.Status.ToString(),
-                                _userService.GetUserName(record.CreateBy),
-                                record.CreationDate.ToString(),
-                                record.Id.ToString()
+                                string.Join(", ", UserManager.GetRoles(Convert.ToInt64(record.Id))),
+                                record.Status,
+                                record.CreateBy,
+                                record.CreationDate,
+                                record.Id
                             }
                         ).ToArray()
                 });

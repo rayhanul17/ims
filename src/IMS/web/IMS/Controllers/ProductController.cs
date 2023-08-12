@@ -21,8 +21,7 @@ namespace IMS.Controllers
         #region Initialization
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
-        private readonly IBrandService _brandService;
-        private readonly IUserService _userService;
+        private readonly IBrandService _brandService;        
         private readonly IImageService _imageService;
 
         public ProductController()
@@ -30,8 +29,7 @@ namespace IMS.Controllers
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
             _productService = new ProductService(session);
             _categoryService = new CategoryService(session);
-            _brandService = new BrandService(session);
-            _userService = new UserService(session);
+            _brandService = new BrandService(session);            
             _imageService = new ImageService();
         }
 

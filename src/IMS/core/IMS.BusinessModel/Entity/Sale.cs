@@ -3,11 +3,9 @@ using System.Collections.Generic;
 
 namespace IMS.BusinessModel.Entity
 {
-    public class Sale : IEntity<long>
+    public class Sale : BaseEntity<long>
     {
-        public virtual long Id { get; set; }
         public virtual long CustomerId { get; set; }
-        public virtual long CreateBy { get; set; }
         public virtual DateTime SaleDate { get; set; }
         public virtual decimal GrandTotalPrice { get; set; }     
         public virtual bool IsPaid { get; set; }

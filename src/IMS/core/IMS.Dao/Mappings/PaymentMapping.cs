@@ -1,15 +1,13 @@
-﻿using FluentNHibernate.Conventions.Helpers;
-using FluentNHibernate.Mapping;
+﻿using FluentNHibernate.Mapping;
 using IMS.BusinessModel.Entity;
 
 namespace IMS.Dao.Mappings
 {
-    public class PaymentMapping : ClassMap<Payment>
+    public class PaymentMapping : BaseMapping<Payment, long>
     {
         public PaymentMapping()
         {
             Table("Payment");
-            Id(x => x.Id).Not.Nullable();
             Map(x => x.OperationId);
             Map(x => x.OperationType);
             Map(x => x.TotalAmount).Not.Nullable();
@@ -18,11 +16,7 @@ namespace IMS.Dao.Mappings
                 .KeyColumn("PaymentId")
                 .LazyLoad()
                 .Cascade.All();
-
-            
-
         }
-
     }
 
     public class PaymentDetailsMapping : ClassMap<PaymentDetails>
@@ -30,7 +24,7 @@ namespace IMS.Dao.Mappings
         public PaymentDetailsMapping()
         {
             Table("PaymentDetails");
-            Id(x =>x.Id).Not.Nullable();
+            Id(x => x.Id).Not.Nullable();
             Map(x => x.PaymentMethod);
             Map(x => x.TransactionId);
             Map(x => x.Amount).Not.Nullable();
@@ -43,5 +37,4 @@ namespace IMS.Dao.Mappings
                 .Column("BankId").Nullable();
         }
     }
-
 }

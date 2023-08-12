@@ -1,28 +1,26 @@
-﻿using IMS.BusinessRules.Enum;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace IMS.BusinessModel.Dto
 {
     public class PaymentReportDto
     {
-        public long Id { get; set; }
-        public long OperationId { get; set; }
-        public OperationType OperationType { get; set; }
-        public decimal TotalAmount { get; set; }
-        public decimal PaidAmount { get; set; }
-        public decimal DueAmount { get; set; }
+        public string Id { get; set; }
+        public string OperationId { get; set; }
+        public string OperationType { get; set; }
+        public string TotalAmount { get; set; }
+        public string PaidAmount { get; set; }
+        public string DueAmount { get; set; }
         public IList<PaymentInformation> PaymentDetails { get; set; } = new List<PaymentInformation>();
     }
 
     public class PaymentInformation
     {
-        public long Id { get; set; }
-        public PaymentMethod PaymentMethod { get; set; }
-        public decimal Amount { get; set; } 
+        public string Id { get; set; }
+        public string PaymentMethod { get; set; }
+        public string Amount { get; set; }
         public string TransactionId { get; set; }
-        public DateTime PaymentDate { get; set; }
-        public long BankId { get; set; }
+        public string PaymentDate { get; set; }
+        public string BankId { get; set; }
         public string Bank { get; set; }
     }
 }

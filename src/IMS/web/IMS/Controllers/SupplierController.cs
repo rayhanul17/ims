@@ -19,13 +19,11 @@ namespace IMS.Controllers
     {
         #region Initialization
         private readonly ISupplierService _supplierService;
-        private readonly IUserService _userService;
-
+        
         public SupplierController()
         {
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
-            _supplierService = new SupplierService(session);
-            _userService = new UserService(session);
+            _supplierService = new SupplierService(session);            
         }
 
         #endregion
@@ -194,10 +192,10 @@ namespace IMS.Controllers
                                 record.Address,
                                 record.ContactNumber,
                                 record.Email,
-                                record.Status.ToString(),
-                                _userService.GetUserName(record.CreateBy),
-                                record.CreationDate.ToString(),
-                                record.Id.ToString()
+                                record.Status,
+                                record.CreateBy,
+                                record.CreationDate,
+                                record.Id
                             }
                         ).ToArray()
                 });

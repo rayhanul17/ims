@@ -1,8 +1,7 @@
 ﻿namespace IMS.BusinessModel.Entity
 {
-    public class PurchaseDetails : IEntity<long>
+    public class PurchaseDetails : BaseEntity<long>
     {
-        public virtual long Id { get; set; }
         public virtual long ProductId { get; set; }
         public virtual int Quantity { get; set; }
         public virtual decimal TotalPrice { get; set; }

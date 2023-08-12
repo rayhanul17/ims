@@ -1,10 +1,4 @@
-﻿using FluentNHibernate.Mapping;
-using IMS.BusinessModel.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IMS.BusinessModel.Entity;
 
 namespace IMS.Dao.Mappings
 {
@@ -13,6 +7,7 @@ namespace IMS.Dao.Mappings
         public ApplicationUserMap() : base()
         {
             Table("ApplicationUser");
+            Map(x => x.Name).Not.Nullable();
             Map(x => x.AspNetUsersId);
             Map(x => x.Email);
         }

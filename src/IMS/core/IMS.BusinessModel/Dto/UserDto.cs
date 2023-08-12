@@ -1,20 +1,13 @@
-﻿using IMS.BusinessRules.Enum;
-using System;
-
-namespace IMS.BusinessModel.Dto
+﻿namespace IMS.BusinessModel.Dto
 {
     public class UserDto
     {
-        public long Id { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
-        public Status Status { get; set; }
-        public long CreateBy { get; set; }
-        public DateTime CreationDate { get; set; }
-        public long ModifyBy { get; set; }
-        public DateTime? ModificationDate { get; set; }
-        public long Rank { get; set; }
-        public long? VersionNumber { get; set; }
-        public string BusinessId { get; set; }
+        public string Status { get; set; }
+        public string CreateBy { get; set; }
+        public string CreationDate { get; set; }
+        public string Rank { get; set; }
     }
 }

@@ -210,17 +210,15 @@ namespace IMS.Services
                     suppliers.Add(
                         new SupplierDto
                         {
-                            Id = supplier.Id,
+                            Id = supplier.Id.ToString(),
                             Name = supplier.Name,
                             Address = supplier.Address,
                             ContactNumber = supplier.ContactNumber,
                             Email = supplier.Email,
-                            CreateBy = supplier.CreateBy,
-                            CreationDate = supplier.CreationDate,
-                            Status = (Status)supplier.Status,
-                            Rank = supplier.Rank,
-                            VersionNumber = supplier.VersionNumber,
-                            BusinessId = supplier.BusinessId,
+                            CreateBy = _userService.GetUserName(supplier.CreateBy),
+                            CreationDate = supplier.CreationDate.ToString(),
+                            Status = ((Status)supplier.Status).ToString(),
+                            Rank = supplier.Rank.ToString()
                         });
                 }
 

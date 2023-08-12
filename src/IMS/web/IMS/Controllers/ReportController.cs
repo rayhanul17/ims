@@ -13,14 +13,12 @@ namespace IMS.Controllers
     public class ReportController : AllBaseController
     {
         #region Initialization
-        private readonly IReportService _reportService;
-        private readonly IUserService _userService;
+        private readonly IReportService _reportService;        
 
         public ReportController()
         {
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
-            _reportService = new ReportService(session);
-            _userService = new UserService(session);
+            _reportService = new ReportService(session);           
         }
 
         #endregion

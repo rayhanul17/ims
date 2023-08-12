@@ -7,6 +7,7 @@ namespace IMS.Dao.Mappings
         public ProductMapping() : base()
         {
             Table("Product");
+            Map(x => x.Name).Not.Nullable();
             Map(x => x.Description);
             Map(x => x.BuyingPrice);
             Map(x => x.SellingPrice);

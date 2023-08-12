@@ -18,14 +18,12 @@ namespace IMS.Controllers
     public class BankController : AllBaseController
     {
         #region Initialization
-        private readonly IBankService _bankService;
-        private readonly IUserService _userService;
+        private readonly IBankService _bankService;        
 
         public BankController()
         {
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
-            _bankService = new BankService(session);
-            _userService = new UserService(session);
+            _bankService = new BankService(session);            
         }
 
         #endregion
@@ -189,10 +187,10 @@ namespace IMS.Controllers
                                 count++.ToString(),
                                 record.Name,
                                 record.Description,
-                                record.Status.ToString(),
-                                _userService.GetUserName(record.CreateBy),
-                                record.CreationDate.ToString(),
-                                record.Id.ToString()
+                                record.Status,
+                                record.CreateBy,
+                                record.CreationDate,
+                                record.Id
                             }
                         ).ToArray()
                 });

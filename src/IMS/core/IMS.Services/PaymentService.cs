@@ -93,8 +93,7 @@ namespace IMS.Services
                             }
                            
                             var paymentDetails = new PaymentDetails
-                            {
-                                BankId = model.BankId,
+                            {                                
                                 TransactionId = model.TransactionId,
                                 Amount = model.Amount,
                                 PaymentDate = _timeService.Now,
@@ -180,20 +179,20 @@ namespace IMS.Services
                 paymentDetails.Add(
                     new PaymentInformation
                     {
-                        PaymentMethod = (PaymentMethod)item.PaymentMethod,
-                        Amount = item.Amount,
+                        PaymentMethod = ((PaymentMethod)item.PaymentMethod).ToString(),
+                        Amount = item.Amount.ToString(),
                         TransactionId = item.TransactionId,
-                        PaymentDate = item.PaymentDate,
+                        PaymentDate = item.PaymentDate.ToString(),
                         Bank = bank?.Name
                     });
             }
 
             var paymentDto = new PaymentReportDto
             {
-                OperationType = (OperationType)payment.OperationType,
-                PaidAmount = payment.PaidAmount,
-                TotalAmount = payment.TotalAmount,
-                DueAmount = payment.TotalAmount - payment.PaidAmount,
+                OperationType = ((OperationType)payment.OperationType).ToString(),
+                PaidAmount = payment.PaidAmount.ToString(),
+                TotalAmount = payment.TotalAmount.ToString(),
+                DueAmount = (payment.TotalAmount - payment.PaidAmount).ToString(),
                 PaymentDetails = paymentDetails
             };
 
@@ -222,11 +221,11 @@ namespace IMS.Services
                     payments.Add(
                         new PaymentReportDto
                         {
-                            Id = payment.Id,                      
-                            OperationType = (OperationType)payment.OperationType,
-                            TotalAmount = payment.TotalAmount,
-                            PaidAmount = payment.PaidAmount,
-                            DueAmount = payment.TotalAmount - payment.PaidAmount,
+                            Id = payment.Id.ToString(),                      
+                            OperationType = ((OperationType)payment.OperationType).ToString(),
+                            TotalAmount = payment.TotalAmount.ToString(),
+                            PaidAmount = payment.PaidAmount.ToString(),
+                            DueAmount = (payment.TotalAmount - payment.PaidAmount).ToString(),
                         });
                 }
 

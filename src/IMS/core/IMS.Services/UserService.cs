@@ -3,6 +3,7 @@ using IMS.BusinessModel.Entity;
 using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
 using IMS.Dao;
+using log4net;
 using NHibernate;
 using System;
 using System.Collections.Generic;
@@ -25,14 +26,18 @@ namespace IMS.Services
     }
     #endregion
 
-    public class UserService : BaseService, IUserService
+    public class UserService : IUserService
     {
         #region Initialization
         private readonly IApplicationUserDao _userDao;
-
-        public UserService(ISession session) : base(session)
+        private readonly ISession _session;
+        private readonly ITimeService _timeService;
+        private readonly ILog _serviceLogger = LogManager.GetLogger("ServiceLogger");
+        public UserService(ISession session)
         {
+            _session = session;
             _userDao = new ApplicationUserDao(session);
+            _timeService = new TimeService();
         }
         #endregion
 
@@ -175,15 +180,13 @@ namespace IMS.Services
                     users.Add(
                         new UserDto
                         {
-                            Id = user.AspNetUsersId,
+                            Id = user.AspNetUsersId.ToString(),
                             Name = user.Name,
                             Email = user.Email,
-                            CreateBy = user.CreateBy,
-                            CreationDate = user.CreationDate,
-                            Status = (Status)user.Status,
-                            Rank = user.Rank,
-                            VersionNumber = user.VersionNumber,
-                            BusinessId = user.BusinessId,
+                            CreateBy = GetUserName(user.CreateBy),
+                            CreationDate = user.CreationDate.ToString(),
+                            Status = ((Status)user.Status).ToString(),
+                            Rank = user.Rank.ToString()                           
                         });
                 }
 

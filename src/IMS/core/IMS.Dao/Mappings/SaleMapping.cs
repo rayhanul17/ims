@@ -3,14 +3,12 @@ using IMS.BusinessModel.Entity;
 
 namespace IMS.Dao.Mappings
 {
-    public class SaleMapping : ClassMap<Sale>
+    public class SaleMapping : BaseMapping<Sale, long>
     {
         public SaleMapping()
         {
-            Table("Sale");
-            Id(x => x.Id);
-            Map(x => x.CustomerId);
-            Map(x => x.CreateBy);
+            Table("Sale");            
+            Map(x => x.CustomerId);            
             Map(x => x.SaleDate);
             Map(x => x.GrandTotalPrice);
             Map(x => x.IsPaid);

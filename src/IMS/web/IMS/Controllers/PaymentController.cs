@@ -17,15 +17,13 @@ namespace IMS.Controllers
     {
         #region Initialization
         private readonly IPaymentService _paymentService;
-        private readonly IBankService _bankService;
-        private readonly IUserService _userService;
+        private readonly IBankService _bankService;        
 
         public PaymentController()
         {
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
             _paymentService = new PaymentService(session);
-            _bankService = new BankService(session);
-            _userService = new UserService(session);
+            _bankService = new BankService(session);            
         }
         #endregion
 
@@ -133,11 +131,11 @@ namespace IMS.Controllers
                             select new string[]
                             {
                                 count++.ToString(),
-                                record.OperationType.ToString(),
-                                record.TotalAmount.ToString(),
-                                record.PaidAmount.ToString(),
-                                record.DueAmount.ToString(),
-                                record.Id.ToString()
+                                record.OperationType,
+                                record.TotalAmount,
+                                record.PaidAmount,
+                                record.DueAmount,
+                                record.Id,
                             }
                         ).ToArray()
                 });

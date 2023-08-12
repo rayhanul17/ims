@@ -11,6 +11,7 @@ namespace IMS.BusinessModel.Dto
         public IList<ProductListDto> PurchaseProductList { get; set; } = new List<ProductListDto>();
         public IList<ProductListDto> SaleProductList { get; set; } = new List<ProductListDto>();
     }
+
     public class PaymentDetailsDto
     {
         public int Count { get; set; }
@@ -18,6 +19,7 @@ namespace IMS.BusinessModel.Dto
         public decimal PaidAmount { get; set; }
         public decimal DueAmount { get; set; }
     }
+
     public class ProductListDto    {
         
         public string Name { get; set; }

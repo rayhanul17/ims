@@ -18,14 +18,12 @@ namespace IMS.Controllers
     public class BrandController : AllBaseController
     {
         #region Initialization
-        private readonly IBrandService _brandService;
-        private readonly IUserService _userService;
+        private readonly IBrandService _brandService;        
 
         public BrandController()
         {
             var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
-            _brandService = new BrandService(session);
-            _userService = new UserService(session);
+            _brandService = new BrandService(session);            
         }
 
         #endregion
@@ -193,10 +191,10 @@ namespace IMS.Controllers
                                 count++.ToString(),
                                 record.Name,
                                 record.Description,
-                                record.Status.ToString(),
-                                _userService.GetUserName(record.CreateBy),
-                                record.CreationDate.ToString(),
-                                record.Id.ToString()
+                                record.Status,
+                                record.CreateBy,
+                                record.CreationDate,
+                                record.Id
                             }
                         ).ToArray()
                 });

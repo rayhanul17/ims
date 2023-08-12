@@ -1,8 +1,8 @@
 ﻿using IMS.BusinessModel.Entity;
+using IMS.BusinessRules.Enum;
 using NHibernate;
 using NHibernate.Transform;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace IMS.Dao
 {
     #region Interfaces
-    public interface IBaseDao<TEntity, TKey> where TEntity : class, IEntity<TKey>
+    public interface IBaseDao<TEntity, TKey> where TEntity : BaseEntity<TKey>
     {
         Task<TKey> AddAsync(TEntity entity);
         Task RemoveByIdAsync(TKey id);
@@ -43,15 +43,14 @@ namespace IMS.Dao
         IList<TEntity> GetDynamic(Expression<Func<TEntity, bool>> filter = null,
             string orderBy = null);
 
-        (IList<TEntity> data, int total, int totalDisplay) LoadAll(Expression<Func<TEntity, bool>> filter = null,
-           string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
+        (IList<BaseEntity<long>> data, int total, int totalDisplay) LoadAll(Expression<Func<BaseEntity<long>, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
     }
     #endregion
 
     #region Implementations
     public abstract class BaseDao<TEntity, TKey>
         : IBaseDao<TEntity, TKey>
-        where TEntity : class, IEntity<TKey>
+        where TEntity : BaseEntity<TKey>
     {
         protected ISession _session;
 
@@ -166,8 +165,8 @@ namespace IMS.Dao
             var result = await ExecuteUpdateDeleteQuery(sql);
 
             return result;
-        }   
-        
+        }
+
         public async Task<long> GetMaxRank(string tableName)
         {
             var sql = $"SELECT MAX([Rank]) Rank FROM {tableName}";
@@ -282,10 +281,11 @@ namespace IMS.Dao
         }
 
         //For BaseEntity
-        public (IList<TEntity> data, int total, int totalDisplay) LoadAll(Expression<Func<TEntity, bool>> filter = null,
-            string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
+        public (IList<BaseEntity<long>> data, int total, int totalDisplay) LoadAll(Expression<Func<BaseEntity<long>, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
         {
-            IQueryable<TEntity> query = _session.Query<TEntity>();
+            IQueryable<BaseEntity<long>> query = _session.Query<BaseEntity<long>>();
+
+            query = query.Where(x => x.Status != (int)Status.Delete);
 
             var total = query.Count();
             var totalDisplay = query.Count();
@@ -294,6 +294,19 @@ namespace IMS.Dao
             {
                 query = query.Where(filter);
                 totalDisplay = query.Count();
+            }
+
+            switch (sortBy)
+            {
+                case "Name":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.Name) : query.OrderByDescending(c => c.Name);
+                    break;
+                case "Creation Date":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.CreationDate) : query.OrderByDescending(c => c.CreationDate);
+                    break;
+                case "Rank":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.Rank) : query.OrderByDescending(c => c.Rank);
+                    break;
             }
 
             var result = query.Skip(pageIndex).Take(pageSize);

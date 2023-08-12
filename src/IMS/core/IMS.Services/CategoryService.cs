@@ -201,15 +201,13 @@ namespace IMS.Services
                     categories.Add(
                         new CategoryDto
                         {
-                            Id = category.Id,
+                            Id = category.Id.ToString(),
                             Name = category.Name,
                             Description = category.Description,
-                            CreateBy = category.CreateBy,
-                            CreationDate = category.CreationDate,                            
-                            Status = (Status)category.Status,
-                            Rank = category.Rank,
-                            VersionNumber = category.VersionNumber,
-                            BusinessId = category.BusinessId,
+                            CreateBy = _userService.GetUserName(category.CreateBy),
+                            CreationDate = category.CreationDate.ToString(),                            
+                            Status = ((Status)category.Status).ToString(),
+                            Rank = category.Rank.ToString()                           
                         });
                 }
 
