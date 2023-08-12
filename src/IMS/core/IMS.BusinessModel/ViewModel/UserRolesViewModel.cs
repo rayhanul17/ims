@@ -2,7 +2,7 @@
 
 namespace IMS.BusinessModel.ViewModel
 {
-    public class UserRolesModel
+    public class UserRolesViewModel
     {
         public long UserId { get; set; }
         public List<Role> Roles { get; set; }

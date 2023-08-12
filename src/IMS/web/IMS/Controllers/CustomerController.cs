@@ -44,7 +44,7 @@ namespace IMS.Controllers
         [Authorize(Roles = "SA, Manager")]
         public ActionResult Create()
         {
-            var model = new CustomerAddModel();
+            var model = new CustomerAddViewModel();
             var selectList = Enum.GetValues(typeof(Status))
                        .Cast<Status>()
                        .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
@@ -55,7 +55,7 @@ namespace IMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
-        public async Task<ActionResult> Create(CustomerAddModel model)
+        public async Task<ActionResult> Create(CustomerAddViewModel model)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace IMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
-        public async Task<ActionResult> Edit(CustomerEditModel model)
+        public async Task<ActionResult> Edit(CustomerEditViewModel model)
         {
             try
             {
@@ -211,7 +211,7 @@ namespace IMS.Controllers
         #endregion
 
         #region Helper Function
-        private void ValidateBankAddModel(CustomerAddModel model)
+        private void ValidateBankAddModel(CustomerAddViewModel model)
         {
             string phone = @"^(?:\+?88)?01[13-9]\d{8}$";
             string mail = @"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$";
@@ -240,7 +240,7 @@ namespace IMS.Controllers
             }
         }
 
-        private void ValidateBankEditModel(CustomerEditModel model)
+        private void ValidateBankEditModel(CustomerEditViewModel model)
         {
             string phone = @"^(?:\+?88)?01[13-9]\d{8}$";
             string mail = @"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$";

@@ -15,12 +15,12 @@ namespace IMS.Services
     #region Interface
     public interface IProductService
     {
-        Task AddAsync(ProductAddModel model, long userId);
-        Task UpdateAsync(ProductEditModel model, long userId);
+        Task AddAsync(ProductAddViewModel model, long userId);
+        Task UpdateAsync(ProductEditViewModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
         Task<RankUpdateDto> GetProductRankAsync(long productId);
         Task UpdateRankAsync(long productId, long targetRank);
-        Task<ProductEditModel> GetByIdAsync(long id);
+        Task<ProductEditViewModel> GetByIdAsync(long id);
         Task<ProductDto> GetPriceAndQuantityByIdAsync(long id);
         IList<ProductDto> LoadActiveProducts(long categoryId, long brandId);
         IList<ProductDto> LoadAvailableProducts(long categoryId, long brandId);
@@ -47,7 +47,7 @@ namespace IMS.Services
         #endregion
 
         #region Operational Function
-        public async Task AddAsync(ProductAddModel model, long userId)
+        public async Task AddAsync(ProductAddViewModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -89,7 +89,7 @@ namespace IMS.Services
             }
         }
 
-        public async Task UpdateAsync(ProductEditModel model, long userId)
+        public async Task UpdateAsync(ProductEditViewModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -172,7 +172,7 @@ namespace IMS.Services
             }
         }
 
-        public async Task<ProductEditModel> GetByIdAsync(long id)
+        public async Task<ProductEditViewModel> GetByIdAsync(long id)
         {
             try
             {
@@ -181,7 +181,7 @@ namespace IMS.Services
                 {
                     throw new CustomException("No object found with this id");
                 }
-                return new ProductEditModel
+                return new ProductEditViewModel
                 {
                     Id = product.Id,
                     Name = product.Name,

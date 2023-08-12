@@ -50,7 +50,7 @@ namespace IMS.Controllers
         [Authorize(Roles = "SA, Manager")]
         public ActionResult Create()
         {
-            var model = new ProductAddModel();
+            var model = new ProductAddViewModel();
 
             #region Dropdown box loading
 
@@ -82,7 +82,7 @@ namespace IMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken()]
         [Authorize(Roles = "SA, Manager")]
-        public async Task<ActionResult> Create(ProductAddModel model, HttpPostedFileBase image)
+        public async Task<ActionResult> Create(ProductAddViewModel model, HttpPostedFileBase image)
         {
 
             try
@@ -165,7 +165,7 @@ namespace IMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
-        public async Task<ActionResult> Edit(ProductEditModel model, HttpPostedFileBase image)
+        public async Task<ActionResult> Edit(ProductEditViewModel model, HttpPostedFileBase image)
         {
             try
             {
@@ -347,7 +347,7 @@ namespace IMS.Controllers
         #endregion
 
         #region Helper Function
-        private void ValidateProductAddModel(ProductAddModel model)
+        private void ValidateProductAddModel(ProductAddViewModel model)
         {
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 255)
             {
@@ -363,7 +363,7 @@ namespace IMS.Controllers
             }
         }
 
-        private void ValidateProductEditModel(ProductEditModel model)
+        private void ValidateProductEditModel(ProductEditViewModel model)
         {
             if (model.Id == 0)
             {

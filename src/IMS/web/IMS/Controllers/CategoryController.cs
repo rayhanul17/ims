@@ -43,7 +43,7 @@ namespace IMS.Controllers
         [Authorize(Roles = "SA, Manager")]
         public ActionResult Create()
         {
-            var model = new CategoryAddModel();
+            var model = new CategoryAddViewModel();
             var selectList = Enum.GetValues(typeof(Status))
                        .Cast<Status>()
                        .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
@@ -56,7 +56,7 @@ namespace IMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
-        public async Task<ActionResult> Create(CategoryAddModel model)
+        public async Task<ActionResult> Create(CategoryAddViewModel model)
         {
             try
             {
@@ -116,7 +116,7 @@ namespace IMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
-        public async Task<ActionResult> Edit(CategoryEditModel model)
+        public async Task<ActionResult> Edit(CategoryEditViewModel model)
         {
             try
             {
@@ -210,7 +210,7 @@ namespace IMS.Controllers
         #endregion
 
         #region Helper Function
-        private void ValidateCategoryAddModel(CategoryAddModel model)
+        private void ValidateCategoryAddModel(CategoryAddViewModel model)
         {            
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length<3 || model.Name.Length > 30)
             {
@@ -226,7 +226,7 @@ namespace IMS.Controllers
             }
         }
 
-        private void ValidateCategoryEditModel(CategoryEditModel model)
+        private void ValidateCategoryEditModel(CategoryEditViewModel model)
         {
             if(model.Id == 0)
             {

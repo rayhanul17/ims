@@ -13,7 +13,7 @@ namespace IMS.Services
     #region Interface
     public interface IPurchaseService
     {
-        Task<long> AddAsync(IList<PurchaseDetailsModel> model, decimal grandTotal, long supplierId, long userId);
+        Task<long> AddAsync(IList<PurchaseDetailsViewModel> model, decimal grandTotal, long supplierId, long userId);
 
         (int total, int totalDisplay, IList<PurchaseDto> records) LoadAllPurchases(string searchBy, int length, int start, string sortBy, string sortDir);
         Task<PurchaseReportDto> GetPurchaseDetailsAsync(long purchaseId);
@@ -36,7 +36,7 @@ namespace IMS.Services
         #endregion
 
         #region Operational Function
-        public async Task<long> AddAsync(IList<PurchaseDetailsModel> model, decimal grandTotal, long supplierId, long userId)
+        public async Task<long> AddAsync(IList<PurchaseDetailsViewModel> model, decimal grandTotal, long supplierId, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {

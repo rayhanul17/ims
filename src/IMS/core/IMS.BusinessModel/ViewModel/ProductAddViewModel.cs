@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace IMS.BusinessModel.ViewModel
 {
-    public class ProductAddModel
+    public class ProductAddViewModel
     {
         public string Name { get; set; }
         public string Image { get; set; }

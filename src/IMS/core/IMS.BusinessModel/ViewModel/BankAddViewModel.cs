@@ -2,7 +2,7 @@
 
 namespace IMS.BusinessModel.ViewModel
 {
-    public class BankAddModel
+    public class BankAddViewModel
     {
         public string Name { get; set; }
         public string Description { get; set; }        

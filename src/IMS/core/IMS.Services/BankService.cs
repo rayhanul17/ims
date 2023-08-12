@@ -15,10 +15,10 @@ namespace IMS.Services
     #region Interface
     public interface IBankService
     {
-        Task AddAsync(BankAddModel model, long userId);
-        Task UpdateAsync(BankEditModel model, long userId);
+        Task AddAsync(BankAddViewModel model, long userId);
+        Task UpdateAsync(BankEditViewModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
-        Task<BankEditModel> GetByIdAsync(long id);
+        Task<BankEditViewModel> GetByIdAsync(long id);
         IList<(long, string)> LoadAllBanks();
         IList<(long, string)> LoadAllActiveBanks();
         (int total, int totalDisplay, IList<BankDto> records) LoadAllBanks(string searchBy, int length, int start, string sortBy, string sortDir);
@@ -39,7 +39,7 @@ namespace IMS.Services
         #endregion
 
         #region Operational Function
-        public async Task AddAsync(BankAddModel model, long userId)
+        public async Task AddAsync(BankAddViewModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -78,7 +78,7 @@ namespace IMS.Services
             }
         }
 
-        public async Task UpdateAsync(BankEditModel model, long userId)
+        public async Task UpdateAsync(BankEditViewModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -149,7 +149,7 @@ namespace IMS.Services
             }
         }
 
-        public async Task<BankEditModel> GetByIdAsync(long id)
+        public async Task<BankEditViewModel> GetByIdAsync(long id)
         {
             try
             {
@@ -158,7 +158,7 @@ namespace IMS.Services
                 {
                     throw new ArgumentNullException(nameof(bank));
                 }
-                return new BankEditModel
+                return new BankEditViewModel
                 {
                     Id = bank.Id,
                     Name = bank.Name,

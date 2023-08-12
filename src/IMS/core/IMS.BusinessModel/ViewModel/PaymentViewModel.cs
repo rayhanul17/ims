@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace IMS.BusinessModel.ViewModel
 {
-    public class PaymentModel
+    public class PaymentViewModel
     {
         public long Id { get; set; }
         public long PaymentId { get; set; }

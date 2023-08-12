@@ -42,7 +42,7 @@ namespace IMS.Controllers
         [Authorize(Roles = "SA, Manager, Seller")]
         public async Task<ActionResult> Create(long id)
         {
-            var model = new PaymentModel();
+            var model = new PaymentViewModel();
             try
             {
                 var paymentMethodList = Enum.GetValues(typeof(PaymentMethod))
@@ -73,7 +73,7 @@ namespace IMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken()]
         [Authorize(Roles = "SA, Manager, Seller")]
-        public async Task<ActionResult> Create(PaymentModel model)
+        public async Task<ActionResult> Create(PaymentViewModel model)
         {
 
             if (model != null)

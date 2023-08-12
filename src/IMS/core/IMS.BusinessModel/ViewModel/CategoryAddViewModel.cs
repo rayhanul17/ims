@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace IMS.BusinessModel.ViewModel
 {
-    public class CategoryAddModel
+    public class CategoryAddViewModel
     {
         [Required, MinLength(3)]
         public string Name { get; set; }

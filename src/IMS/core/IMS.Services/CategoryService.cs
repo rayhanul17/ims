@@ -15,10 +15,10 @@ namespace IMS.Services
     #region Interface
     public interface ICategoryService
     {
-        Task AddAsync(CategoryAddModel model, long userId);
-        Task UpdateAsync(CategoryEditModel model, long userId);
+        Task AddAsync(CategoryAddViewModel model, long userId);
+        Task UpdateAsync(CategoryEditViewModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
-        Task<CategoryEditModel> GetByIdAsync(long id);
+        Task<CategoryEditViewModel> GetByIdAsync(long id);
         IList<(long, string)> LoadAllCategories();
         IList<(long, string)> LoadAllActiveCategories();
         (int total, int totalDisplay, IList<CategoryDto> records) LoadAllCategories(string searchBy, int length, int start, string sortBy, string sortDir);
@@ -39,7 +39,7 @@ namespace IMS.Services
         #endregion
 
         #region Operational Function
-        public async Task AddAsync(CategoryAddModel model, long userId)
+        public async Task AddAsync(CategoryAddViewModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -74,7 +74,7 @@ namespace IMS.Services
             }
         }
 
-        public async Task UpdateAsync(CategoryEditModel model, long userId)
+        public async Task UpdateAsync(CategoryEditViewModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -147,7 +147,7 @@ namespace IMS.Services
             }
         }
 
-        public async Task<CategoryEditModel> GetByIdAsync(long id)
+        public async Task<CategoryEditViewModel> GetByIdAsync(long id)
         {
             try
             {
@@ -156,7 +156,7 @@ namespace IMS.Services
                 {
                     throw new ArgumentNullException(nameof(category));
                 }
-                return new CategoryEditModel
+                return new CategoryEditViewModel
                 {
                     Id = category.Id,
                     Name = category.Name,

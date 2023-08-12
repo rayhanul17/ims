@@ -17,9 +17,9 @@ namespace IMS.Services
     public interface IPaymentService
     {
         Task AddAsync(long operationId, OperationType operationType, decimal Amount);
-        Task MakePaymentAsync(PaymentModel model);
+        Task MakePaymentAsync(PaymentViewModel model);
         (int total, int totalDisplay, IList<PaymentReportDto> records) LoadAllPayments(string searchBy, int length, int start, string sortBy, string sortDir);
-        Task<PaymentModel> GetPaymentByIdAsync(long paymentId);
+        Task<PaymentViewModel> GetPaymentByIdAsync(long paymentId);
         Task<PaymentReportDto> GetPaymentDetailsAsync(long paymentId);
     }
     #endregion
@@ -69,7 +69,7 @@ namespace IMS.Services
             }
         }
 
-        public async Task MakePaymentAsync(PaymentModel model)
+        public async Task MakePaymentAsync(PaymentViewModel model)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -146,14 +146,14 @@ namespace IMS.Services
         #endregion
 
         #region Operational Function
-        public async Task<PaymentModel> GetPaymentByIdAsync(long paymentId)
+        public async Task<PaymentViewModel> GetPaymentByIdAsync(long paymentId)
         {
             var payment = await Task.Run(() => _paymentDao.Get(x => x.Id == paymentId).FirstOrDefault());
             if(payment == null)
             {
                 throw new CustomException("Invalid payment id");
             }
-            var model = new PaymentModel
+            var model = new PaymentViewModel
             {
                 PaymentId = payment.Id,
                 TotalAmount = payment.TotalAmount,

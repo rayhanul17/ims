@@ -16,10 +16,10 @@ namespace IMS.Services
     #region Interface
     public interface ICustomerService
     {
-        Task AddAsync(CustomerAddModel model, long userId);
-        Task UpdateAsync(CustomerEditModel model, long userId);
+        Task AddAsync(CustomerAddViewModel model, long userId);
+        Task UpdateAsync(CustomerEditViewModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
-        Task<CustomerEditModel> GetByIdAsync(long id);
+        Task<CustomerEditViewModel> GetByIdAsync(long id);
         string GetNameById(long id);        
         IList<CustomerDto> LoadAllCustomers();
         IList<(long, string)> LoadAllActiveCustomers();
@@ -39,7 +39,7 @@ namespace IMS.Services
         #endregion
 
         #region Operational Function
-        public async Task AddAsync(CustomerAddModel model, long userId)
+        public async Task AddAsync(CustomerAddViewModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -76,7 +76,7 @@ namespace IMS.Services
             }
         }
 
-        public async Task UpdateAsync(CustomerEditModel model, long userId)
+        public async Task UpdateAsync(CustomerEditViewModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -144,7 +144,7 @@ namespace IMS.Services
             }
         }
 
-        public async Task<CustomerEditModel> GetByIdAsync(long id)
+        public async Task<CustomerEditViewModel> GetByIdAsync(long id)
         {
             try
             {
@@ -153,7 +153,7 @@ namespace IMS.Services
                 {
                     throw new CustomException("No object with this id"); 
                 }
-                return new CustomerEditModel
+                return new CustomerEditViewModel
                 {
                     Id = customer.Id,
                     Name = customer.Name,

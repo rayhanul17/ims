@@ -94,7 +94,7 @@ namespace IMS.Models
         public string ConfirmPassword { get; set; }
     }
 
-    public class UserEditModel
+    public class UserEditViewModel
     {
 
         [Required]

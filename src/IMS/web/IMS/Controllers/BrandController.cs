@@ -43,7 +43,7 @@ namespace IMS.Controllers
         [Authorize(Roles = "SA, Manager")]
         public ActionResult Create()
         {
-            var model = new BrandAddModel();
+            var model = new BrandAddViewModel();
             var selectList = Enum.GetValues(typeof(Status))
                        .Cast<Status>()
                        .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
@@ -56,7 +56,7 @@ namespace IMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
-        public async Task<ActionResult> Create(BrandAddModel model)
+        public async Task<ActionResult> Create(BrandAddViewModel model)
         {
             try
             {
@@ -116,7 +116,7 @@ namespace IMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
-        public async Task<ActionResult> Edit(BrandEditModel model)
+        public async Task<ActionResult> Edit(BrandEditViewModel model)
         {
             try
             {
@@ -211,7 +211,7 @@ namespace IMS.Controllers
         #endregion
 
         #region Helper Function
-        private void ValidateBrandAddModel(BrandAddModel model)
+        private void ValidateBrandAddModel(BrandAddViewModel model)
         {            
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length<3 || model.Name.Length > 30)
             {
@@ -227,7 +227,7 @@ namespace IMS.Controllers
             }
         }
 
-        private void ValidateBrandEditModel(BrandEditModel model)
+        private void ValidateBrandEditModel(BrandEditViewModel model)
         {
             if(model.Id == 0)
             {

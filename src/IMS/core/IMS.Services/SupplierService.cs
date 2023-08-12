@@ -15,11 +15,11 @@ namespace IMS.Services
     #region Interface
     public interface ISupplierService
     {
-        Task AddAsync(SupplierAddModel model, long userId);
-        Task UpdateAsync(SupplierEditModel model, long userId);
+        Task AddAsync(SupplierAddViewModel model, long userId);
+        Task UpdateAsync(SupplierEditViewModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
         string GetNameById(long id);
-        Task<SupplierEditModel> GetByIdAsync(long id);
+        Task<SupplierEditViewModel> GetByIdAsync(long id);
         IList<(long, string)> LoadAllActiveSuppliers();
         (int total, int totalDisplay, IList<SupplierDto> records) LoadAllSuppliers(string searchBy, int length, int start, string sortBy, string sortDir);
     }
@@ -37,7 +37,7 @@ namespace IMS.Services
         #endregion
 
         #region Operational Function
-        public async Task AddAsync(SupplierAddModel model, long userId)
+        public async Task AddAsync(SupplierAddViewModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -74,7 +74,7 @@ namespace IMS.Services
             }
         }
 
-        public async Task UpdateAsync(SupplierEditModel model, long userId)
+        public async Task UpdateAsync(SupplierEditViewModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -145,7 +145,7 @@ namespace IMS.Services
             }
         }
 
-        public async Task<SupplierEditModel> GetByIdAsync(long id)
+        public async Task<SupplierEditViewModel> GetByIdAsync(long id)
         {
             try
             {
@@ -154,7 +154,7 @@ namespace IMS.Services
                 {
                     throw new ArgumentNullException(nameof(supplier));
                 }
-                return new SupplierEditModel
+                return new SupplierEditViewModel
                 {
                     Id = supplier.Id,
                     Name = supplier.Name,

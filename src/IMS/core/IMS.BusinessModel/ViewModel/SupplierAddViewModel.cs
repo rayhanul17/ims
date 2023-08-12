@@ -6,7 +6,7 @@ using System.Text;
 
 namespace IMS.BusinessModel.ViewModel
 {
-    public class CustomerAddModel
+    public class SupplierAddViewModel
     {
         [Required, MinLength(3), MaxLength(100)]
         public string Name { get; set; }

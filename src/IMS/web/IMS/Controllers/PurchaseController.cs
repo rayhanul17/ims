@@ -80,7 +80,7 @@ namespace IMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
-        public async Task<ActionResult> Create(PurchaseDetailsModel[] model, long supplierId, decimal grandTotal)
+        public async Task<ActionResult> Create(PurchaseDetailsViewModel[] model, long supplierId, decimal grandTotal)
         {
 
             if (model != null && supplierId > 0 && grandTotal > -1)

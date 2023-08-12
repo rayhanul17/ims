@@ -15,10 +15,10 @@ namespace IMS.Services
     #region Interface
     public interface IBrandService
     {
-        Task AddAsync(BrandAddModel model, long userId);
-        Task UpdateAsync(BrandEditModel model, long userId);
+        Task AddAsync(BrandAddViewModel model, long userId);
+        Task UpdateAsync(BrandEditViewModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
-        Task<BrandEditModel> GetByIdAsync(long id);
+        Task<BrandEditViewModel> GetByIdAsync(long id);
         IList<(long, string)> LoadAllBrands();
         IList<(long, string)> LoadAllActiveBrands();
         (int total, int totalDisplay, IList<BrandDto> records) LoadAllBrands(string searchBy, int length, int start, string sortBy, string sortDir);
@@ -37,7 +37,7 @@ namespace IMS.Services
         #endregion
 
         #region Operational Function
-        public async Task AddAsync(BrandAddModel model, long userId)
+        public async Task AddAsync(BrandAddViewModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -72,7 +72,7 @@ namespace IMS.Services
             }
         }
 
-        public async Task UpdateAsync(BrandEditModel model, long userId)
+        public async Task UpdateAsync(BrandEditViewModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -139,7 +139,7 @@ namespace IMS.Services
             }
         }
 
-        public async Task<BrandEditModel> GetByIdAsync(long id)
+        public async Task<BrandEditViewModel> GetByIdAsync(long id)
         {
             try
             {
@@ -148,7 +148,7 @@ namespace IMS.Services
                 {
                     throw new CustomException("No object found with this id");
                 }
-                return new BrandEditModel
+                return new BrandEditViewModel
                 {
                     Id = brand.Id,
                     Name = brand.Name,

@@ -1,6 +1,6 @@
 ﻿namespace IMS.BusinessModel.ViewModel
 {
-    public class PurchaseDetailsModel
+    public class PurchaseDetailsViewModel
     {  
         public bool IsDeleted { get; set; }
         public long ProductId { get; set; }

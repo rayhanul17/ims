@@ -91,7 +91,7 @@ namespace IMS.Controllers
                 var email = user.Email;
                 var userName = _userService.GetUserName(id);
 
-                var model = new UserEditModel
+                var model = new UserEditViewModel
                 {
                     Id = id,
                     Email = email,
@@ -116,7 +116,7 @@ namespace IMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
-        public async Task<ActionResult> Edit(UserEditModel model, long id)
+        public async Task<ActionResult> Edit(UserEditViewModel model, long id)
         {
             if (ModelState.IsValid)
             {
@@ -166,7 +166,7 @@ namespace IMS.Controllers
                new Role {Text="Seller",Value="Seller",IsChecked=false },
 
            };
-            UserRolesModel model = new UserRolesModel();
+            UserRolesViewModel model = new UserRolesViewModel();
             model.Roles = roles;
 
             return View(model);
@@ -175,7 +175,7 @@ namespace IMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
-        public async Task<ActionResult> ManageUserRole(UserRolesModel model)
+        public async Task<ActionResult> ManageUserRole(UserRolesViewModel model)
         {
             if (ModelState.IsValid)
             {
