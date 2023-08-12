@@ -22,7 +22,7 @@ namespace IMS.Controllers
 
         public CategoryController()
         {
-            var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
+            var session = new MsSqlSessionFactory().OpenSession();
             _categoryService = new CategoryService(session);            
         }
 

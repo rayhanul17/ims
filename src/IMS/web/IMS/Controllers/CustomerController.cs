@@ -23,7 +23,7 @@ namespace IMS.Controllers
 
         public CustomerController()
         {
-            var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
+            var session = new MsSqlSessionFactory().OpenSession();
             _customerService = new CustomerService(session);           
         }
 

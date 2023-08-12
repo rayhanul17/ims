@@ -53,7 +53,7 @@
                         Created By
                     </th>
                     <th>
-                        Created Date
+                        Creation Date
                     </th>
                     <th>
                         Actions
@@ -90,12 +90,12 @@
                     "datatype": "json",
                 },
                 "columns": [
-                    { "name": "SL" },
+                    { "name": "Rank" },
                     { "name": "Name" },
                     { "name": "Description" },
                     { "name": "Status" },
                     { "name": "Created By" },
-                    { "name": "Created Date" }
+                    { "name": "Creation Date" }
                 ],
                 "columnDefs": [
                     {
@@ -118,12 +118,11 @@
                                 return ``;
                             }
 
-
                         }
                     },
-                    { "orderable": false, "targets": [0, 3, 4] }
+                    { "orderable": false, "targets": [2, 3, 4] }
                 ],
-                "order": [1, 'asc']
+                "order": [0, 'asc']
             });
         });
 

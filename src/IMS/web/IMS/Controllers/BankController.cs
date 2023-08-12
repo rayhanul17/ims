@@ -1,5 +1,4 @@
 ﻿using IMS.BusinessModel.ViewModel;
-using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
 using IMS.Models;
@@ -18,12 +17,12 @@ namespace IMS.Controllers
     public class BankController : AllBaseController
     {
         #region Initialization
-        private readonly IBankService _bankService;        
+        private readonly IBankService _bankService;
 
         public BankController()
         {
-            var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
-            _bankService = new BankService(session);            
+            var session = new MsSqlSessionFactory().OpenSession();
+            _bankService = new BankService(session);
         }
 
         #endregion
@@ -41,14 +40,23 @@ namespace IMS.Controllers
         [Authorize(Roles = "SA, Manager")]
         public ActionResult Create()
         {
-            var model = new BankAddViewModel();
-            var selectList = Enum.GetValues(typeof(Status))
-                       .Cast<Status>()
-                       .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
-            ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
+            try
+            {
+                var model = new BankAddViewModel();
+                var selectList = Enum.GetValues(typeof(Status))
+                           .Cast<Status>()
+                           .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
+                ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
 
-            _logger.Info("Bank Creation Page");
-            return View(model);
+                _logger.Info("Bank Creation Page");
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+                return View();
+            }
         }
 
         [HttpPost]
@@ -56,7 +64,7 @@ namespace IMS.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Create(BankAddViewModel model)
-        {            
+        {
             try
             {
                 ValidateBankAddModel(model);
@@ -184,7 +192,7 @@ namespace IMS.Controllers
                     data = (from record in data.records
                             select new string[]
                             {
-                                count++.ToString(),
+                                record.Rank,
                                 record.Name,
                                 record.Description,
                                 record.Status,
@@ -210,7 +218,7 @@ namespace IMS.Controllers
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 30)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
-            }            
+            }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {
                 ModelState.AddModelError("Status", "Status must active or inactive");
@@ -222,7 +230,7 @@ namespace IMS.Controllers
             if (model.Id == 0)
             {
                 ModelState.AddModelError("Id", "Object id not found");
-            }            
+            }
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 30)
             {
                 ModelState.AddModelError("Name", "Name Invalid");

@@ -21,7 +21,7 @@ namespace IMS.Controllers
 
         public PaymentController()
         {
-            var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
+            var session = new MsSqlSessionFactory().OpenSession();
             _paymentService = new PaymentService(session);
             _bankService = new BankService(session);            
         }

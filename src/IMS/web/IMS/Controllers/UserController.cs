@@ -24,7 +24,7 @@ namespace IMS.Controllers
 
         public UserController()
         {
-            var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
+            var session = new MsSqlSessionFactory().OpenSession();
             _userService = new UserService(session);
         }
 

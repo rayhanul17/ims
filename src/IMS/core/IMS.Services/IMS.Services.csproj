@@ -99,10 +99,6 @@
       <Project>{2f40636b-5062-4b61-b01a-86f060fd9102}</Project>
       <Name>IMS.Dao</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IMS.Exceptions\IMS.Exceptions.csproj">
-      <Project>{8fb582a1-25e3-408d-9ee1-1b5966df4701}</Project>
-      <Name>IMS.Exceptions</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

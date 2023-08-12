@@ -43,7 +43,7 @@ namespace IMS.Dao
         IList<TEntity> GetDynamic(Expression<Func<TEntity, bool>> filter = null,
             string orderBy = null);
 
-        (IList<BaseEntity<long>> data, int total, int totalDisplay) LoadAll(Expression<Func<BaseEntity<long>, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
+        (IList<TEntity> data, int total, int totalDisplay) LoadAll(Expression<Func<TEntity, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
     }
     #endregion
 
@@ -281,9 +281,9 @@ namespace IMS.Dao
         }
 
         //For BaseEntity
-        public (IList<BaseEntity<long>> data, int total, int totalDisplay) LoadAll(Expression<Func<BaseEntity<long>, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
+        public (IList<TEntity> data, int total, int totalDisplay) LoadAll(Expression<Func<TEntity, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
         {
-            IQueryable<BaseEntity<long>> query = _session.Query<BaseEntity<long>>();
+            IQueryable<TEntity> query = _session.Query<TEntity>();
 
             query = query.Where(x => x.Status != (int)Status.Delete);
 

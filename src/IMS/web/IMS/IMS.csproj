@@ -2644,10 +2644,6 @@
       <Project>{db1a8031-388e-4bae-a065-0a0f01b5dfba}</Project>
       <Name>IMS.BusinessRules</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\IMS.Exceptions\IMS.Exceptions.csproj">
-      <Project>{8fb582a1-25e3-408d-9ee1-1b5966df4701}</Project>
-      <Name>IMS.Exceptions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Core\IMS.Services\IMS.Services.csproj">
       <Project>{66ec614f-a90c-4319-b3d0-68880ef7ac47}</Project>
       <Name>IMS.Services</Name>

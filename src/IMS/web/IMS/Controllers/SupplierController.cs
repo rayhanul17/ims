@@ -22,7 +22,7 @@ namespace IMS.Controllers
         
         public SupplierController()
         {
-            var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
+            var session = new MsSqlSessionFactory().OpenSession();
             _supplierService = new SupplierService(session);            
         }
 

@@ -21,7 +21,7 @@ namespace IMS.Controllers
 
         public AccountController()
         {
-            var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
+            var session = new MsSqlSessionFactory().OpenSession();
             _userService = new UserService(session);
         }
 

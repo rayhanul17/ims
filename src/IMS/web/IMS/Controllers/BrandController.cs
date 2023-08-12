@@ -22,7 +22,7 @@ namespace IMS.Controllers
 
         public BrandController()
         {
-            var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
+            var session = new MsSqlSessionFactory().OpenSession();
             _brandService = new BrandService(session);            
         }
 

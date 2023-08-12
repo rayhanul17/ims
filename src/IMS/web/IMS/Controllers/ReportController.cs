@@ -17,7 +17,7 @@ namespace IMS.Controllers
 
         public ReportController()
         {
-            var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
+            var session = new MsSqlSessionFactory().OpenSession();
             _reportService = new ReportService(session);           
         }
 

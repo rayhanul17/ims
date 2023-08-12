@@ -26,7 +26,7 @@ namespace IMS.Controllers
         
         public SaleController()
         {
-            var session = new MsSqlSessionFactory(DbConnectionString.ConnectionString).OpenSession();
+            var session = new MsSqlSessionFactory().OpenSession();
             _categoryService = new CategoryService(session);
             _productService = new ProductService(session);
             _brandService = new BrandService(session);
