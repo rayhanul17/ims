@@ -12,18 +12,24 @@ using System.Threading.Tasks;
 
 namespace IMS.Services
 {
-    #region Interface
     public interface ICategoryService
     {
+        #region Operational Function
         Task AddAsync(CategoryAddViewModel model, long userId);
         Task UpdateAsync(CategoryEditViewModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
+        #endregion
+
+        #region Single Instance Loading Function
         Task<CategoryEditViewModel> GetByIdAsync(long id);
+        #endregion
+
+        #region List Loading Function
         IList<(long, string)> LoadAllCategories();
         IList<(long, string)> LoadAllActiveCategories();
-        (int total, int totalDisplay, IList<CategoryDto> records) LoadAllCategories(string searchBy, int length, int start, string sortBy, string sortDir);
+        Task<(int total, int totalDisplay, IList<CategoryDto> records)> LoadAllCategories(string searchBy, int length, int start, string sortBy, string sortDir);
+        #endregion
     }
-    #endregion
 
     public class CategoryService : BaseService, ICategoryService
     {
@@ -41,112 +47,139 @@ namespace IMS.Services
         #region Operational Function
         public async Task AddAsync(CategoryAddViewModel model, long userId)
         {
-            using (var transaction = _session.BeginTransaction())
+            try
             {
-                try
+                var count = _categoryDao.GetCount(x => x.Name == model.Name);
+                if (count > 0)
                 {
-                    var count = _categoryDao.GetCount(x => x.Name == model.Name);
-                    if (count > 0)
+                    throw new CustomException("Found another category with this name");
+                }
+
+                var category = new Category()
+                {
+                    Name = model.Name,
+                    Description = model.Description,
+                    Status = (int)model.Status,
+                    Rank = await _categoryDao.GetMaxRank("Category") + 1,
+                    CreateBy = userId,
+                    CreationDate = _timeService.Now,
+                };
+
+                using (var transaction = _session.BeginTransaction())
+                {
+                    try
                     {
-                        throw new CustomException("Found another category with this name");
+                        await _categoryDao.AddAsync(category);
+                        transaction.Commit();
                     }
-
-                    var category = new Category()
+                    catch (Exception ex)
                     {
-                        Name = model.Name,
-                        Description = model.Description,
-                        Status = (int)model.Status,
-                        Rank = await _categoryDao.GetMaxRank("Category") + 1,
-                        CreateBy = userId,
-                        CreationDate = _timeService.Now,
-                    };
-
-                    await _categoryDao.AddAsync(category);
-                    transaction.Commit();
+                        transaction.Rollback();
+                        throw ex;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    _serviceLogger.Error(ex.Message, ex);
-
-                    throw;
-                }
+            }
+            catch(CustomException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {                
+                _serviceLogger.Error(ex.Message, ex);
+                throw ex;            
             }
         }
 
         public async Task UpdateAsync(CategoryEditViewModel model, long userId)
         {
-            using (var transaction = _session.BeginTransaction())
+            try
             {
-                try
+                var category = await _categoryDao.GetByIdAsync(model.Id);
+                var namecount = _categoryDao.GetCount(x => x.Name == model.Name);
+
+                if (category == null)
                 {
-                    var category = await _categoryDao.GetByIdAsync(model.Id);
-                    var namecount = _categoryDao.GetCount(x => x.Name == model.Name);
-
-                    if (category == null)
-                    {
-                        throw new CustomException("No record found with this id!");
-                    }
-                    if (namecount > 1)
-                    {
-                        throw new CustomException("Already exist category with this name");
-                    }
-
-                    category.Name = model.Name;
-                    category.Description = model.Description;
-                    category.Status = (int)model.Status;
-                    category.ModifyBy = userId;
-                    category.ModificationDate = _timeService.Now;
-
-                    await _categoryDao.EditAsync(category);
-                    transaction.Commit();
-
-                    _serviceLogger.Info("Data Saved!");
+                    throw new CustomException("No record found with this id!");
                 }
-                catch (Exception ex)
+                if (namecount > 1)
                 {
-                    transaction.Rollback();
-                    _serviceLogger.Error(ex.Message, ex);
-
-                    throw;
+                    throw new CustomException("Already exist category with this name");
                 }
+
+                category.Name = model.Name;
+                category.Description = model.Description;
+                category.Status = (int)model.Status;
+                category.ModifyBy = userId;
+                category.ModificationDate = _timeService.Now;
+
+                using (var transaction = _session.BeginTransaction())
+                {
+                    try
+                    {
+                        await _categoryDao.EditAsync(category);
+                        transaction.Commit();
+                    }
+                    catch (CustomException ex)
+                    {
+                        transaction.Rollback();
+                        throw ex;
+                    }                    
+                }
+            }
+            catch(CustomException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {                
+                _serviceLogger.Error(ex.Message, ex);
+                throw;            
             }
         }
 
         public async Task RemoveByIdAsync(long id, long userId)
         {
-            using (var transaction = _session.BeginTransaction())
+            try
             {
-                try
+                var count = _productDao.GetCount(x => x.Category.Id == id && x.Status != (int)Status.Delete);
+                if (count > 0)
                 {
-                    var count = _productDao.GetCount(x => x.Category.Id == id && x.Status != (int)Status.Delete);
-                    if (count > 0)
+                    throw new CustomException("Found product under this category");
+                }
+
+                var category = await _categoryDao.GetByIdAsync(id);
+                category.Status = (int)Status.Delete;
+                category.ModifyBy = userId;
+                category.ModificationDate = _timeService.Now;
+
+                using (var transaction = _session.BeginTransaction())
+                {
+                    try
                     {
-                        throw new CustomException("Found product under this category");
+                        await _categoryDao.EditAsync(category);
+                        transaction.Commit();
                     }
-                    //await _categoryDao.RemoveByIdAsync(id);
-                    var category = await _categoryDao.GetByIdAsync(id);
-                    category.Status = (int)Status.Delete;
-                    category.ModifyBy = userId;
-                    category.ModificationDate = _timeService.Now;
-                    await _categoryDao.EditAsync(category);
-                    transaction.Commit();
-
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw ex;
+                    }
                 }
-                catch (CustomException ex)
-                {
-                    throw ex;
-                }
-                catch (Exception ex)
-                {
-                    _serviceLogger.Error(ex);
-                    transaction.Rollback();
-
-                    throw;
-                }
+            }
+            catch (CustomException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                _serviceLogger.Error(ex);             
+                throw ex;            
             }
         }
 
+        #endregion
+
+        #region Single Instance Loading
         public async Task<CategoryEditViewModel> GetByIdAsync(long id)
         {
             try
@@ -154,7 +187,7 @@ namespace IMS.Services
                 var category = await _categoryDao.GetByIdAsync(id);
                 if (category == null)
                 {
-                    throw new ArgumentNullException(nameof(category));
+                    throw new CustomException("No object found with this id");
                 }
                 return new CategoryEditViewModel
                 {
@@ -171,19 +204,20 @@ namespace IMS.Services
                     BusinessId = category.BusinessId,
                 };
             }
+            catch (CustomException ex)
+            {
+                throw ex;
+            }
             catch (Exception ex)
             {
                 _serviceLogger.Error(ex.Message, ex);
-                throw;
+                throw ex;
             }
         }
         #endregion
 
-        #region Single Instance Loading
-        #endregion
-
         #region List Loading Function
-        public (int total, int totalDisplay, IList<CategoryDto> records) LoadAllCategories(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
+        public async Task<(int total, int totalDisplay, IList<CategoryDto> records)> LoadAllCategories(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
         {
             try
             {
@@ -193,7 +227,7 @@ namespace IMS.Services
                     filter = x => x.Name.Contains(searchBy) || x.Description.Contains(searchBy);
                 }
 
-                var result = _categoryDao.LoadAllCategories(filter, null, start, length, sortBy, sortDir);
+                var result = _categoryDao.GetDynamic(filter, null, start, length, sortBy, sortDir);
 
                 List<CategoryDto> categories = new List<CategoryDto>();
                 foreach (Category category in result.data)
@@ -204,7 +238,7 @@ namespace IMS.Services
                             Id = category.Id.ToString(),
                             Name = category.Name,
                             Description = category.Description,
-                            CreateBy = _userService.GetUserName(category.CreateBy),
+                            CreateBy = await _userService.GetUserNameAsync(category.CreateBy),
                             CreationDate = category.CreationDate.ToString(),
                             Status = ((Status)category.Status).ToString(),
                             Rank = category.Rank.ToString()
@@ -223,7 +257,7 @@ namespace IMS.Services
         public IList<(long, string)> LoadAllCategories()
         {
             List<(long, string)> categories = new List<(long, string)>();
-            var allcategories = _categoryDao.GetCategory(x => x.Status != (int)Status.Delete);
+            var allcategories = _categoryDao.Get(x => x.Status != (int)Status.Delete);
             foreach (var category in allcategories)
             {
                 categories.Add((category.Id, category.Name));
@@ -234,7 +268,7 @@ namespace IMS.Services
         public IList<(long, string)> LoadAllActiveCategories()
         {
             List<(long, string)> categories = new List<(long, string)>();
-            var allcategories = _categoryDao.GetCategory(x => x.Status == (int)Status.Active);
+            var allcategories = _categoryDao.Get(x => x.Status == (int)Status.Active);
             foreach (var category in allcategories)
             {
                 categories.Add((category.Id, category.Name));

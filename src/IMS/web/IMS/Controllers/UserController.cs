@@ -87,7 +87,7 @@ namespace IMS.Controllers
                     return View();
                 }
                 var email = user.Email;
-                var userName = _userService.GetUserName(id);
+                var userName = await _userService.GetUserNameAsync(id);
 
                 var model = new UserEditViewModel
                 {
@@ -216,12 +216,12 @@ namespace IMS.Controllers
         #endregion
 
         #region Ajax call
-        public JsonResult GetUsers()
+        public async Task<JsonResult> GetUsers()
         {
             try
             {
                 var model = new DataTablesAjaxRequestModel(Request);
-                var data = _userService.LoadAllUsers(model.SearchText, model.Length, model.Start, model.SortColumn,
+                var data = await _userService.LoadAllUsers(model.SearchText, model.Length, model.Start, model.SortColumn,
                     model.SortDirection);                
 
                 return Json(new

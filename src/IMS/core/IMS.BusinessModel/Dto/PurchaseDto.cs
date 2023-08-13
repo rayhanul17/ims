@@ -9,5 +9,6 @@
         public string GrandTotalPrice { get; set; }
         public string IsPaid { get; set; }
         public string PaymentId { get; set; }
+        public string Rank { get; set; }
     }
 }

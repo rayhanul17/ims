@@ -1,6 +1,7 @@
 ﻿using IMS.BusinessModel.Dto;
 using IMS.BusinessModel.Entity;
 using IMS.BusinessModel.ViewModel;
+using IMS.BusinessRules.Enum;
 using IMS.Dao;
 using NHibernate;
 using System;
@@ -15,7 +16,7 @@ namespace IMS.Services
     {
         Task<long> AddAsync(IList<PurchaseDetailsViewModel> model, decimal grandTotal, long supplierId, long userId);
 
-        (int total, int totalDisplay, IList<PurchaseDto> records) LoadAllPurchases(string searchBy, int length, int start, string sortBy, string sortDir);
+        Task<(int total, int totalDisplay, IList<PurchaseDto> records)> LoadAllPurchases(string searchBy, int length, int start, string sortBy, string sortDir);
         Task<PurchaseReportDto> GetPurchaseDetailsAsync(long purchaseId);
     }
     #endregion
@@ -72,7 +73,10 @@ namespace IMS.Services
                         CreateBy = userId,
                         PurchaseDate = _timeService.Now,
                         GrandTotalPrice = grandTotal,
-                        PurchaseDetails = purchaseDetails
+                        PurchaseDetails = purchaseDetails,
+                        CreationDate = _timeService.Now,
+                        Rank = await _purchaseDao.GetMaxRank(typeof(Purchase).Name) + 1,
+                        Status = (int)Status.Active
                     };
 
                     var id = await _purchaseDao.AddAsync(Purchase);
@@ -92,7 +96,7 @@ namespace IMS.Services
         public async Task<PurchaseReportDto> GetPurchaseDetailsAsync(long id)
         {
             var purchase = await _purchaseDao.GetByIdAsync(id);
-            var supplier = _supplierDao.GetById(purchase.SupplierId);
+            var supplier = await _supplierDao.GetByIdAsync(purchase.SupplierId);
             var purchaseProducts = new List<ProductInformation>();
 
             foreach (var item in purchase.PurchaseDetails)
@@ -127,16 +131,12 @@ namespace IMS.Services
         #endregion     
 
         #region List Loading Function
-        public (int total, int totalDisplay, IList<PurchaseDto> records) LoadAllPurchases(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
+        public async Task<(int total, int totalDisplay, IList<PurchaseDto> records)> LoadAllPurchases(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
         {
             try
             {
                 Expression<Func<Purchase, bool>> filter = null;
-                //if (searchBy != null)
-                //{
-                //    filter = x => x.GrandTotalPrice.Equals(searchBy);
-                //}
-
+                
                 var result = _purchaseDao.LoadAllPurchases(filter, null, start, length, sortBy, sortDir);
 
                 List<PurchaseDto> categories = new List<PurchaseDto>();
@@ -146,12 +146,13 @@ namespace IMS.Services
                         new PurchaseDto
                         {
                             Id = purchase.Id.ToString(),
-                            SupplierName = _supplierService.GetNameById(purchase.SupplierId),
-                            CreateBy = _userService.GetUserName(purchase.CreateBy),
+                            SupplierName = await _supplierService.GetNameByIdAsync(purchase.SupplierId),
+                            CreateBy = await _userService.GetUserNameAsync(purchase.CreateBy),
                             PurchaseDate = purchase.PurchaseDate.ToString(),
                             GrandTotalPrice = purchase.GrandTotalPrice.ToString(),
                             IsPaid = purchase.IsPaid.ToString(),
                             PaymentId = purchase.PaymentId.ToString(),
+                            Rank = purchase.Rank.ToString(),
                         });
                 }
 

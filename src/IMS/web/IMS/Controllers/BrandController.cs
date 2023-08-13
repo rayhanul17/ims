@@ -173,15 +173,13 @@ namespace IMS.Controllers
 
         #region Ajax Call
         [AllowAnonymous]
-        public JsonResult GetBrands()
+        public async Task<JsonResult> GetBrands()
         {
             try
             {
                 var model = new DataTablesAjaxRequestModel(Request);
-                var data = _brandService.LoadAllBrands(model.SearchText, model.Length, model.Start, model.SortColumn,
-                    model.SortDirection);
-
-                var count = 1;
+                var data = await _brandService.LoadAllBrands(model.SearchText, model.Length, model.Start, model.SortColumn,
+                    model.SortDirection);                
 
                 return Json(new
                 {
@@ -191,7 +189,7 @@ namespace IMS.Controllers
                     data = (from record in data.records
                             select new string[]
                             {
-                                count++.ToString(),
+                                record.Rank,
                                 record.Name,
                                 record.Description,
                                 record.Status,

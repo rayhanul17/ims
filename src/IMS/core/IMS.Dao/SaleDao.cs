@@ -25,8 +25,6 @@ namespace IMS.Dao
         {
             IQueryable<Sale> query = _session.Query<Sale>();
 
-            //query = query.Where(x => x.Status != (int)Status.Delete);
-
             var total = query.Count();
             var totalDisplay = query.Count();
 

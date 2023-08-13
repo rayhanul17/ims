@@ -16,7 +16,7 @@ namespace IMS.Services
     #region Interface
     public interface IPaymentService
     {
-        Task AddAsync(long operationId, OperationType operationType, decimal Amount);
+        Task AddAsync(long operationId, OperationType operationType, decimal Amount, long userId);
         Task MakePaymentAsync(PaymentViewModel model);
         (int total, int totalDisplay, IList<PaymentReportDto> records) LoadAllPayments(string searchBy, int length, int start, string sortBy, string sortDir);
         Task<PaymentViewModel> GetPaymentByIdAsync(long paymentId);
@@ -36,7 +36,7 @@ namespace IMS.Services
             _bankDao = new BankDao(session);
         }
 
-        public async Task AddAsync(long operationId, OperationType operationType, decimal Amount)
+        public async Task AddAsync(long operationId, OperationType operationType, decimal Amount, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -47,7 +47,11 @@ namespace IMS.Services
                         OperationId = operationId,
                         OperationType = (int)operationType,
                         TotalAmount = Amount,
-                        PaidAmount = 0
+                        PaidAmount = 0,
+                        CreateBy = userId,
+                        CreationDate = _timeService.Now,
+                        Rank = await _paymentDao.GetMaxRank(typeof(Payment).Name) + 1,
+                        Status = (int)Status.Active
                     };
 
                     var paymentId = await _paymentDao.AddAsync(payment);
@@ -137,14 +141,6 @@ namespace IMS.Services
         #endregion
 
         #region Operational Function
-
-
-        #endregion
-
-        #region Single Instance Loading
-        #endregion
-
-        #region Operational Function
         public async Task<PaymentViewModel> GetPaymentByIdAsync(long paymentId)
         {
             var payment = await Task.Run(() => _paymentDao.Get(x => x.Id == paymentId).FirstOrDefault());
@@ -226,6 +222,7 @@ namespace IMS.Services
                             TotalAmount = payment.TotalAmount.ToString(),
                             PaidAmount = payment.PaidAmount.ToString(),
                             DueAmount = (payment.TotalAmount - payment.PaidAmount).ToString(),
+                            Rank = payment.Rank.ToString(),
                         });
                 }
 
@@ -238,6 +235,5 @@ namespace IMS.Services
             }
         }
         #endregion
-
     }
 }

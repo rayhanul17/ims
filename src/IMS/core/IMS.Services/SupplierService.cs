@@ -12,18 +12,24 @@ using System.Threading.Tasks;
 
 namespace IMS.Services
 {
-    #region Interface
     public interface ISupplierService
     {
+        #region Opperational Function
         Task AddAsync(SupplierAddViewModel model, long userId);
         Task UpdateAsync(SupplierEditViewModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
-        string GetNameById(long id);
+        Task<string> GetNameByIdAsync(long id);
+        #endregion
+
+        #region Single Instance Loading Function
         Task<SupplierEditViewModel> GetByIdAsync(long id);
+        #endregion
+
+        #region List Loading Function
         IList<(long, string)> LoadAllActiveSuppliers();
-        (int total, int totalDisplay, IList<SupplierDto> records) LoadAllSuppliers(string searchBy, int length, int start, string sortBy, string sortDir);
+        Task<(int total, int totalDisplay, IList<SupplierDto> records)> LoadAllSuppliers(string searchBy, int length, int start, string sortBy, string sortDir);
+        #endregion
     }
-    #endregion
 
     public class SupplierService : BaseService, ISupplierService
     {
@@ -39,112 +45,156 @@ namespace IMS.Services
         #region Operational Function
         public async Task AddAsync(SupplierAddViewModel model, long userId)
         {
-            using (var transaction = _session.BeginTransaction())
+            try
             {
-                try
+                var count = _supplierDao.GetCount(x => x.Email == model.Email && x.ContactNumber == model.ContactNumber);
+
+                if (count > 0)
                 {
-                    var count = _supplierDao.GetCount(x => x.Email == model.Email && x.ContactNumber == model.ContactNumber);
-                    if (count > 0)
+                    throw new CustomException("Found another supplier with this name");
+                }
+
+                var supplier = new Supplier()
+                {
+                    Name = model.Name,
+                    Address = model.Address,
+                    ContactNumber = model.ContactNumber,
+                    Email = model.Email,
+                    Status = (int)model.Status,
+                    Rank = await _supplierDao.GetMaxRank("Supplier") + 1,
+                    CreateBy = userId,
+                    CreationDate = _timeService.Now,
+                };
+
+                using (var transaction = _session.BeginTransaction())
+                {
+                    try
                     {
-                        throw new CustomException("Found another supplier with this name");
+                        await _supplierDao.AddAsync(supplier);
+                        transaction.Commit();
                     }
-
-                    var supplier = new Supplier()
+                    catch (Exception ex)
                     {
-                        Name = model.Name,
-                        Address = model.Address,
-                        ContactNumber = model.ContactNumber,
-                        Email = model.Email,
-                        Status = (int)model.Status,
-                        Rank = await _supplierDao.GetMaxRank("Supplier") + 1,
-                        CreateBy = userId,
-                        CreationDate = _timeService.Now,
-                    };
-
-                    await _supplierDao.AddAsync(supplier);
-                    transaction.Commit();
+                        transaction.Rollback();
+                        throw ex;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    _serviceLogger.Error(ex.Message, ex);
-
-                    throw;
-                }
+            }
+            catch (CustomException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)  
+            {                
+                _serviceLogger.Error(ex.Message, ex);
+                throw;            
             }
         }
 
         public async Task UpdateAsync(SupplierEditViewModel model, long userId)
         {
-            using (var transaction = _session.BeginTransaction())
+            try
             {
-                try
+                var supplier = await _supplierDao.GetByIdAsync(model.Id);
+                var namecount = _supplierDao.GetCount(x => x.Name == model.Name);
+
+                if (supplier == null)
                 {
-                    var supplier = _supplierDao.GetById(model.Id);
-                    var namecount = _supplierDao.GetCount(x => x.Name == model.Name);
-
-                    if (supplier == null)
-                    {
-                        throw new CustomException("No record found with this id!");
-                    }
-                    if (namecount > 1)
-                    {
-                        throw new CustomException("Already exist supplier with this name");
-                    }
-
-                    supplier.Name = model.Name;
-                    supplier.Address = model.Address;
-                    supplier.ContactNumber = model.ContactNumber;
-                    supplier.Email = model.Email;
-                    supplier.Status = (int)model.Status;
-                    supplier.ModifyBy = userId;
-                    supplier.ModificationDate = _timeService.Now;
-
-
-                    await _supplierDao.EditAsync(supplier);
-                    transaction.Commit();
-
-                    _serviceLogger.Info("Data Saved!");
+                    throw new CustomException("No record found with this id!");
                 }
-                catch (Exception ex)
+                if (namecount > 1)
                 {
-                    transaction.Rollback();
-                    _serviceLogger.Error(ex.Message, ex);
-
-                    throw;
+                    throw new CustomException("Already exist supplier with this name");
                 }
+
+                supplier.Name = model.Name;
+                supplier.Address = model.Address;
+                supplier.ContactNumber = model.ContactNumber;
+                supplier.Email = model.Email;
+                supplier.Status = (int)model.Status;
+                supplier.ModifyBy = userId;
+                supplier.ModificationDate = _timeService.Now;
+
+                using (var transaction = _session.BeginTransaction())
+                {
+                    try
+                    {
+                        await _supplierDao.EditAsync(supplier);
+                        transaction.Commit();
+                    }
+                    catch(Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw ex;
+                    }                   
+                }
+            }
+            catch (CustomException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {               
+                _serviceLogger.Error(ex.Message, ex);
+                throw ex;            
             }
         }
 
         public async Task RemoveByIdAsync(long id, long userId)
         {
-            using (var transaction = _session.BeginTransaction())
+            try
             {
-                try
+                var supplier = await _supplierDao.GetByIdAsync(id);
+                if (supplier == null)
                 {
-                    //await _supplierDao.RemoveByIdAsync(id);
-                    var supplier = await _supplierDao.GetByIdAsync(id);
-                    if (supplier == null)
+                    throw new CustomException("No object with this id");
+                }
+                supplier.Status = (int)Status.Delete;
+                supplier.ModifyBy = userId;
+                supplier.ModificationDate = _timeService.Now;
+
+                using (var transaction = _session.BeginTransaction())
+                {
+                    try
                     {
-                        throw new CustomException("No object with this id");
+                        await _supplierDao.EditAsync(supplier);
+                        transaction.Commit();
                     }
-                    supplier.Status = (int)Status.Delete;
-                    supplier.ModifyBy = userId;
-                    supplier.ModificationDate = _timeService.Now;
-                    await _supplierDao.EditAsync(supplier);
-                    transaction.Commit();
-
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw ex;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    _serviceLogger.Error(ex);
-                    transaction.Rollback();
+            }
+            catch (CustomException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                _serviceLogger.Error(ex);              
+                throw ex;
+            }            
+        }        
 
-                    throw;
-                }
+        public async Task<string> GetNameByIdAsync(long id)
+        {
+            try
+            {
+                var supplier = await _supplierDao.GetByIdAsync(id);
+                return supplier.Name;
+            }
+            catch(Exception ex)
+            {
+                _serviceLogger.Error($"{ex.Message}", ex);
+                throw ex;
             }
         }
 
+        #endregion
+
+        #region Single Instance Loading
         public async Task<SupplierEditViewModel> GetByIdAsync(long id)
         {
             try
@@ -161,37 +211,24 @@ namespace IMS.Services
                     Address = supplier.Address,
                     ContactNumber = supplier.ContactNumber,
                     Email = supplier.Email,
-                    CreateBy = supplier.CreateBy,
-                    CreationDate = supplier.CreationDate,
-                    ModifyBy = supplier.ModifyBy,
-                    ModificationDate = supplier.ModificationDate,
-                    Status = (Status)supplier.Status,
-                    Rank = supplier.Rank,
-                    VersionNumber = supplier.VersionNumber,
-                    BusinessId = supplier.BusinessId,
+                    CreateBy = supplier.CreateBy,                    
+                    Status = (Status)supplier.Status,                    
                 };
+            }
+            catch (CustomException ex)
+            {
+                throw ex;
             }
             catch (Exception ex)
             {
                 _serviceLogger.Error(ex.Message, ex);
                 throw;
             }
-
         }
-
-        public string GetNameById(long id)
-        {
-            var supplier = _supplierDao.GetById(id);
-            return supplier.Name;
-        }
-
-        #endregion
-
-        #region Single Instance Loading
         #endregion
 
         #region List Loading Function
-        public (int total, int totalDisplay, IList<SupplierDto> records) LoadAllSuppliers(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
+        public async Task<(int total, int totalDisplay, IList<SupplierDto> records)> LoadAllSuppliers(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
         {
             try
             {
@@ -202,7 +239,7 @@ namespace IMS.Services
                                     || x.Address.Contains(searchBy);
                 }
 
-                var result = _supplierDao.LoadAllSuppliers(filter, null, start, length, sortBy, sortDir);
+                var result = _supplierDao.GetDynamic(filter, null, start, length, sortBy, sortDir);
 
                 List<SupplierDto> suppliers = new List<SupplierDto>();
                 foreach (Supplier supplier in result.data)
@@ -215,7 +252,7 @@ namespace IMS.Services
                             Address = supplier.Address,
                             ContactNumber = supplier.ContactNumber,
                             Email = supplier.Email,
-                            CreateBy = _userService.GetUserName(supplier.CreateBy),
+                            CreateBy = await _userService.GetUserNameAsync(supplier.CreateBy),
                             CreationDate = supplier.CreationDate.ToString(),
                             Status = ((Status)supplier.Status).ToString(),
                             Rank = supplier.Rank.ToString()
@@ -234,7 +271,7 @@ namespace IMS.Services
         public IList<(long, string)> LoadAllActiveSuppliers()
         {
             List<(long, string)> suppliers = new List<(long, string)>();
-            var allSuppliers = _supplierDao.GetSuppliers(x => x.Status == (int)Status.Active);
+            var allSuppliers = _supplierDao.Get(x => x.Status == (int)Status.Active);
             foreach (var supplier in allSuppliers)
             {
                 suppliers.Add((supplier.Id, supplier.Name));

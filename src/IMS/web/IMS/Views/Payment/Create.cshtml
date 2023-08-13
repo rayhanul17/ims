@@ -65,8 +65,9 @@
             $('#transactionField').hide();
             $("#paymentMethodListBox").change(function () {
                 let v = $('#paymentMethodListBox').val();
-                if (v == '2') {
-                    console.log(v == '2');
+                //10 means payment method cash
+                //20 means payment method Bank
+                if (v == '20') {                    
                     $('#bankListBox').show();
                     $('#transactionField').show();
                 }
@@ -86,8 +87,9 @@
             let transactionIdLength = $("#transactionId").val().length;
             if (pay > 0 && pay <= due) {
                 $('#payAmount').css('border-color', '');
-                console.log("step1");
-                if (payType == '1' || (payType == '2' && bank != '' && transactionIdLength > 4)) {
+                //10 means payment method cash
+                //20 means payment method Bank
+                if (payType == '10' || (payType == '20' && bank != '' && transactionIdLength > 4)) {
                     $('#transactionId').css('border-color', '');
                     $('#bankListBox').css('border', '');
                     $("#paymentForm").submit();

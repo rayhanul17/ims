@@ -177,15 +177,13 @@ namespace IMS.Controllers
 
         #region Ajax Call
         [AllowAnonymous]
-        public JsonResult GetCategories()
+        public async Task<JsonResult> GetCategories()
         {
             try
             {
                 var model = new DataTablesAjaxRequestModel(Request);
-                var data = _categoryService.LoadAllCategories(model.SearchText, model.Length, model.Start, model.SortColumn,
-                    model.SortDirection);
-
-                var count = 1;
+                var data = await _categoryService.LoadAllCategories(model.SearchText, model.Length, model.Start, model.SortColumn,
+                    model.SortDirection);               
 
                 return Json(new
                 {
@@ -195,7 +193,7 @@ namespace IMS.Controllers
                     data = (from record in data.records
                             select new string[]
                             {
-                                count++.ToString(),
+                                record.Rank,
                                 record.Name,
                                 record.Description,
                                 record.Status,
@@ -237,7 +235,7 @@ namespace IMS.Controllers
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 30)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
-            }  ModelState.AddModelError("Description", "Description Length Invalid");            
+            }     
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {
                 ModelState.AddModelError("Status", "Status must active or inactive");

@@ -27,7 +27,7 @@ namespace IMS.Services
         #region List Loading Function
         IList<(long, string)> LoadAllBanks();
         IList<(long, string)> LoadAllActiveBanks();
-        (int total, int totalDisplay, IList<BankDto> records) LoadAllBanks(string searchBy, int length, int start, string sortBy, string sortDir);
+        Task<(int total, int totalDisplay, IList<BankDto> records)> LoadAllBanks(string searchBy, int length, int start, string sortBy, string sortDir);
         #endregion
     }
 
@@ -73,18 +73,18 @@ namespace IMS.Services
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw ex;
                     }
                 }
             }
             catch (CustomException ex)
             {
-                throw;
+                throw ex;
             }
             catch (Exception ex)
             {
                 _serviceLogger.Error(ex.Message, ex);
-                throw;
+                throw ex;
             }
         }
 
@@ -120,18 +120,18 @@ namespace IMS.Services
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw ex;
                     }
                 }
             }
             catch (CustomException ex)
             {
-                throw;
+                throw ex;
             }
             catch (Exception ex)
             {
                 _serviceLogger.Error(ex.Message, ex);
-                throw;
+                throw ex;
             }
         }
 
@@ -154,7 +154,7 @@ namespace IMS.Services
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw ex;
                     }
                 }
             }
@@ -168,7 +168,6 @@ namespace IMS.Services
                 throw;
             }
         }
-
         #endregion
 
         #region Single Instance Loading Function
@@ -209,7 +208,7 @@ namespace IMS.Services
         #endregion
 
         #region List Loading Function
-        public (int total, int totalDisplay, IList<BankDto> records) LoadAllBanks(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
+        public async Task<(int total, int totalDisplay, IList<BankDto> records)> LoadAllBanks(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
         {
             try
             {
@@ -219,7 +218,7 @@ namespace IMS.Services
                     filter = x => x.Name.Contains(searchBy) || x.Description.Contains(searchBy);
                 }
 
-                var result = _bankDao.LoadAll(filter, null, start, length, sortBy, sortDir);
+                var result = _bankDao.GetDynamic(filter, null, start, length, sortBy, sortDir);
 
                 List<BankDto> banks = new List<BankDto>();
                 foreach (Bank bank in result.data)
@@ -230,7 +229,7 @@ namespace IMS.Services
                             Id = bank.Id.ToString(),
                             Name = bank.Name,
                             Description = bank.Description,
-                            CreateBy = _userService.GetUserName(bank.CreateBy),
+                            CreateBy = await _userService.GetUserNameAsync(bank.CreateBy),
                             CreationDate = bank.CreationDate.ToString(),
                             Status = ((Status)bank.Status).ToString(),
                             Rank = bank.Rank.ToString(),
@@ -252,7 +251,7 @@ namespace IMS.Services
             List<(long, string)> banks = new List<(long, string)>();
             try
             {
-                var allBanks = _bankDao.GetBank(x => x.Status != (int)Status.Delete);
+                var allBanks = _bankDao.Get(x => x.Status != (int)Status.Delete);
                 foreach (var bank in allBanks)
                 {
                     banks.Add((bank.Id, bank.Name));
@@ -272,7 +271,7 @@ namespace IMS.Services
             List<(long, string)> banks = new List<(long, string)>();
             try
             {
-                var allBanks = _bankDao.GetBank(x => x.Status == (int)Status.Active);
+                var allBanks = _bankDao.Get(x => x.Status == (int)Status.Active);
                 foreach (var bank in allBanks)
                 {
                     banks.Add((bank.Id, bank.Name));

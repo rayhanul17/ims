@@ -10,6 +10,7 @@ namespace IMS.BusinessModel.Dto
         public string TotalAmount { get; set; }
         public string PaidAmount { get; set; }
         public string DueAmount { get; set; }
+        public string Rank { get; set; }
         public IList<PaymentInformation> PaymentDetails { get; set; } = new List<PaymentInformation>();
     }
 

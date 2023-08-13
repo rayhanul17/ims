@@ -7,6 +7,7 @@ using log4net;
 using NHibernate;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -18,10 +19,10 @@ namespace IMS.Services
         Task CreateUserAsync(string name, string email, long aspid, long creatorId);
         Task UpdateUserAsync(string name, string email, long aspid, long creatorId);
         Task<bool> IsActiveUserAsync(string email);
-        string GetUserName(long userId);
+        Task<string> GetUserNameAsync(long userId);
         Task BlockAsync(long userId);
         IList<(long, string)> LoadAllActiveUsers();
-        (int total, int totalDisplay, IList<UserDto> records) LoadAllUsers(string searchBy = null,
+        Task<(int total, int totalDisplay, IList<UserDto> records)> LoadAllUsers(string searchBy = null,
             int length = 10, int start = 1, string sortBy = null, string sortDir = null);
     }
     #endregion
@@ -71,14 +72,14 @@ namespace IMS.Services
             }
         }
 
-        public string GetUserName(long userId)
+        public async Task<string> GetUserNameAsync(long userId)
         {
             Expression<Func<ApplicationUser, bool>> filter = null;
             filter = x => x.AspNetUsersId.Equals(userId);
 
-            var user = _userDao.GetUser(filter);
+            var user = await Task.Run( () => _userDao.Get(filter).FirstOrDefault());
 
-            return user.Name;
+            return user?.Name;
         }
 
         public async Task BlockAsync(long userId)
@@ -162,7 +163,7 @@ namespace IMS.Services
             return users;
         }
 
-        public (int total, int totalDisplay, IList<UserDto> records) LoadAllUsers(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
+        public async Task<(int total, int totalDisplay, IList<UserDto> records)> LoadAllUsers(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
         {
             try
             {
@@ -183,7 +184,7 @@ namespace IMS.Services
                             Id = user.AspNetUsersId.ToString(),
                             Name = user.Name,
                             Email = user.Email,
-                            CreateBy = GetUserName(user.CreateBy),
+                            CreateBy = await GetUserNameAsync(user.CreateBy),
                             CreationDate = user.CreationDate.ToString(),
                             Status = ((Status)user.Status).ToString(),
                             Rank = user.Rank.ToString()

@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="~/Assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css" />
     <link rel="stylesheet" href="~/Assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css" />
     <link rel="stylesheet" href="~/Assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <style>
+        #table td {
+            vertical-align: middle;
+        }
+    </style>
 }
 <div class="card">
     <div class="card-header">
@@ -89,7 +94,7 @@
                     { "name": "Description" },
                     { "name": "Status" },
                     { "name": "Created By" },
-                    { "name": "Created Date" }
+                    { "name": "Creation Date" }
                 ],
                 "columnDefs": [
                     {
@@ -97,12 +102,12 @@
                         "targets": 6,
                         "render": function (data, type, row) {
                             if ('@User.IsInRole("SA")' == 'True' || '@User.IsInRole("Manager")' == 'True') {
-                                return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/brand/edit/${data}'">
+                                return `<button type="submit" class="btn btn-info btn-sm m-1" onclick="window.location.href='/brand/edit/${data}'">
                                                         <i class="fas fa-pencil-alt">
                                                         </i>
                                                         Edit
                                                     </button>
-                                                    <button type="submit" class="btn btn-danger btn-sm delete-modal" data-id='${data}' value= '${data}'>
+                                                    <button type="submit" class="btn btn-danger btn-sm delete-modal m-1" data-id='${data}' value= '${data}'>
                                                         <i class="fas fa-trash">
                                                         </i>
                                                         Delete
@@ -111,10 +116,10 @@
                             else {
                                 return ``;
                             }
-                            
+
                         }
                     },
-                    { "orderable": false, "targets": [3, 4] }
+                    { "orderable": false, "targets": [2, 3, 4] }
                 ],
                 "order": [0, 'asc']
             });

@@ -1,6 +1,7 @@
 ﻿using IMS.BusinessModel.Dto;
 using IMS.BusinessModel.Entity;
 using IMS.BusinessModel.ViewModel;
+using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
 using IMS.Dao;
 using NHibernate;
@@ -11,15 +12,20 @@ using System.Threading.Tasks;
 
 namespace IMS.Services
 {
-    #region Interface
     public interface ISaleService
     {
+        #region Opperational Function
         Task<long> AddAsync(IList<SaleDetailsViewModel> model, decimal grandTotal, long CustomerId, long userId);
+        #endregion
 
-        (int total, int totalDisplay, IList<SaleDto> records) LoadAllSales(string searchBy, int length, int start, string sortBy, string sortDir);
+        #region Single Instance Loading Function
         Task<SaleReportDto> GetSaleDetailsAsync(long SaleId);
+        #endregion
+
+        #region List Loading Function
+        Task<(int total, int totalDisplay, IList<SaleDto> records)> LoadAllSales(string searchBy, int length, int start, string sortBy, string sortDir);
+        #endregion
     }
-    #endregion
 
     public class SaleService : BaseService, ISaleService
     {
@@ -58,10 +64,6 @@ namespace IMS.Services
                             throw new CustomException("Selling quantity more than instock quantity");
                         }
                         product.InStockQuantity -= item.Quantity;
-                        //product.ModifyBy = userId;
-                        //product.ModificationDate = _timeService.Now;
-                        //product.BuyingPrice = item.UnitPrice;
-                        //product.SellingPrice = item.UnitPrice + (item.UnitPrice * product.ProfitMargin / 100) - product.DiscountPrice;
 
                         await _productDao.EditAsync(product);
 
@@ -81,7 +83,10 @@ namespace IMS.Services
                         CreateBy = userId,
                         SaleDate = _timeService.Now,
                         GrandTotalPrice = grandTotal,
-                        SaleDetails = saleDetails
+                        SaleDetails = saleDetails,
+                        CreationDate = _timeService.Now,
+                        Rank = await _saleDao.GetMaxRank(typeof(Sale).Name) + 1,
+                        Status = (int)Status.Active
                     };
 
                     var id = await _saleDao.AddAsync(sale);
@@ -100,12 +105,12 @@ namespace IMS.Services
 
         #endregion
 
-        #region Single Instance Loading
+        #region Single Instance Loading Function
 
         public async Task<SaleReportDto> GetSaleDetailsAsync(long id)
         {
             var sale = await _saleDao.GetByIdAsync(id);
-            var customer = _customerDao.GetById(sale.CustomerId);
+            var customer = await _customerDao.GetByIdAsync(sale.CustomerId);
             var saleProducts = new List<ProductInformation>();
 
             foreach (var item in sale.SaleDetails)
@@ -138,7 +143,7 @@ namespace IMS.Services
         #endregion
 
         #region List Loading Function
-        public (int total, int totalDisplay, IList<SaleDto> records) LoadAllSales(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
+        public async Task<(int total, int totalDisplay, IList<SaleDto> records)> LoadAllSales(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
         {
             try
             {
@@ -153,12 +158,13 @@ namespace IMS.Services
                         new SaleDto
                         {
                             Id = sale.Id.ToString(),
-                            CustomerName = _customerService.GetNameById(sale.CustomerId),
-                            CreateBy = _userService.GetUserName(sale.CreateBy),
+                            CustomerName = await _customerService.GetNameByIdAsync(sale.CustomerId),
+                            CreateBy = await _userService.GetUserNameAsync(sale.CreateBy),
                             SaleDate = sale.SaleDate.ToString(),
                             GrandTotalPrice = sale.GrandTotalPrice.ToString(),
                             IsPaid = sale.IsPaid.ToString(),
                             PaymentId = sale.PaymentId.ToString(),
+                            Rank = sale.Rank.ToString(),
                         });
                 }
 

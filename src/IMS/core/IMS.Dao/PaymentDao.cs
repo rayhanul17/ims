@@ -9,23 +9,25 @@ namespace IMS.Dao
 {
     public interface IPaymentDao : IBaseDao<Payment, long>
     {
-        IList<Payment> GetPayments(Expression<Func<Payment, bool>> filter);
-        (IList<Payment> data, int total, int totalDisplay) LoadAllPayments(Expression<Func<Payment, bool>> filter = null,
-           string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
+        //IList<Payment> GetPayments(Expression<Func<Payment, bool>> filter);
+        #region List Loading Function
+        (IList<Payment> data, int total, int totalDisplay) LoadAllPayments(Expression<Func<Payment, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
+        #endregion
     }
 
     public class PaymentDao : BaseDao<Payment, long>, IPaymentDao
     {
+        #region Initialization
         public PaymentDao(ISession session) : base(session)
         {
 
         }
+        #endregion
 
+        #region List Loading Function
         public (IList<Payment> data, int total, int totalDisplay) LoadAllPayments(Expression<Func<Payment, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
         {
-            IQueryable<Payment> query = _session.Query<Payment>();
-
-            //query = query.Where(x => x.Status != (int)Status.Delete);
+            IQueryable<Payment> query = _session.Query<Payment>();            
 
             var total = query.Count();
             var totalDisplay = query.Count();
@@ -38,6 +40,9 @@ namespace IMS.Dao
 
             switch (sortBy)
             {
+                case "Rank":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.Rank) : query.OrderByDescending(c => c.Rank);
+                    break;
                 case "TotalAmount":
                     query = sortDir == "asc" ? query.OrderBy(c => c.TotalAmount) : query.OrderByDescending(c => c.TotalAmount);
                     break;
@@ -62,6 +67,6 @@ namespace IMS.Dao
 
             return query.ToList();
         }
-    }
-
+        #endregion
+    } 
 }

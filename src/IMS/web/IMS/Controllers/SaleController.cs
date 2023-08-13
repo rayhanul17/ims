@@ -98,7 +98,7 @@ namespace IMS.Controllers
                     }
                     var userId = User.Identity.GetUserId<long>();
                     var id = await _saleService.AddAsync(model, grandTotal, customerId, userId);
-                    await _paymentService.AddAsync(id, OperationType.Sale, grandTotal);
+                    await _paymentService.AddAsync(id, OperationType.Sale, grandTotal, userId);
 
                     ViewResponse("Successfully Sale completed!", ResponseTypes.Success);
 
@@ -157,15 +157,13 @@ namespace IMS.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public JsonResult GetSales()
+        public async Task<JsonResult> GetSales()
         {
             try
             {
                 var model = new DataTablesAjaxRequestModel(Request);
-                var data = _saleService.LoadAllSales(model.SearchText, model.Length, model.Start, model.SortColumn,
-                    model.SortDirection);
-
-                var count = 1;
+                var data = await _saleService.LoadAllSales(model.SearchText, model.Length, model.Start, model.SortColumn,
+                    model.SortDirection);                
 
                 return Json(new
                 {
@@ -175,7 +173,7 @@ namespace IMS.Controllers
                     data = (from record in data.records
                             select new string[]
                             {
-                                count++.ToString(),
+                                record.Rank,
                                 record.CustomerName,
                                 record.CreateBy,
                                 record.SaleDate,

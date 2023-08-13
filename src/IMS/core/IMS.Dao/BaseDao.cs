@@ -21,15 +21,12 @@ namespace IMS.Dao
         Task<TEntity> GetByIdAsync(TKey id);
         Task<long> GetMaxRank(string tableName);
         IList<TEntity> Get(Expression<Func<TEntity, bool>> filter);
-        IList<TEntity> GetAll();
+        IList<TEntity> LoadAll();
         int GetCount(Expression<Func<TEntity, bool>> filter = null);
         Task<int> ExecuteUpdateDeleteQuery(string query);
         Task<T> GetRankByIdAsync<T>(long id, string tableName);
         Task<long> RankUpAsync(long rankFrom, long rankTo, string tableName);
         Task<long> RankDownAsync(long rankFrom, long rankTo, string tableName);
-        (IList<TEntity> data, int total, int totalDisplay) GetDynamic(
-            Expression<Func<TEntity, bool>> filter = null,
-            string orderBy = null, int pageIndex = 1, int pageSize = 10);
 
         IList<TEntity> Get(Expression<Func<TEntity, bool>> filter, int pageIndex = 1,
             int pageSize = 10);
@@ -43,7 +40,7 @@ namespace IMS.Dao
         IList<TEntity> GetDynamic(Expression<Func<TEntity, bool>> filter = null,
             string orderBy = null);
 
-        (IList<TEntity> data, int total, int totalDisplay) LoadAll(Expression<Func<TEntity, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
+        (IList<TEntity> data, int total, int totalDisplay) GetDynamic(Expression<Func<TEntity, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
     }
     #endregion
 
@@ -70,7 +67,7 @@ namespace IMS.Dao
             return await _session.GetAsync<TEntity>(id);
         }
 
-        public virtual IList<TEntity> GetAll()
+        public virtual IList<TEntity> LoadAll()
         {
             return _session.Query<TEntity>().ToList();
         }
@@ -281,7 +278,7 @@ namespace IMS.Dao
         }
 
         //For BaseEntity
-        public (IList<TEntity> data, int total, int totalDisplay) LoadAll(Expression<Func<TEntity, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
+        public (IList<TEntity> data, int total, int totalDisplay) GetDynamic(Expression<Func<TEntity, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
         {
             IQueryable<TEntity> query = _session.Query<TEntity>();
 

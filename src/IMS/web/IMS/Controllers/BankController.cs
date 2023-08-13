@@ -171,12 +171,12 @@ namespace IMS.Controllers
 
         #region Ajax Call
         [AllowAnonymous]
-        public JsonResult GetBanks()
+        public async Task<JsonResult> GetBanks()
         {
             try
             {
                 var model = new DataTablesAjaxRequestModel(Request);
-                var data = _bankService.LoadAllBanks(model.SearchText, model.Length, model.Start, model.SortColumn,
+                var data = await _bankService.LoadAllBanks(model.SearchText, model.Length, model.Start, model.SortColumn,
                     model.SortDirection);
 
                 return Json(new
