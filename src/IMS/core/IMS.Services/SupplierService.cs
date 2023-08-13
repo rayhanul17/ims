@@ -61,7 +61,7 @@ namespace IMS.Services
                     ContactNumber = model.ContactNumber,
                     Email = model.Email,
                     Status = (int)model.Status,
-                    Rank = await _supplierDao.GetMaxRank("Supplier") + 1,
+                    Rank = await _supplierDao.GetMaxRank(typeof(Supplier).Name) + 1,
                     CreateBy = userId,
                     CreationDate = _timeService.Now,
                 };

@@ -25,11 +25,18 @@ namespace IMS.Controllers
 
         public ProductController()
         {
-            var session = new MsSqlSessionFactory().OpenSession();
-            _productService = new ProductService(session);
-            _categoryService = new CategoryService(session);
-            _brandService = new BrandService(session);
-            _imageService = new ImageService();
+            try
+            {
+                var session = new MsSqlSessionFactory().OpenSession();
+                _productService = new ProductService(session);
+                _categoryService = new CategoryService(session);
+                _brandService = new BrandService(session);
+                _imageService = new ImageService();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         #endregion

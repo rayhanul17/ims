@@ -8,7 +8,7 @@ namespace IMS.Dao.Mappings
         {
             Table("Product");
             Map(x => x.Name).Not.Nullable();
-            Map(x => x.Description);
+            Map(x => x.Description).Length(4001);
             Map(x => x.BuyingPrice);
             Map(x => x.SellingPrice);
             Map(x => x.DiscountPrice);

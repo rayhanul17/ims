@@ -8,7 +8,7 @@ namespace IMS.Dao.Mappings
         {
             Table("Bank");
             Map(x => x.Name).Not.Nullable();
-            Map(x => x.Description);
+            Map(x => x.Description).Length(4001);
             HasMany(x => x.PaymentDetails)
                 .KeyColumn("BankId")
                 .Inverse()

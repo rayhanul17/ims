@@ -59,7 +59,7 @@ namespace IMS.Services
                     Name = model.Name,
                     Description = model.Description,
                     Status = (int)model.Status,
-                    Rank = await _brandDao.GetMaxRank("Brand") + 1,
+                    Rank = await _brandDao.GetMaxRank(typeof(Brand).Name) + 1,
                     CreateBy = userId,
                     CreationDate = _timeService.Now,
                 };

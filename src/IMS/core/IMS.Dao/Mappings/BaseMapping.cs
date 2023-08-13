@@ -16,8 +16,7 @@ namespace IMS.Dao.Mappings
             Map(x => x.ModifyBy).Nullable();
             Map(x => x.ModificationDate).Nullable();
             Map(x => x.BusinessId).Nullable();
-            Version(x => x.VersionNumber).Not.Nullable();
-
+            Version(x => x.VersionNumber).Nullable();
         }
     }
 }

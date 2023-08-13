@@ -60,7 +60,7 @@ namespace IMS.Services
                     ContactNumber = model.ContactNumber,
                     Email = model.Email,
                     Status = (int)model.Status,
-                    Rank = await _customerDao.GetMaxRank("Customer") + 1,
+                    Rank = await _customerDao.GetMaxRank(typeof(Customer).Name) + 1,
                     CreateBy = userId,
                     CreationDate = _timeService.Now,
                 };
