@@ -44,7 +44,7 @@ namespace IMS.Services
                 try
                 {
                     var count = _brandDao.GetCount(x => x.Name == model.Name);
-                    if(count > 0)
+                    if (count > 0)
                     {
                         throw new CustomException("Found another Brand with this name");
                     }
@@ -110,7 +110,7 @@ namespace IMS.Services
                 }
             }
         }
-        
+
         public async Task RemoveByIdAsync(long id, long userId)
         {
             using (var transaction = _session.BeginTransaction())
@@ -163,7 +163,7 @@ namespace IMS.Services
                     BusinessId = brand.BusinessId,
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _serviceLogger.Error(ex.Message, ex);
                 throw;
@@ -197,10 +197,10 @@ namespace IMS.Services
                             Name = brand.Name,
                             Description = brand.Description,
                             CreateBy = _userService.GetUserName(brand.CreateBy),
-                            CreationDate = brand.CreationDate.ToString(),                            
+                            CreationDate = brand.CreationDate.ToString(),
                             Status = ((Status)brand.Status).ToString(),
                             Rank = brand.Rank.ToString()
-                            
+
                         });
                 }
 

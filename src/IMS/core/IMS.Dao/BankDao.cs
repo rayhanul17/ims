@@ -1,5 +1,4 @@
-﻿using FluentNHibernate.Data;
-using IMS.BusinessModel.Entity;
+﻿using IMS.BusinessModel.Entity;
 using IMS.BusinessRules.Enum;
 using NHibernate;
 using System;
@@ -26,7 +25,7 @@ namespace IMS.Dao
         public (IList<Bank> data, int total, int totalDisplay) LoadAllBanks(Expression<Func<Bank, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
         {
             IQueryable<Bank> query = _session.Query<Bank>();
-            
+
             query = query.Where(x => x.Status != (int)Status.Delete);
 
             var total = query.Count();
@@ -70,5 +69,5 @@ namespace IMS.Dao
         }
 
     }
-    
+
 }

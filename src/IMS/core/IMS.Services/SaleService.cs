@@ -49,11 +49,11 @@ namespace IMS.Services
                     foreach (var item in model)
                     {
                         var product = await _productDao.GetByIdAsync(item.ProductId);
-                        if(product == null )
+                        if (product == null)
                         {
                             throw new CustomException("No Product found with id");
                         }
-                        else if(product.InStockQuantity < item.Quantity)
+                        else if (product.InStockQuantity < item.Quantity)
                         {
                             throw new CustomException("Selling quantity more than instock quantity");
                         }
@@ -142,7 +142,7 @@ namespace IMS.Services
         {
             try
             {
-                Expression<Func<Sale, bool>> filter = null;                
+                Expression<Func<Sale, bool>> filter = null;
 
                 var result = _saleDao.LoadAllSales(filter, null, start, length, sortBy, sortDir);
 
@@ -158,7 +158,7 @@ namespace IMS.Services
                             SaleDate = sale.SaleDate.ToString(),
                             GrandTotalPrice = sale.GrandTotalPrice.ToString(),
                             IsPaid = sale.IsPaid.ToString(),
-                            PaymentId= sale.PaymentId.ToString(),
+                            PaymentId = sale.PaymentId.ToString(),
                         });
                 }
 

@@ -1,5 +1,5 @@
-﻿using IMS.BusinessModel.ViewModel;
-using IMS.BusinessRules;
+﻿using IMS.BusinessModel.Dto;
+using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
 using IMS.Models;
@@ -17,13 +17,13 @@ namespace IMS.Controllers
     {
         #region Initialization
         private readonly IPaymentService _paymentService;
-        private readonly IBankService _bankService;        
+        private readonly IBankService _bankService;
 
         public PaymentController()
         {
             var session = new MsSqlSessionFactory().OpenSession();
             _paymentService = new PaymentService(session);
-            _bankService = new BankService(session);            
+            _bankService = new BankService(session);
         }
         #endregion
 
@@ -65,6 +65,7 @@ namespace IMS.Controllers
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
+
             return View(model);
         }
 
@@ -103,7 +104,17 @@ namespace IMS.Controllers
         [Authorize(Roles = "SA, Manager, Seller")]
         public async Task<ActionResult> Details(long id)
         {
-            var model = await _paymentService.GetPaymentDetailsAsync(id);
+            var model = new PaymentReportDto();
+            try
+            {
+                model = await _paymentService.GetPaymentDetailsAsync(id);                
+            }
+            catch(Exception ex)
+            {
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+                _logger.Error(ex.Message, ex);
+            }
+
             return View(model);
         }
 

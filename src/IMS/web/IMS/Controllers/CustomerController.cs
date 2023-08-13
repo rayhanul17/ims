@@ -1,5 +1,4 @@
 ﻿using IMS.BusinessModel.ViewModel;
-using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
 using IMS.Models;
@@ -19,12 +18,12 @@ namespace IMS.Controllers
     public class CustomerController : AllBaseController
     {
         #region Initialization
-        private readonly ICustomerService _customerService;        
+        private readonly ICustomerService _customerService;
 
         public CustomerController()
         {
             var session = new MsSqlSessionFactory().OpenSession();
-            _customerService = new CustomerService(session);           
+            _customerService = new CustomerService(session);
         }
 
         #endregion
@@ -43,14 +42,24 @@ namespace IMS.Controllers
         public ActionResult Create()
         {
             var model = new CustomerAddViewModel();
-            var selectList = Enum.GetValues(typeof(Status))
-                       .Cast<Status>()
-                       .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
-            ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
+            try
+            {
+                var selectList = Enum.GetValues(typeof(Status))
+                           .Cast<Status>()
+                           .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
+                ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
+            }
+            catch (Exception ex)
+            {
+                ViewResponse("Failed to load status", ResponseTypes.Danger);
+                _logger.Error(ex.Message, ex);
+            }
+
             return View(model);
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Create(CustomerAddViewModel model)
@@ -70,18 +79,18 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
+
             return RedirectToAction("Index", "Customer");
         }
 
-        [HttpGet]        
+        [HttpGet]
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(long id)
         {
@@ -99,18 +108,19 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
+
             return RedirectToAction("Index", "Customer");
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(CustomerEditViewModel model)
@@ -130,8 +140,7 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);               
             }
             catch (Exception ex)
             {

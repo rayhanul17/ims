@@ -61,7 +61,7 @@ namespace IMS.Services
 
                     await _userDao.AddAsync(user);
                     transaction.Commit();
-                    
+
                 }
                 catch (Exception ex)
                 {
@@ -186,7 +186,7 @@ namespace IMS.Services
                             CreateBy = GetUserName(user.CreateBy),
                             CreationDate = user.CreationDate.ToString(),
                             Status = ((Status)user.Status).ToString(),
-                            Rank = user.Rank.ToString()                           
+                            Rank = user.Rank.ToString()
                         });
                 }
 

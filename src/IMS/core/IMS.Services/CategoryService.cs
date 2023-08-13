@@ -46,7 +46,7 @@ namespace IMS.Services
                 try
                 {
                     var count = _categoryDao.GetCount(x => x.Name == model.Name);
-                    if(count > 0)
+                    if (count > 0)
                     {
                         throw new CustomException("Found another category with this name");
                     }
@@ -112,7 +112,7 @@ namespace IMS.Services
                 }
             }
         }
-        
+
         public async Task RemoveByIdAsync(long id, long userId)
         {
             using (var transaction = _session.BeginTransaction())
@@ -133,7 +133,7 @@ namespace IMS.Services
                     transaction.Commit();
 
                 }
-                catch(CustomException ex)
+                catch (CustomException ex)
                 {
                     throw ex;
                 }
@@ -171,7 +171,7 @@ namespace IMS.Services
                     BusinessId = category.BusinessId,
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _serviceLogger.Error(ex.Message, ex);
                 throw;
@@ -205,9 +205,9 @@ namespace IMS.Services
                             Name = category.Name,
                             Description = category.Description,
                             CreateBy = _userService.GetUserName(category.CreateBy),
-                            CreationDate = category.CreationDate.ToString(),                            
+                            CreationDate = category.CreationDate.ToString(),
                             Status = ((Status)category.Status).ToString(),
-                            Rank = category.Rank.ToString()                           
+                            Rank = category.Rank.ToString()
                         });
                 }
 
@@ -219,10 +219,10 @@ namespace IMS.Services
                 throw;
             }
         }
-        
-        public IList<(long,string)> LoadAllCategories()
+
+        public IList<(long, string)> LoadAllCategories()
         {
-            List<(long, string)> categories = new List<(long, string)> ();
+            List<(long, string)> categories = new List<(long, string)>();
             var allcategories = _categoryDao.GetCategory(x => x.Status != (int)Status.Delete);
             foreach (var category in allcategories)
             {

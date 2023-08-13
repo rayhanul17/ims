@@ -1,5 +1,5 @@
-﻿using IMS.BusinessModel.ViewModel;
-using IMS.BusinessRules;
+﻿using IMS.BusinessModel.Dto;
+using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
 using IMS.Models;
@@ -23,7 +23,7 @@ namespace IMS.Controllers
         private readonly ICustomerService _customerService;
         private readonly ISaleService _saleService;
         private readonly IPaymentService _paymentService;
-        
+
         public SaleController()
         {
             var session = new MsSqlSessionFactory().OpenSession();
@@ -32,7 +32,7 @@ namespace IMS.Controllers
             _brandService = new BrandService(session);
             _customerService = new CustomerService(session);
             _saleService = new SaleService(session);
-            _paymentService = new PaymentService(session);            
+            _paymentService = new PaymentService(session);
         }
         #endregion
 
@@ -49,29 +49,36 @@ namespace IMS.Controllers
         [Authorize(Roles = "SA, Manager, Seller")]
         public ActionResult Create()
         {
-            var categoryList = _categoryService.LoadAllActiveCategories();
-            ViewBag.CategoryList = categoryList.Select(x => new SelectListItem
+            try
             {
-                Text = x.Item2,
-                Value = x.Item1.ToString()
-            }).ToList();
+                var categoryList = _categoryService.LoadAllActiveCategories();
+                ViewBag.CategoryList = categoryList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
 
-            var brandList = _brandService.LoadAllActiveBrands();
-            ViewBag.BrandList = brandList.Select(x => new SelectListItem
+                var brandList = _brandService.LoadAllActiveBrands();
+                ViewBag.BrandList = brandList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
+
+                var CustomerList = _customerService.LoadAllActiveCustomers();
+                ViewBag.CustomerList = CustomerList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
+            }
+            catch (Exception ex)
             {
-                Text = x.Item2,
-                Value = x.Item1.ToString()
-            }).ToList();
-
-            var CustomerList = _customerService.LoadAllActiveCustomers();
-            ViewBag.CustomerList = CustomerList.Select(x => new SelectListItem
-            {
-                Text = x.Item2,
-                Value = x.Item1.ToString()
-            }).ToList();
-
+                _logger.Error(ex.Message, ex);
+                ViewResponse("Failed to load metadata", ResponseTypes.Danger);
+            }
             return View();
-        }        
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -96,7 +103,7 @@ namespace IMS.Controllers
                     ViewResponse("Successfully Sale completed!", ResponseTypes.Success);
 
                 }
-                catch(CustomException ex)
+                catch (CustomException ex)
                 {
                     ViewResponse(ex.Message, ResponseTypes.Warning);
                 }
@@ -116,7 +123,16 @@ namespace IMS.Controllers
         [Authorize(Roles = "SA, Manager, Seller")]
         public async Task<ActionResult> Details(long id)
         {
-            var model = await _saleService.GetSaleDetailsAsync(id);
+            var model = new SaleReportDto();
+            try
+            {
+                model = await _saleService.GetSaleDetailsAsync(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+            }
             return View(model);
         }
 
@@ -127,8 +143,16 @@ namespace IMS.Controllers
         [AllowAnonymous]
         public JsonResult UpdateProductList(long categoryId, long brandId)
         {
-            var products = _productService.LoadAvailableProducts(categoryId, brandId).Select(x => new { value = x.Id, text = x.Name, qty = x.InStockQuantity, price = x.SellingPrice });
-            return Json(products);
+            try
+            {
+                var products = _productService.LoadAvailableProducts(categoryId, brandId).Select(x => new { value = x.Id, text = x.Name, qty = x.InStockQuantity, price = x.SellingPrice });
+                return Json(products);
+            }
+            catch(Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+                return default(JsonResult);
+            }
         }
 
         [HttpPost]
@@ -165,8 +189,7 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {

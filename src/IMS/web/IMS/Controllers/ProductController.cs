@@ -1,5 +1,4 @@
 ﻿using IMS.BusinessModel.ViewModel;
-using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
 using IMS.Models;
@@ -21,7 +20,7 @@ namespace IMS.Controllers
         #region Initialization
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
-        private readonly IBrandService _brandService;        
+        private readonly IBrandService _brandService;
         private readonly IImageService _imageService;
 
         public ProductController()
@@ -29,7 +28,7 @@ namespace IMS.Controllers
             var session = new MsSqlSessionFactory().OpenSession();
             _productService = new ProductService(session);
             _categoryService = new CategoryService(session);
-            _brandService = new BrandService(session);            
+            _brandService = new BrandService(session);
             _imageService = new ImageService();
         }
 
@@ -73,11 +72,12 @@ namespace IMS.Controllers
 
             #endregion
 
-            
+
             return View(model);
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         [ValidateAntiForgeryToken()]
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Create(ProductAddViewModel model, HttpPostedFileBase image)
@@ -102,14 +102,14 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
+
             return RedirectToAction("Index", "Product");
         }
 
@@ -149,18 +149,19 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
+
             return RedirectToAction("Index", "Product");
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(ProductEditViewModel model, HttpPostedFileBase image)
@@ -186,8 +187,7 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
@@ -210,14 +210,14 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
+
             return RedirectToAction("Index", "Product");
         }
 
@@ -351,10 +351,6 @@ namespace IMS.Controllers
             {
                 ModelState.AddModelError("Name", "Name Length Invalid");
             }
-            if (model.Description?.Length > 255)
-            {
-                ModelState.AddModelError("Description", "Description Length Invalid");
-            }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {
                 ModelState.AddModelError("Status", "Status must active or inactive");
@@ -370,10 +366,6 @@ namespace IMS.Controllers
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 255)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
-            }
-            if (model.Description?.Length > 255)
-            {
-                ModelState.AddModelError("Description", "Description Length Invalid");
             }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {

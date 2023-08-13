@@ -38,7 +38,7 @@
             <thead>
                 <tr>
                     <th>
-                        SL
+                        Rank
                     </th>
                     <th>
                         Name
@@ -68,7 +68,6 @@
 @Html.Partial("_ModalPartial")
 @section Scripts
 {
-    <!-- DataTables  & Plugins -->
     <script src="~/Assets/plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="~/Assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
     <script src="~/Assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
@@ -103,12 +102,12 @@
                         "targets": 6,
                         "render": function (data, type, row) {
                             if ('@User.IsInRole("SA")' == 'True' || '@User.IsInRole("Manager")' == 'True') {
-                                return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/bank/edit/${data}'">
+                                return `<button type="submit" class="btn btn-info btn-sm m-1" onclick="window.location.href='/bank/edit/${data}'">
                                                         <i class="fas fa-pencil-alt">
                                                         </i>
                                                         Edit
                                                     </button>
-                                                    <button type="submit" class="btn btn-danger btn-sm delete-modal" data-id='${data}' value= '${data}'>
+                                                    <button type="submit" class="btn btn-danger btn-sm m-1 delete-modal" data-id='${data}' value= '${data}'>
                                                         <i class="fas fa-trash">
                                                         </i>
                                                         Delete
@@ -134,17 +133,12 @@
             $("#deleteId").val(id);
             $("#deleteForm").attr("action", "/bank/delete");
             console.log(m);
-            m.modal('show');
-            //m[0].style.display = "block";
+            m.modal('show');            
         });
 
         $("#deleteButton").click(function () {
-            $("#deleteForm").submit();
-            //var m = $("#modal-default");
-            //m[0].style.display = "hidden";
-
+            $("#deleteForm").submit();            
         });
 
     </script>
 }
-

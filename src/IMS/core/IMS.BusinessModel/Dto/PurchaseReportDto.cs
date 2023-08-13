@@ -13,5 +13,5 @@ namespace IMS.BusinessModel.Dto
         public long PurchaseId { get; set; }
         public IList<ProductInformation> Products { get; set; } = new List<ProductInformation>();
 
-    }    
+    }
 }

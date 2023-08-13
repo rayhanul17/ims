@@ -103,7 +103,7 @@ namespace IMS.Models
         [Required]
         [EmailAddress]
         [MaxLength(255)]
-        [Display(Name = "Email")]        
+        [Display(Name = "Email")]
         public string Email { get; set; }
 
         [Required]

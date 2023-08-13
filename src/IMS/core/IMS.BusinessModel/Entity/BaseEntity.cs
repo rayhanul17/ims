@@ -8,7 +8,7 @@ namespace IMS.BusinessModel.Entity
         public virtual string Name { get; set; }
         public virtual int Status { get; set; }
         public virtual T CreateBy { get; set; }
-        public virtual DateTime CreationDate { get; set; }        
+        public virtual DateTime CreationDate { get; set; }
         public virtual T ModifyBy { get; set; }
         public virtual DateTime? ModificationDate { get; set; }
         public virtual T Rank { get; set; }

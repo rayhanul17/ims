@@ -4,7 +4,6 @@ using NHibernate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace IMS.Services
@@ -103,7 +102,7 @@ namespace IMS.Services
                 $"WHERE p.PurchaseDate BETWEEN '{startDate}' AND '{endDate}'")).FirstOrDefault();
 
             var saleProductList = await _reportDao.ExecuteQueryAsync<ProductListDto>($"SELECT " +
-                $"s.SaleDate AS Date, " +                
+                $"s.SaleDate AS Date, " +
                 $"sd.Quantity, " +
                 $"sd.TotalPrice, " +
                 $"p.Name " +
@@ -124,7 +123,7 @@ namespace IMS.Services
 
             var loseProfitReportDto = new LoseProfitReportDto
             {
-                DateRange = dates[0] + "-" + dates[1], 
+                DateRange = dates[0] + "-" + dates[1],
                 PurchasePaymentDetails = purchaseInfo,
                 SalePaymentDetails = saleInfo,
                 PurchaseProductList = purchaseProductList,

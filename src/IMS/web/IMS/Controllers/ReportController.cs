@@ -1,5 +1,4 @@
 ﻿using IMS.BusinessModel.Dto;
-using IMS.BusinessRules;
 using IMS.BusinessRules.Exceptions;
 using IMS.Services;
 using IMS.Services.SessionFactories;
@@ -13,12 +12,12 @@ namespace IMS.Controllers
     public class ReportController : AllBaseController
     {
         #region Initialization
-        private readonly IReportService _reportService;        
+        private readonly IReportService _reportService;
 
         public ReportController()
         {
             var session = new MsSqlSessionFactory().OpenSession();
-            _reportService = new ReportService(session);           
+            _reportService = new ReportService(session);
         }
 
         #endregion
@@ -58,7 +57,7 @@ namespace IMS.Controllers
 
         }
 
-        [HttpGet]        
+        [HttpGet]
         public async Task<ActionResult> Dashboard()
         {
             try

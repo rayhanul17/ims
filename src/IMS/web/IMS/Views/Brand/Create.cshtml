@@ -1,5 +1,4 @@
-﻿@using IMS.Models
-@model IMS.BusinessModel.ViewModel.BrandAddViewModel
+﻿@model IMS.BusinessModel.ViewModel.BrandAddViewModel
 @{ 
     ViewData["Title"] = "Brand Create";
 }
@@ -11,19 +10,14 @@
         }
     </style>
 }
-
+<script src="~/Assets/ckeditor/ckeditor.js"></script>
 <div class="container-fluid">
-    <div class="row">
-        <!-- left column -->
-        <div class="col">
-            @*<partial name="_ResponsePartial" />*@
-            <!-- general form elements -->
+    <div class="row d-flex justify-content-center">
+        <div class="col-8">
             <div class="card card-primary">
                 <div class="card-header">
                     <h3 class="card-title">@ViewData["Title"]</h3>
                 </div>
-                <!-- /.card-header -->
-                <!-- form start -->
                 @using (Html.BeginForm("Create", "Brand", FormMethod.Post, htmlAttributes: new { @id = "myform", @class = "nav-link cmxform" }))
                 {
                     @Html.AntiForgeryToken()
@@ -35,17 +29,17 @@
 
                         </div>
                         <div class="form-group">
-                            <label> @Html.LabelFor(m => m.Description)</label>
-                            @Html.TextBoxFor(m => m.Description, new { @class = "form-control", @placeholder = "Description", @type = "text" })
-                            @*<span>@Html.ValidationMessageFor(model => model.Description)</span>*@
+                            @Html.LabelFor(m => m.Description)
+                            @Html.TextAreaFor(m => m.Description, new { @id = "Description", @class = "form-control", @placeholder = "Description" })
+                            <script>
+                                CKEDITOR.replace("Description");
+                            </script>
                         </div>
                         <div class="form-group">
                             <label> @Html.LabelFor(m => m.Status)</label>
                             @Html.DropDownListFor(m => m.Status, (SelectList)ViewBag.StatusList, new { @class = "form-control" })
                         </div>
                     </div>
-                    <!-- /.card-body -->
-
                     <div class="card-footer">
                         <button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
                     </div>
@@ -53,8 +47,8 @@
             </div>
         </div>
     </div>
-    <!-- /.row -->
-</div><!-- /.container-fluid -->
+</div>
+
 @section Scripts
 {
     <script src="~/Assets/js/validation/jquery.min.js"></script>
@@ -62,7 +56,6 @@
     <script src="~/Assets/js/validation/additional-methods.min.js"></script>
     <script>
         $(document).ready(function () {
-            console.log("hello");
             $("#myform").validate({
 
                 // In 'rules' user have to specify all the

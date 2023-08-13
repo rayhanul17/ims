@@ -1,5 +1,4 @@
 ﻿using IMS.BusinessModel.ViewModel;
-using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
 using IMS.Models;
@@ -19,11 +18,11 @@ namespace IMS.Controllers
     {
         #region Initialization
         private readonly ISupplierService _supplierService;
-        
+
         public SupplierController()
         {
             var session = new MsSqlSessionFactory().OpenSession();
-            _supplierService = new SupplierService(session);            
+            _supplierService = new SupplierService(session);
         }
 
         #endregion
@@ -43,10 +42,19 @@ namespace IMS.Controllers
         public ActionResult Create()
         {
             var model = new SupplierAddViewModel();
-            var selectList = Enum.GetValues(typeof(Status))
-                       .Cast<Status>()
-                       .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
-            ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
+            try
+            {
+                var selectList = Enum.GetValues(typeof(Status))
+                           .Cast<Status>()
+                           .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
+                ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
+            }
+            catch (Exception ex)
+            {
+                ViewResponse("Failed to load status", ResponseTypes.Danger);
+                _logger.Error(ex.Message, ex);
+            }
+
             return View(model);
         }
 
@@ -70,14 +78,14 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
+
             return RedirectToAction("Index", "Supplier");
         }
 
@@ -99,14 +107,14 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
+
             return RedirectToAction("Index", "Supplier");
         }
 
@@ -130,8 +138,7 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
@@ -154,14 +161,14 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
+
             return RedirectToAction("Index", "Supplier");
         }
         #endregion

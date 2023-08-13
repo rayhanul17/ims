@@ -56,7 +56,7 @@ namespace IMS.Dao
                     break;
                 case "Name":
                     query = sortDir == "asc" ? query.OrderBy(c => c.Name) : query.OrderByDescending(c => c.Name);
-                    break;                
+                    break;
                 case "Description":
                     query = sortDir == "asc" ? query.OrderBy(c => c.Description) : query.OrderByDescending(c => c.Description);
                     break;
@@ -67,7 +67,7 @@ namespace IMS.Dao
             return (result.ToList(), total, totalDisplay);
         }
 
-        
+
     }
 
 }

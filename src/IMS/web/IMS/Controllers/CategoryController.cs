@@ -1,5 +1,4 @@
 ﻿using IMS.BusinessModel.ViewModel;
-using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
 using IMS.Models;
@@ -18,12 +17,12 @@ namespace IMS.Controllers
     public class CategoryController : AllBaseController
     {
         #region Initialization
-        private readonly ICategoryService _categoryService;        
+        private readonly ICategoryService _categoryService;
 
         public CategoryController()
         {
             var session = new MsSqlSessionFactory().OpenSession();
-            _categoryService = new CategoryService(session);            
+            _categoryService = new CategoryService(session);
         }
 
         #endregion
@@ -42,16 +41,25 @@ namespace IMS.Controllers
         public ActionResult Create()
         {
             var model = new CategoryAddViewModel();
-            var selectList = Enum.GetValues(typeof(Status))
-                       .Cast<Status>()
-                       .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
-            ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
-                       
-            _logger.Info("Category Creation Page");
+            try
+            {
+                var selectList = Enum.GetValues(typeof(Status))
+                           .Cast<Status>()
+                           .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
+                ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
+
+            }
+            catch (Exception ex)
+            {
+                ViewResponse("Failed to load status", ResponseTypes.Danger);
+                _logger.Error(ex.Message, ex);
+            }
+
             return View(model);
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Create(CategoryAddViewModel model)
@@ -71,14 +79,14 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Danger);
-                _logger.Error(ex);
+                ViewResponse(ex.Message, ResponseTypes.Danger);               
             }
             catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex);
             }
+
             return RedirectToAction("Index", "Category");
         }
 
@@ -100,18 +108,19 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
+
             return RedirectToAction("Index", "Category");
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(CategoryEditViewModel model)
@@ -132,8 +141,7 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);               
             }
             catch (Exception ex)
             {
@@ -154,7 +162,7 @@ namespace IMS.Controllers
                 var userId = User.Identity.GetUserId<long>();
                 await _categoryService.RemoveByIdAsync(id, userId);
             }
-            catch(CustomException ex)
+            catch (CustomException ex)
             {
                 ViewResponse(ex.Message, ResponseTypes.Warning);
             }
@@ -209,14 +217,10 @@ namespace IMS.Controllers
 
         #region Helper Function
         private void ValidateCategoryAddModel(CategoryAddViewModel model)
-        {            
-            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length<3 || model.Name.Length > 30)
+        {
+            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 30)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
-            }
-            if (model.Description?.Length > 255)
-            {
-                ModelState.AddModelError("Description", "Description Length Invalid");
             }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {
@@ -226,18 +230,14 @@ namespace IMS.Controllers
 
         private void ValidateCategoryEditModel(CategoryEditViewModel model)
         {
-            if(model.Id == 0)
+            if (model.Id == 0)
             {
                 ModelState.AddModelError("Id", "Object id not found");
             }
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 30)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
-            }
-            if (model.Description?.Length > 255)
-            {
-                ModelState.AddModelError("Description", "Description Length Invalid");
-            }
+            }  ModelState.AddModelError("Description", "Description Length Invalid");            
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {
                 ModelState.AddModelError("Status", "Status must active or inactive");

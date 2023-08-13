@@ -1,8 +1,5 @@
 ﻿using IMS.BusinessRules.Enum;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace IMS.BusinessModel.ViewModel
 {

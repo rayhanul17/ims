@@ -1,5 +1,4 @@
 ﻿using IMS.BusinessModel.ViewModel;
-using IMS.BusinessRules;
 using IMS.BusinessRules.Exceptions;
 using IMS.Models;
 using IMS.Services;
@@ -64,8 +63,7 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
@@ -102,14 +100,14 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
+
             return View();
         }
 
@@ -135,8 +133,7 @@ namespace IMS.Controllers
 
                 catch (CustomException ex)
                 {
-                    ViewResponse(ex.Message, ResponseTypes.Warning);
-                    _logger.Error(ex.Message, ex);
+                    ViewResponse(ex.Message, ResponseTypes.Warning);                    
                 }
                 catch (Exception ex)
                 {
@@ -144,6 +141,7 @@ namespace IMS.Controllers
                     _logger.Error(ex.Message, ex);
                 }
             }
+
             return View(model);
         }
 
@@ -151,24 +149,31 @@ namespace IMS.Controllers
         [Authorize(Roles = "SA, Manager")]
         public ActionResult ManageUserRole()
         {
-
-            var userList = _userService.LoadAllActiveUsers();
-            ViewBag.UserList = userList.Select(x => new SelectListItem
+            var model = new UserRolesViewModel();
+            try
             {
-                Text = x.Item2,
-                Value = x.Item1.ToString()
-            }).ToList();
+                var userList = _userService.LoadAllActiveUsers();
+                ViewBag.UserList = userList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
 
-            List<Role> roles = new List<Role>()
-           {
-               new Role {Text="SA",Value="SA",IsChecked=false },
-               new Role {Text="Manager",Value="Manager",IsChecked=false },
-               new Role {Text="Seller",Value="Seller",IsChecked=false },
+                List<Role> roles = new List<Role>()
+                   {
+                       new Role {Text="SA",Value="SA",IsChecked=false },
+                       new Role {Text="Manager",Value="Manager",IsChecked=false },
+                       new Role {Text="Seller",Value="Seller",IsChecked=false },
 
-           };
-            UserRolesViewModel model = new UserRolesViewModel();
-            model.Roles = roles;
-
+                   };
+                model.Roles = roles;
+            } 
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+            }
+            
             return View(model);
 
         }
@@ -193,24 +198,21 @@ namespace IMS.Controllers
                 }
                 catch (CustomException ex)
                 {
-                    ViewResponse(ex.Message, ResponseTypes.Warning);
-                    _logger.Error(ex.Message, ex);
+                    ViewResponse(ex.Message, ResponseTypes.Warning);                    
                 }
                 catch (Exception ex)
                 {
                     ViewResponse("Something went wrong", ResponseTypes.Danger);
                     _logger.Error(ex.Message, ex);
                 }
-
-
             }
             else
             {
                 ViewResponse("Provide Data Properly", ResponseTypes.Warning);
             }
+
             return RedirectToAction("ManageUserRole");
         }
-
         #endregion
 
         #region Ajax call
@@ -220,9 +222,7 @@ namespace IMS.Controllers
             {
                 var model = new DataTablesAjaxRequestModel(Request);
                 var data = _userService.LoadAllUsers(model.SearchText, model.Length, model.Start, model.SortColumn,
-                    model.SortDirection);
-
-                var count = 1;
+                    model.SortDirection);                
 
                 return Json(new
                 {
@@ -232,7 +232,7 @@ namespace IMS.Controllers
                     data = (from record in data.records
                             select new string[]
                             {
-                                count++.ToString(),
+                                record.Rank,
                                 record.Name,
                                 record.Email,
                                 string.Join(", ", UserManager.GetRoles(Convert.ToInt64(record.Id))),

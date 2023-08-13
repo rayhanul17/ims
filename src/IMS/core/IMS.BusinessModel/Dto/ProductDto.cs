@@ -10,6 +10,6 @@
         public string ProfitMargin { get; set; }
         public string InStockQuantity { get; set; }
         public string Category { get; set; }
-        public string Brand { get; set; }        
+        public string Brand { get; set; }
     }
 }

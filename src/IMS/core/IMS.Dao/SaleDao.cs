@@ -43,7 +43,7 @@ namespace IMS.Dao
                     break;
                 case "Sale Date":
                     query = sortDir == "asc" ? query.OrderBy(c => c.SaleDate) : query.OrderByDescending(c => c.SaleDate);
-                    break;                
+                    break;
             }
 
             var result = query.Skip(pageIndex).Take(pageSize);

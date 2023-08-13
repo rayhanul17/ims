@@ -32,7 +32,7 @@
             <thead>
                 <tr>
                     <th>
-                        SL
+                        Rank
                     </th>
                     <th>
                         Name
@@ -84,7 +84,7 @@
                     "datatype": "json",
                 },
                 "columns": [
-                    { "name": "SL" },
+                    { "name": "Rank" },
                     { "name": "Name" },
                     { "name": "Description" },
                     { "name": "Status" },
@@ -113,9 +113,9 @@
                             }
                         }
                     },
-                    { "orderable": false, "targets": [0, 3, 4] }
+                    { "orderable": false, "targets": [3, 4] }
                 ],
-                "order": [1, 'asc']
+                "order": [0, 'asc']
             });
         });
 
@@ -128,16 +128,12 @@
             $("#deleteForm").attr("action", "/category/delete");
             console.log(m);
             m.modal('show');
-            //m[0].style.display = "block";
         });
 
         $("#deleteButton").click(function () {
             $("#deleteForm").submit();
-            //var m = $("#modal-default");
-            //m[0].style.display = "hidden";
 
         });
 
     </script>
 }
-

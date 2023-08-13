@@ -20,8 +20,9 @@ namespace IMS.BusinessModel.Dto
         public decimal DueAmount { get; set; }
     }
 
-    public class ProductListDto    {
-        
+    public class ProductListDto
+    {
+
         public string Name { get; set; }
         public int Quantity { get; set; }
         public decimal TotalPrice { get; set; }

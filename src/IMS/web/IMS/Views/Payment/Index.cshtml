@@ -22,7 +22,7 @@
             <thead>
                 <tr>
                     <th>
-                        SL
+                        Rank
                     </th>
                     <th>
                         Purchase/Sale
@@ -70,7 +70,7 @@
                     "datatype": "json",
                 },
                 "columns": [
-                    { "name": "SL" },
+                    { "name": "Rank" },
                     { "name": "Purchase/Sale" },
                     { "name": "TotalAmount" },
                     { "name": "PaidAmount" },                    
@@ -96,9 +96,9 @@
                             return b;
                         }
                     },
-                    { "orderable": false, "targets": [0, 1, 4] }
+                    { "orderable": false, "targets": [1, 4] }
                 ],
-                "order": [1, 'asc']
+                "order": [0, 'asc']
             });
         });
 

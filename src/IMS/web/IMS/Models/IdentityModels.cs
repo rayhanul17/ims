@@ -1,7 +1,5 @@
-﻿using IMS.BusinessRules;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using System.Configuration;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -27,7 +25,7 @@ namespace IMS.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, RoleLongPk, long,
         UserLoginLongPk, UserRoleLongPk, UserClaimLongPk>
-    {     
+    {
         //"Data Source = DESKTOP-L0GNHBL\SQLEXPRESS;Database=IMS;Trusted_Connection=True;"
         public ApplicationDbContext()
             : base("Data Source = .\\SQLEXPRESS;Database=IMS;Trusted_Connection=True;")

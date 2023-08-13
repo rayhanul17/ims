@@ -7,15 +7,15 @@ namespace IMS.Dao.Mappings
     {
         public PurchaseMapping()
         {
-            Table("Purchase");           
-            Map(x => x.SupplierId);            
+            Table("Purchase");
+            Map(x => x.SupplierId);
             Map(x => x.PurchaseDate);
             Map(x => x.GrandTotalPrice);
             Map(x => x.IsPaid);
             Map(x => x.PaymentId);
 
             HasMany(x => x.PurchaseDetails)
-                .KeyColumn("PurchaseId")                
+                .KeyColumn("PurchaseId")
                 .LazyLoad()
                 .Cascade.All();
         }

@@ -60,7 +60,7 @@ namespace IMS.Dao
                     break;
                 case "Created Date":
                     query = sortDir == "asc" ? query.OrderBy(c => c.CreationDate) : query.OrderByDescending(c => c.CreationDate);
-                    break;                    
+                    break;
             }
 
             var result = query.Skip(pageIndex).Take(pageSize);

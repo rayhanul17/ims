@@ -31,15 +31,14 @@ namespace IMS.Services
         #endregion
     }
 
-
     public class BankService : BaseService, IBankService
     {
         #region Initializtion
-        private readonly IBankDao _bankDao;       
+        private readonly IBankDao _bankDao;
 
         public BankService(ISession session) : base(session)
         {
-            _bankDao = new BankDao(session);             
+            _bankDao = new BankDao(session);
         }
         #endregion
 
@@ -73,7 +72,7 @@ namespace IMS.Services
                     }
                     catch (Exception ex)
                     {
-                        transaction.Rollback();                        
+                        transaction.Rollback();
                         throw;
                     }
                 }
@@ -86,22 +85,21 @@ namespace IMS.Services
             {
                 _serviceLogger.Error(ex.Message, ex);
                 throw;
-            }            
+            }
         }
 
         public async Task UpdateAsync(BankEditViewModel model, long userId)
         {
-
             try
             {
                 var bank = await _bankDao.GetByIdAsync(model.Id);
-                var namecount = _bankDao.GetCount(x => x.Name == model.Name);
+                var nameCount = _bankDao.GetCount(x => x.Name == model.Name);
 
                 if (bank == null)
                 {
                     throw new CustomException("No record found with this id!");
                 }
-                if (namecount > 1)
+                if (nameCount > 1)
                 {
                     throw new CustomException("Already exist Bank with this name");
                 }
@@ -121,7 +119,7 @@ namespace IMS.Services
                     }
                     catch (Exception ex)
                     {
-                        transaction.Rollback();                        
+                        transaction.Rollback();
                         throw;
                     }
                 }
@@ -131,7 +129,7 @@ namespace IMS.Services
                 throw;
             }
             catch (Exception ex)
-            {               
+            {
                 _serviceLogger.Error(ex.Message, ex);
                 throw;
             }
@@ -169,8 +167,11 @@ namespace IMS.Services
                 _serviceLogger.Error(ex);
                 throw;
             }
-        }         
-        
+        }
+
+        #endregion
+
+        #region Single Instance Loading Function
         public async Task<BankEditViewModel> GetByIdAsync(long id)
         {
             try
@@ -195,19 +196,16 @@ namespace IMS.Services
                     BusinessId = bank.BusinessId,
                 };
             }
-            catch(CustomException ex)
+            catch (CustomException ex)
             {
                 throw ex;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _serviceLogger.Error(ex.Message, ex);
                 throw;
             }
         }
-        #endregion
-
-        #region Single Instance Loading
         #endregion
 
         #region List Loading Function
@@ -231,12 +229,12 @@ namespace IMS.Services
                         {
                             Id = bank.Id.ToString(),
                             Name = bank.Name,
-                            Description =bank.Description,
+                            Description = bank.Description,
                             CreateBy = _userService.GetUserName(bank.CreateBy),
-                            CreationDate = bank.CreationDate.ToString(),                           
+                            CreationDate = bank.CreationDate.ToString(),
                             Status = ((Status)bank.Status).ToString(),
                             Rank = bank.Rank.ToString(),
-                            
+
                         });
                 }
 
@@ -248,10 +246,10 @@ namespace IMS.Services
                 throw;
             }
         }
-        
-        public IList<(long,string)> LoadAllBanks()
+
+        public IList<(long, string)> LoadAllBanks()
         {
-            List<(long, string)> banks = new List<(long, string)> ();
+            List<(long, string)> banks = new List<(long, string)>();
             try
             {
                 var allBanks = _bankDao.GetBank(x => x.Status != (int)Status.Delete);
@@ -260,9 +258,9 @@ namespace IMS.Services
                     banks.Add((bank.Id, bank.Name));
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _serviceLogger.Error (ex.Message, ex);
+                _serviceLogger.Error(ex.Message, ex);
                 throw;
             }
 

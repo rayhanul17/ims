@@ -5,7 +5,7 @@ namespace IMS.BusinessModel.ViewModel
     public class UserRolesViewModel
     {
         public long UserId { get; set; }
-        public List<Role> Roles { get; set; }
+        public List<Role> Roles { get; set; } = new List<Role>();
     }
 
     public class Role
@@ -13,5 +13,5 @@ namespace IMS.BusinessModel.ViewModel
         public string Value { get; set; }
         public string Text { get; set; }
         public bool IsChecked { get; set; }
-    }    
+    }
 }

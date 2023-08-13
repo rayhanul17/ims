@@ -1,5 +1,4 @@
-﻿using IMS.BusinessRules;
-using IMS.Models;
+﻿using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
 using Microsoft.AspNet.Identity;

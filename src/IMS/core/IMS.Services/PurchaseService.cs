@@ -151,7 +151,7 @@ namespace IMS.Services
                             PurchaseDate = purchase.PurchaseDate.ToString(),
                             GrandTotalPrice = purchase.GrandTotalPrice.ToString(),
                             IsPaid = purchase.IsPaid.ToString(),
-                            PaymentId= purchase.PaymentId.ToString(),
+                            PaymentId = purchase.PaymentId.ToString(),
                         });
                 }
 

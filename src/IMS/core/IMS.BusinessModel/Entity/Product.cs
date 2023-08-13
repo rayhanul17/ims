@@ -2,7 +2,7 @@
 {
     public class Product : BaseEntity<long>
     {
-        public virtual string Description { get; set; }  
+        public virtual string Description { get; set; }
         public virtual string Image { get; set; }
         public virtual decimal BuyingPrice { get; set; }
         public virtual decimal SellingPrice { get; set; }

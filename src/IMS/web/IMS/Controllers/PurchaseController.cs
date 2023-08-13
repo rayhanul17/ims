@@ -1,5 +1,5 @@
-﻿using IMS.BusinessModel.ViewModel;
-using IMS.BusinessRules;
+﻿using IMS.BusinessModel.Dto;
+using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
 using IMS.Models;
@@ -22,7 +22,7 @@ namespace IMS.Controllers
         private readonly IBrandService _brandService;
         private readonly ISupplierService _supplierService;
         private readonly IPurchaseService _purchaseService;
-        private readonly IPaymentService _paymentService;       
+        private readonly IPaymentService _paymentService;
 
         public PurchaseController()
         {
@@ -32,7 +32,7 @@ namespace IMS.Controllers
             _brandService = new BrandService(session);
             _supplierService = new SupplierService(session);
             _purchaseService = new PurchaseService(session);
-            _paymentService = new PaymentService(session);            
+            _paymentService = new PaymentService(session);
         }
         #endregion
 
@@ -51,27 +51,34 @@ namespace IMS.Controllers
         [Authorize(Roles = "SA, Manager")]
         public ActionResult Create()
         {
-            var categoryList = _categoryService.LoadAllActiveCategories();
-            ViewBag.CategoryList = categoryList.Select(x => new SelectListItem
+            try
             {
-                Text = x.Item2,
-                Value = x.Item1.ToString()
-            }).ToList();
+                var categoryList = _categoryService.LoadAllActiveCategories();
+                ViewBag.CategoryList = categoryList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
 
-            var brandList = _brandService.LoadAllActiveBrands();
-            ViewBag.BrandList = brandList.Select(x => new SelectListItem
+                var brandList = _brandService.LoadAllActiveBrands();
+                ViewBag.BrandList = brandList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
+
+                var supplierList = _supplierService.LoadAllActiveSuppliers();
+                ViewBag.SupplierList = supplierList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
+            }
+            catch (Exception ex)
             {
-                Text = x.Item2,
-                Value = x.Item1.ToString()
-            }).ToList();
-
-            var supplierList = _supplierService.LoadAllActiveSuppliers();
-            ViewBag.SupplierList = supplierList.Select(x => new SelectListItem
-            {
-                Text = x.Item2,
-                Value = x.Item1.ToString()
-            }).ToList();
-
+                _logger.Error(ex.Message, ex);
+                ViewResponse("Failed to load metadata", ResponseTypes.Danger);
+            }
             return View();
         }
 
@@ -100,8 +107,7 @@ namespace IMS.Controllers
                 }
                 catch (CustomException ex)
                 {
-                    ViewResponse(ex.Message, ResponseTypes.Warning);
-                    _logger.Error(ex.Message, ex);
+                    ViewResponse(ex.Message, ResponseTypes.Warning);                    
                 }
                 catch (Exception ex)
                 {
@@ -121,7 +127,16 @@ namespace IMS.Controllers
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Details(long id)
         {
-            var model = await _purchaseService.GetPurchaseDetailsAsync(id);
+            var model = new PurchaseReportDto();
+            try
+            {
+                model = await _purchaseService.GetPurchaseDetailsAsync(id);
+            }
+            catch(Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+            }
             return View(model);
         }
 
@@ -178,8 +193,7 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
@@ -189,7 +203,6 @@ namespace IMS.Controllers
 
             return default(JsonResult);
         }
-
         #endregion
     }
 }

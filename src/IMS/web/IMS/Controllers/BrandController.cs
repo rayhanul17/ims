@@ -1,5 +1,4 @@
 ﻿using IMS.BusinessModel.ViewModel;
-using IMS.BusinessRules;
 using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
 using IMS.Models;
@@ -18,14 +17,13 @@ namespace IMS.Controllers
     public class BrandController : AllBaseController
     {
         #region Initialization
-        private readonly IBrandService _brandService;        
+        private readonly IBrandService _brandService;
 
         public BrandController()
         {
             var session = new MsSqlSessionFactory().OpenSession();
-            _brandService = new BrandService(session);            
+            _brandService = new BrandService(session);
         }
-
         #endregion
 
         #region Index
@@ -42,16 +40,24 @@ namespace IMS.Controllers
         public ActionResult Create()
         {
             var model = new BrandAddViewModel();
-            var selectList = Enum.GetValues(typeof(Status))
-                       .Cast<Status>()
-                       .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
-            ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
-                       
-            
+            try
+            {
+                var selectList = Enum.GetValues(typeof(Status))
+                           .Cast<Status>()
+                           .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
+                ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
+            }
+            catch (Exception ex)
+            {
+                ViewResponse("Failed to load status", ResponseTypes.Danger);
+                _logger.Error(ex.Message, ex);
+            }
+
             return View(model);
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Create(BrandAddViewModel model)
@@ -71,13 +77,12 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
-                _logger.Error(ex);
+                _logger.Error(ex.Message, ex);
             }
             return RedirectToAction("Index", "Brand");
         }
@@ -100,8 +105,7 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-                _logger.Error(ex.Message, ex);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
             }
             catch (Exception ex)
             {
@@ -112,6 +116,7 @@ namespace IMS.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(BrandEditViewModel model)
@@ -132,13 +137,12 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Danger);
-                _logger.Error(ex);
+                ViewResponse(ex.Message, ResponseTypes.Danger);                
             }
             catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
-                _logger.Error(ex);
+                _logger.Error(ex.Message, ex);
             }
 
             return RedirectToAction("Index", "Brand");
@@ -156,13 +160,12 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Danger);
-                _logger.Error(ex);
+                ViewResponse(ex.Message, ResponseTypes.Danger);                
             }
             catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
-                _logger.Error(ex);
+                _logger.Error(ex.Message, ex);
             }
             return RedirectToAction("Index", "Brand");
         }
@@ -210,14 +213,10 @@ namespace IMS.Controllers
 
         #region Helper Function
         private void ValidateBrandAddModel(BrandAddViewModel model)
-        {            
-            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length<3 || model.Name.Length > 30)
+        {
+            if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 30)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
-            }
-            if (model.Description?.Length > 255)
-            {
-                ModelState.AddModelError("Description", "Description Length Invalid");
             }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {
@@ -227,17 +226,13 @@ namespace IMS.Controllers
 
         private void ValidateBrandEditModel(BrandEditViewModel model)
         {
-            if(model.Id == 0)
+            if (model.Id == 0)
             {
                 ModelState.AddModelError("Id", "Object id not found");
             }
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 30)
             {
                 ModelState.AddModelError("Name", "Name Invalid");
-            }
-            if (model.Description?.Length > 255)
-            {
-                ModelState.AddModelError("Description", "Description Length Invalid");
             }
             if (!(model.Status == Status.Active || model.Status == Status.Inactive))
             {

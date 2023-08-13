@@ -10,50 +10,49 @@
     </style>
 }
 <div class="container-fluid">
-    <div class="row">
-        <!-- left column -->
-        <div class="col">
-            @*<partial name="_ResponsePartial" />*@
-            <!-- general form elements -->
+    <div class="row d-flex justify-content-center">
+        <div class="col-8">
             <div class="card card-primary">
                 <div class="card-header">
                     <h3 class="card-title">@ViewData["Title"]</h3>
                 </div>
-                <!-- /.card-header -->
-                <!-- form start -->
                 @using (Html.BeginForm("Edit", "Supplier", FormMethod.Post, htmlAttributes: new { @id = "myform", @class = "nav-link cmxform" }))
                 {
                     @Html.AntiForgeryToken()
                     <div class="card-body">
                         @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "color:red;" })
-                        <div class="form-group">
-                            <label> @Html.LabelFor(m => m.Name)</label>
-                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control", @placeholder = "Name", @type = "text" })
-                            @Html.ValidationMessageFor(model => model.Name, "", new { style = "color:red" })
+                        <div class="row">
+                            <div class="col-8 form-group">
+                                <label> @Html.LabelFor(m => m.Name)</label>
+                                @Html.TextBoxFor(m => m.Name, new { @class = "form-control", @placeholder = "Name", @type = "text" })
+                                @Html.ValidationMessageFor(model => model.Name, "", new { style = "color:red" })
+                            </div>
+                            <div class="col-4 form-group">
+                                <label> @Html.LabelFor(m => m.Status)</label>
+                                @Html.DropDownListFor(m => m.Status, (SelectList)ViewBag.StatusList, new { @class = "form-control" })
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label> @Html.LabelFor(m => m.Address)</label>
-                            @Html.TextBoxFor(m => m.Address, new { @class = "form-control", @placeholder = "Address", @type = "text" })
-                            <span>@Html.ValidationMessageFor(model => model.Address)</span>
+                        <div class="row">
+                            <div class="col-8 form-group">
+                                <label> @Html.LabelFor(m => m.Email)</label>
+                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = "Email Address", @type = "text" })
+                                <span>@Html.ValidationMessageFor(model => model.Email)</span>
+                            </div>
+                            <div class="col-4 form-group">
+                                <label> @Html.LabelFor(m => m.ContactNumber)</label>
+                                @Html.TextBoxFor(m => m.ContactNumber, new { @class = "form-control", @placeholder = "Contact Number", @type = "text", @pattern = "^(?:\\+?88)?01[13-9]\\d{8}$" })
+                                <span>@Html.ValidationMessageFor(model => model.ContactNumber)</span>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label> @Html.LabelFor(m => m.ContactNumber)</label>
-                            @Html.TextBoxFor(m => m.ContactNumber, new { @class = "form-control", @placeholder = "Contact Number", @type = "text", @pattern = "^(?:\\+?88)?01[13-9]\\d{8}$" })
-                            <span>@Html.ValidationMessageFor(model => model.ContactNumber)</span>
-                        </div>
-                        <div class="form-group">
-                            <label> @Html.LabelFor(m => m.Email)</label>
-                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = "Email Address", @type = "text" })
-                            <span>@Html.ValidationMessageFor(model => model.Email)</span>
-                        </div>
-                        <div class="form-group">
-                            <label> @Html.LabelFor(m => m.Status)</label>
-                            @Html.DropDownListFor(m => m.Status, (SelectList)ViewBag.StatusList, new { @class = "form-control" })
+                        <div class="row">
+                            <div class="col-12 form-group">
+                                <label> @Html.LabelFor(m => m.Address)</label>
+                                @Html.TextAreaFor(m => m.Address, new { @class = "form-control", @placeholder = "Address", @type = "text" })
+                                <span>@Html.ValidationMessageFor(model => model.Address)</span>
+                            </div>
                         </div>
                         @Html.HiddenFor(model => model.Id)
                     </div>
-                    <!-- /.card-body -->
-
                     <div class="card-footer">
                         <button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
                     </div>
@@ -61,8 +60,7 @@
             </div>
         </div>
     </div>
-    <!-- /.row -->
-</div><!-- /.container-fluid -->
+</div>
 
 @section Scripts
 {
@@ -71,7 +69,6 @@
     <script src="~/Assets/js/validation/additional-methods.min.js"></script>
     <script>
         $(document).ready(function () {
-            console.log("hello");
             $("#myform").validate({
 
                 // In 'rules' user have to specify all the
@@ -118,4 +115,3 @@
         });
     </script>
 }
-

@@ -47,8 +47,7 @@ namespace IMS.Controllers
                            .Cast<Status>()
                            .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
                 ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
-
-                _logger.Info("Bank Creation Page");
+                
                 return View(model);
             }
             catch (Exception ex)
@@ -90,7 +89,7 @@ namespace IMS.Controllers
             return RedirectToAction("Index", "Bank");
         }
 
-        [HttpGet]
+        [HttpGet]        
         [Authorize(Roles = "SA, Manager")]
         public async Task<ActionResult> Edit(long id)
         {
@@ -137,7 +136,6 @@ namespace IMS.Controllers
             catch (CustomException ex)
             {
                 ViewResponse(ex.Message, ResponseTypes.Danger);
-                _logger.Error(ex);
             }
             catch (Exception ex)
             {
@@ -165,7 +163,7 @@ namespace IMS.Controllers
             catch (Exception ex)
             {
                 _logger.Error(ex.Message, ex);
-
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
             }
             return RedirectToAction("Index", "Bank");
         }
@@ -175,14 +173,11 @@ namespace IMS.Controllers
         [AllowAnonymous]
         public JsonResult GetBanks()
         {
-
             try
             {
                 var model = new DataTablesAjaxRequestModel(Request);
                 var data = _bankService.LoadAllBanks(model.SearchText, model.Length, model.Start, model.SortColumn,
                     model.SortDirection);
-
-                var count = 1;
 
                 return Json(new
                 {
@@ -206,6 +201,7 @@ namespace IMS.Controllers
             catch (Exception ex)
             {
                 _logger.Error(ex.Message, ex);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
             }
 
             return default(JsonResult);

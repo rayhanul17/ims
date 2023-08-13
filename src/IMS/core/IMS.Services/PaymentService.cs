@@ -38,12 +38,12 @@ namespace IMS.Services
 
         public async Task AddAsync(long operationId, OperationType operationType, decimal Amount)
         {
-            using(var transaction = _session.BeginTransaction())
+            using (var transaction = _session.BeginTransaction())
             {
                 try
                 {
                     var payment = new Payment
-                    {                        
+                    {
                         OperationId = operationId,
                         OperationType = (int)operationType,
                         TotalAmount = Amount,
@@ -82,7 +82,7 @@ namespace IMS.Services
                     }
                     else
                     {
-                        if(payment.TotalAmount == model.TotalAmount
+                        if (payment.TotalAmount == model.TotalAmount
                             && model.Amount > 0
                             && model.Amount <= payment.TotalAmount - payment.PaidAmount)
                         {
@@ -91,9 +91,9 @@ namespace IMS.Services
                             {
                                 throw new CustomException("Bank not found");
                             }
-                           
+
                             var paymentDetails = new PaymentDetails
-                            {                                
+                            {
                                 TransactionId = model.TransactionId,
                                 Amount = model.Amount,
                                 PaymentDate = _timeService.Now,
@@ -122,7 +122,7 @@ namespace IMS.Services
                         {
                             throw new CustomException("Modified payment information");
                         }
-                        
+
                     }
 
                 }
@@ -148,7 +148,7 @@ namespace IMS.Services
         public async Task<PaymentViewModel> GetPaymentByIdAsync(long paymentId)
         {
             var payment = await Task.Run(() => _paymentDao.Get(x => x.Id == paymentId).FirstOrDefault());
-            if(payment == null)
+            if (payment == null)
             {
                 throw new CustomException("Invalid payment id");
             }
@@ -169,7 +169,7 @@ namespace IMS.Services
 
             var paymentDetails = new List<PaymentInformation>();
 
-            foreach( var item in payment.PaymentDetails)
+            foreach (var item in payment.PaymentDetails)
             {
                 Bank bank = null;
                 if (item.Bank != null)
@@ -207,7 +207,7 @@ namespace IMS.Services
             try
             {
                 Expression<Func<Payment, bool>> filter = null;
-                
+
                 if (!string.IsNullOrWhiteSpace(searchBy))
                 {
                     filter = x => x.Id == Convert.ToInt64(searchBy) || x.OperationId == Convert.ToInt64(searchBy);
@@ -221,7 +221,7 @@ namespace IMS.Services
                     payments.Add(
                         new PaymentReportDto
                         {
-                            Id = payment.Id.ToString(),                      
+                            Id = payment.Id.ToString(),
                             OperationType = ((OperationType)payment.OperationType).ToString(),
                             TotalAmount = payment.TotalAmount.ToString(),
                             PaidAmount = payment.PaidAmount.ToString(),

@@ -7,15 +7,15 @@ namespace IMS.Dao.Mappings
     {
         public SaleMapping()
         {
-            Table("Sale");            
-            Map(x => x.CustomerId);            
+            Table("Sale");
+            Map(x => x.CustomerId);
             Map(x => x.SaleDate);
             Map(x => x.GrandTotalPrice);
             Map(x => x.IsPaid);
             Map(x => x.PaymentId);
 
             HasMany(x => x.SaleDetails)
-                .KeyColumn("SaleId")                
+                .KeyColumn("SaleId")
                 .LazyLoad()
                 .Cascade.All();
         }

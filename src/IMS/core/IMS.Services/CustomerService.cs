@@ -8,7 +8,6 @@ using NHibernate;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace IMS.Services
@@ -20,7 +19,7 @@ namespace IMS.Services
         Task UpdateAsync(CustomerEditViewModel model, long userId);
         Task RemoveByIdAsync(long id, long userId);
         Task<CustomerEditViewModel> GetByIdAsync(long id);
-        string GetNameById(long id);        
+        string GetNameById(long id);
         IList<CustomerDto> LoadAllCustomers();
         IList<(long, string)> LoadAllActiveCustomers();
         (int total, int totalDisplay, IList<CustomerDto> records) LoadAllCustomers(string searchBy, int length, int start, string sortBy, string sortDir);
@@ -46,7 +45,7 @@ namespace IMS.Services
                 try
                 {
                     var count = _customerDao.GetCount(x => x.Email == model.Email && x.ContactNumber == model.ContactNumber);
-                    if(count > 0)
+                    if (count > 0)
                     {
                         throw new CustomException("Found another customer with this name");
                     }
@@ -97,7 +96,7 @@ namespace IMS.Services
                     customer.Name = model.Name;
                     customer.Address = model.Address;
                     customer.ContactNumber = model.ContactNumber;
-                    customer.Email = model.Email;                    
+                    customer.Email = model.Email;
                     customer.Status = (int)model.Status;
                     customer.ModifyBy = userId;
                     customer.ModificationDate = _timeService.Now;
@@ -116,7 +115,7 @@ namespace IMS.Services
                 }
             }
         }
-        
+
         public async Task RemoveByIdAsync(long id, long userId)
         {
             using (var transaction = _session.BeginTransaction())
@@ -151,7 +150,7 @@ namespace IMS.Services
                 var customer = await _customerDao.GetByIdAsync(id);
                 if (customer == null)
                 {
-                    throw new CustomException("No object with this id"); 
+                    throw new CustomException("No object with this id");
                 }
                 return new CustomerEditViewModel
                 {
@@ -170,12 +169,12 @@ namespace IMS.Services
                     BusinessId = customer.BusinessId,
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _serviceLogger.Error(ex.Message, ex);
                 throw;
             }
-            
+
         }
 
         public string GetNameById(long id)
@@ -214,9 +213,9 @@ namespace IMS.Services
                             ContactNumber = customer.ContactNumber,
                             Email = customer.Email,
                             CreateBy = _userService.GetUserName(customer.CreateBy),
-                            CreationDate = customer.CreationDate.ToString(),                            
+                            CreationDate = customer.CreationDate.ToString(),
                             Status = ((Status)customer.Status).ToString(),
-                            Rank = customer.Rank.ToString()                            
+                            Rank = customer.Rank.ToString()
                         });
                 }
 
@@ -227,13 +226,13 @@ namespace IMS.Services
                 _serviceLogger.Error(ex.Message, ex);
                 throw;
             }
-        }        
+        }
 
         public IList<CustomerDto> LoadAllCustomers()
         {
             throw new NotImplementedException();
         }
-        
+
 
         public IList<(long, string)> LoadAllActiveCustomers()
         {
