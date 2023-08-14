@@ -35,11 +35,14 @@ namespace IMS.Dao
             }
 
             switch (sortBy)
-            {
-                case "Total Amount":
+            {               
+                case "Rank":
+                    query = sortDir == "asc" ? query.OrderBy(c => c.Rank) : query.OrderByDescending(c => c.Rank);
+                    break;
+                case "TotalAmount":
                     query = sortDir == "asc" ? query.OrderBy(c => c.GrandTotalPrice) : query.OrderByDescending(c => c.GrandTotalPrice);
                     break;
-                case "Sale Date":
+                case "SaleDate":
                     query = sortDir == "asc" ? query.OrderBy(c => c.SaleDate) : query.OrderByDescending(c => c.SaleDate);
                     break;
             }

@@ -83,9 +83,9 @@
                     { "name": "Rank" },
                     { "name": "VoucherId" },
                     { "name": "Supplier" },
-                    { "name": "Purchase By" },
-                    { "name": "Purchase Date" },
-                    { "name": "Total Amount" }                    
+                    { "name": "PurchaseBy" },
+                    { "name": "PurchaseDate" },
+                    { "name": "TotalAmount" }                    
                 ],
                 "columnDefs": [
                     {
@@ -108,7 +108,7 @@
                             return b;
                         }
                     },
-                    { "orderable": false, "targets": [2, 3] }
+                    { "orderable": false, "targets": [1, 2, 3] }
                 ],
                 "order": [0, 'asc']
             });

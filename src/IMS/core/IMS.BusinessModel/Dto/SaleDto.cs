@@ -10,5 +10,6 @@
         public string IsPaid { get; set; }
         public string PaymentId { get; set; }
         public string Rank { get; set; }
+        public string VoucherId { get; set; }
     }
 }

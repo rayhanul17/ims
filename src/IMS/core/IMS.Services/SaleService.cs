@@ -15,7 +15,7 @@ namespace IMS.Services
     public interface ISaleService
     {
         #region Opperational Function
-        Task<long> AddAsync(IList<SaleDetailsViewModel> model, decimal grandTotal, long CustomerId, long userId);
+        Task AddAsync(IList<SaleDetailsViewModel> model, decimal grandTotal, long CustomerId, long userId);
         #endregion
 
         #region Single Instance Loading Function
@@ -33,76 +33,113 @@ namespace IMS.Services
         private readonly ISaleDao _saleDao;
         private readonly IProductDao _productDao;
         private readonly ICustomerDao _customerDao;
-        private readonly ICustomerService _customerService;
+        private readonly IPaymentDao _paymentDao;
 
         public SaleService(ISession session) : base(session)
         {
             _saleDao = new SaleDao(session);
             _productDao = new ProductDao(session);
             _customerDao = new CustomerDao(session);
-            _customerService = new CustomerService(session);
+            _paymentDao = new PaymentDao(session);
         }
         #endregion
 
         #region Operational Function
-        public async Task<long> AddAsync(IList<SaleDetailsViewModel> model, decimal grandTotal, long CustomerId, long userId)
+        public async Task AddAsync(IList<SaleDetailsViewModel> model, decimal grandTotal, long CustomerId, long userId)
         {
-            using (var transaction = _session.BeginTransaction())
+            try
             {
-                try
+                List<SaleDetails> saleDetails = new List<SaleDetails>();
+                List<Product> productList = new List<Product>();
+
+                foreach (var item in model)
                 {
-                    List<SaleDetails> saleDetails = new List<SaleDetails>();
-                    foreach (var item in model)
+                    var product = await _productDao.GetByIdAsync(item.ProductId);
+                    if (product == null)
                     {
-                        var product = await _productDao.GetByIdAsync(item.ProductId);
-                        if (product == null)
-                        {
-                            throw new CustomException("No Product found with id");
-                        }
-                        else if (product.InStockQuantity < item.Quantity)
-                        {
-                            throw new CustomException("Selling quantity more than instock quantity");
-                        }
-                        product.InStockQuantity -= item.Quantity;
-
-                        await _productDao.EditAsync(product);
-
-                        saleDetails.Add(
-                            new SaleDetails
-                            {
-                                ProductId = item.ProductId,
-                                Quantity = item.Quantity,
-                                TotalPrice = product.SellingPrice * item.Quantity,
-                            }
-                        );
+                        throw new CustomException("No Product found with id");
                     }
-
-                    var sale = new Sale()
+                    else if (product.InStockQuantity < item.Quantity)
                     {
-                        CustomerId = CustomerId,
-                        CreateBy = userId,
-                        SaleDate = _timeService.Now,
-                        GrandTotalPrice = grandTotal,
-                        SaleDetails = saleDetails,
-                        CreationDate = _timeService.Now,
-                        Rank = await _saleDao.GetMaxRank() + 1,
-                        Status = (int)Status.Active
-                    };
+                        throw new CustomException("Selling quantity more than stock quantity");
+                    }
+                    product.InStockQuantity -= item.Quantity;
 
-                    var id = await _saleDao.AddAsync(sale);
-                    transaction.Commit();
-                    return id;
+                    productList.Add(product);
+
+                    saleDetails.Add(
+                        new SaleDetails
+                        {
+                            ProductId = item.ProductId,
+                            Quantity = item.Quantity,
+                            TotalPrice = product.SellingPrice * item.Quantity,
+                            Status = (int)Status.Active,
+                            Rank = await _saleDao.GetMaxRank(typeof(SaleDetails).Name) + 1,
+                            CreateBy = userId,
+                            CreationDate = _timeService.Now,
+                        }
+                    );
                 }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    _serviceLogger.Error(ex.Message, ex);
 
-                    throw;
+                var sale = new Sale()
+                {
+                    CustomerId = CustomerId,
+                    CreateBy = userId,
+                    SaleDate = _timeService.Now,
+                    GrandTotalPrice = grandTotal,
+                    SaleDetails = saleDetails,
+                    CreationDate = _timeService.Now,
+                    Rank = await _saleDao.GetMaxRank() + 1,
+                    Status = (int)Status.Active
+                };
+                sale.VoucherId = "#S" + sale.Rank + DateTime.UtcNow.ToString("ddMMyyyy");
+
+                var payment = new Payment
+                {
+                    VoucherId = sale.VoucherId,
+                    OperationType = (int)OperationType.Sale,
+                    TotalAmount = sale.GrandTotalPrice,
+                    PaidAmount = 0,
+                    CreateBy = userId,
+                    CreationDate = _timeService.Now,
+                    Rank = await _paymentDao.GetMaxRank() + 1,
+                    Status = (int)Status.Active
+                };
+                using (var transaction = _session.BeginTransaction())
+                {
+                    try
+                    {
+                        foreach (var product in productList)
+                        {
+                            await _productDao.EditAsync(product);
+                        }
+                        var saleId = await _saleDao.AddAsync(sale);
+                        
+                        payment.SaleId = saleId;
+                        
+                        var paymentId = await _paymentDao.AddAsync(payment);
+
+                        await _paymentDao.SetPaymentIdToSaleTable(paymentId, saleId);
+
+                        transaction.Commit();                       
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw ex;
+                    }
                 }
             }
-        }
-
+            catch (CustomException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                _serviceLogger.Error(ex.Message, ex);
+                throw ex;
+            }
+        } 
         #endregion
 
         #region Single Instance Loading Function
@@ -149,6 +186,11 @@ namespace IMS.Services
             {
                 Expression<Func<Sale, bool>> filter = null;
 
+                if (!string.IsNullOrWhiteSpace(searchBy))
+                {
+                    searchBy = searchBy.Trim();
+                    filter = x => x.VoucherId.Contains(searchBy);
+                }
                 var result = _saleDao.LoadAllSales(filter, null, start, length, sortBy, sortDir);
 
                 List<SaleDto> categories = new List<SaleDto>();
@@ -158,13 +200,14 @@ namespace IMS.Services
                         new SaleDto
                         {
                             Id = sale.Id.ToString(),
-                            CustomerName = await _customerService.GetNameByIdAsync(sale.CustomerId),
+                            CustomerName = (await _customerDao.GetByIdAsync(sale.CustomerId)).Name,
                             CreateBy = await _userService.GetUserNameAsync(sale.CreateBy),
                             SaleDate = sale.SaleDate.ToString(),
                             GrandTotalPrice = sale.GrandTotalPrice.ToString(),
                             IsPaid = sale.IsPaid.ToString(),
                             PaymentId = sale.PaymentId.ToString(),
                             Rank = sale.Rank.ToString(),
+                            VoucherId = sale.VoucherId
                         });
                 }
 

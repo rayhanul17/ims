@@ -118,6 +118,18 @@ namespace IMS.Services
                         payment.PaidAmount += model.Amount;
                         payment.PaymentDetails.Add(paymentDetails);
 
+                        var tableName = Convert.ToString((OperationType)payment.OperationType);
+                        long operationId;
+
+                        if (payment.OperationType == (int)OperationType.Purchase)
+                        {
+                            operationId = Convert.ToInt64(payment.PurchaseId);
+                        }
+                        else
+                        {
+                            operationId = Convert.ToInt64(payment.SaleId);
+                        }
+
                         using (var transaction = _session.BeginTransaction())
                         {
                             try
@@ -126,8 +138,7 @@ namespace IMS.Services
 
                                 if (payment.PaidAmount == payment.TotalAmount)
                                 {
-                                    var tableName = Convert.ToString((OperationType)payment.OperationType);
-                                    var query = $"UPDATE {tableName} SET IsPaid = 1 WHERE Id = {payment.PurchaseId};";
+                                    var query = $"UPDATE {tableName} SET IsPaid = 1 WHERE Id = {operationId};";
                                     await _paymentDao.ExecuteUpdateDeleteQuery(query);
                                 }
 

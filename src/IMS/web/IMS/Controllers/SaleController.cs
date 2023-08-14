@@ -97,8 +97,7 @@ namespace IMS.Controllers
                         return RedirectToAction("Create");
                     }
                     var userId = User.Identity.GetUserId<long>();
-                    var id = await _saleService.AddAsync(model, grandTotal, customerId, userId);
-                    //await _paymentService.AddAsync(id, OperationType.Sale, grandTotal, userId);
+                    await _saleService.AddAsync(model, grandTotal, customerId, userId);                    
 
                     ViewResponse("Successfully Sale completed!", ResponseTypes.Success);
 
@@ -174,6 +173,7 @@ namespace IMS.Controllers
                             select new string[]
                             {
                                 record.Rank,
+                                record.VoucherId,
                                 record.CustomerName,
                                 record.CreateBy,
                                 record.SaleDate,
