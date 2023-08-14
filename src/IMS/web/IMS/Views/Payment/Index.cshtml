@@ -25,7 +25,7 @@
                         Rank
                     </th>
                     <th>
-                        Purchase/Sale
+                        Voucher Id
                     </th>
                     <th>
                         Total Amount
@@ -64,6 +64,7 @@
             $('#table').DataTable({
                 "processing": true,
                 "serverSide": true,
+                "searching": true,
                 "ajax": {
                     "url": "/payment/getpayments",
                     "type": "POST",
@@ -71,7 +72,7 @@
                 },
                 "columns": [
                     { "name": "Rank" },
-                    { "name": "Purchase/Sale" },
+                    { "name": "VoucherId" },
                     { "name": "TotalAmount" },
                     { "name": "PaidAmount" },                    
                     { "name": "DueAmount" }                    

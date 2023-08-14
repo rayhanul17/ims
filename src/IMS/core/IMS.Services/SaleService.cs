@@ -85,7 +85,7 @@ namespace IMS.Services
                         GrandTotalPrice = grandTotal,
                         SaleDetails = saleDetails,
                         CreationDate = _timeService.Now,
-                        Rank = await _saleDao.GetMaxRank(typeof(Sale).Name) + 1,
+                        Rank = await _saleDao.GetMaxRank() + 1,
                         Status = (int)Status.Active
                     };
 

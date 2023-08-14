@@ -10,9 +10,11 @@ namespace IMS.Dao
 {
     public interface IPaymentDao : IBaseDao<Payment, long>
     {
-        //IList<Payment> GetPayments(Expression<Func<Payment, bool>> filter);
+        #region Opperational Function
         Task SetPaymentIdToPurchaseTable(long paymentId, long purchaseId);
         Task SetPaymentIdToSaleTable(long paymentId, long saleId);
+        #endregion
+
         #region List Loading Function
         (IList<Payment> data, int total, int totalDisplay) LoadAllPayments(Expression<Func<Payment, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
         #endregion
@@ -30,7 +32,7 @@ namespace IMS.Dao
         #region Opperational Function
         public async Task SetPaymentIdToPurchaseTable(long paymentId, long purchaseId)
         {
-            var query = $"UPDATE Purchase SET PaymentId = {paymentId} WHERE Id = {purchaseId};";           
+            var query = $"UPDATE Purchase SET PaymentId = {paymentId} WHERE Id = {purchaseId};";
 
             await ExecuteUpdateDeleteQuery(query);
         }
@@ -46,7 +48,7 @@ namespace IMS.Dao
         #region List Loading Function
         public (IList<Payment> data, int total, int totalDisplay) LoadAllPayments(Expression<Func<Payment, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
         {
-            IQueryable<Payment> query = _session.Query<Payment>();            
+            IQueryable<Payment> query = _session.Query<Payment>();
 
             var total = query.Count();
             var totalDisplay = query.Count();
@@ -74,18 +76,6 @@ namespace IMS.Dao
 
             return (result.ToList(), total, totalDisplay);
         }
-
-        public IList<Payment> GetPayments(Expression<Func<Payment, bool>> filter)
-        {
-            IQueryable<Payment> query = _session.Query<Payment>();
-
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            return query.ToList();
-        }
         #endregion
-    } 
+    }
 }

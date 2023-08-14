@@ -72,7 +72,7 @@ namespace IMS.Services
                     Status = (int)model.Status,
                     ProfitMargin = model.ProfitMargin,
                     DiscountPrice = model.DiscountPrice,
-                    Rank = await _productDao.GetMaxRank(typeof(Product).Name) + 1,
+                    Rank = await _productDao.GetMaxRank() + 1,
                     CreateBy = userId,
                     CreationDate = _timeService.Now,
                     Image = model.Image,

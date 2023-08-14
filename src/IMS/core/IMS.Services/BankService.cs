@@ -58,7 +58,7 @@ namespace IMS.Services
                     Name = model.Name,
                     Description = model.Description,
                     Status = (int)model.Status,
-                    Rank = await _bankDao.GetMaxRank(typeof(Bank).Name) + 1,
+                    Rank = await _bankDao.GetMaxRank() + 1,
                     CreateBy = userId,
                     CreationDate = _timeService.Now,
                 };

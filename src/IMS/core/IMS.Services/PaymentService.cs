@@ -13,20 +13,26 @@ using System.Threading.Tasks;
 
 namespace IMS.Services
 {
-    #region Interface
     public interface IPaymentService
     {
+        #region Opperational Function
         Task AddAsync(long operationId, OperationType operationType, decimal Amount, long userId, string voucherId);
         Task MakePaymentAsync(PaymentViewModel model, long userId);
-        (int total, int totalDisplay, IList<PaymentReportDto> records) LoadAllPayments(string searchBy, int length, int start, string sortBy, string sortDir);
+        #endregion
+
+        #region Single Instance Loading Function
         Task<PaymentViewModel> GetPaymentByIdAsync(long paymentId);
         Task<PaymentReportDto> GetPaymentDetailsAsync(long paymentId);
+        #endregion
+
+        #region List Loading Function
+        (int total, int totalDisplay, IList<PaymentReportDto> records) LoadAllPayments(string searchBy, int length, int start, string sortBy, string sortDir);
+        #endregion
     }
-    #endregion
 
     public class PaymentService : BaseService, IPaymentService
     {
-        #region Initializtion
+        #region Initialization
         private readonly IPaymentDao _paymentDao;
         private readonly IBankDao _bankDao;
 
@@ -52,7 +58,7 @@ namespace IMS.Services
                         PaidAmount = 0,
                         CreateBy = userId,
                         CreationDate = _timeService.Now,
-                        Rank = await _paymentDao.GetMaxRank(typeof(Payment).Name) + 1,
+                        Rank = await _paymentDao.GetMaxRank() + 1,
                         Status = (int)Status.Active
                     };
 
@@ -77,127 +83,164 @@ namespace IMS.Services
 
         public async Task MakePaymentAsync(PaymentViewModel model, long userId)
         {
-            using (var transaction = _session.BeginTransaction())
+
+            try
             {
-                try
+                var payment = await _paymentDao.GetByIdAsync(model.PaymentId);
+                if (payment == null)
                 {
-                    var payment = await _paymentDao.GetByIdAsync(model.PaymentId);
-                    if (payment == null)
+                    throw new CustomException("Wrong payment id found");
+                }
+                else
+                {
+                    if (payment.TotalAmount == model.TotalAmount && model.Amount > 0 && model.Amount <= payment.TotalAmount - payment.PaidAmount)
                     {
-                        throw new CustomException("Wrong payment id found");
+                        var bank = await _bankDao.GetByIdAsync(model.BankId);
+                        if (model.PaymentMethod == PaymentMethod.Bank && bank == null)
+                        {
+                            throw new CustomException("Bank not found");
+                        }
+
+                        var paymentDetails = new PaymentDetails
+                        {
+                            TransactionId = model.TransactionId,
+                            Amount = model.Amount,
+                            PaymentDate = _timeService.Now,
+                            PaymentMethod = (int)model.PaymentMethod,
+                            Payment = payment,
+                            Bank = bank,
+                            CreateBy = userId,
+                            CreationDate = _timeService.Now,
+                            Status = (int)Status.Active,
+                            Rank = await _paymentDao.GetMaxRank(typeof(PaymentDetails).Name) + 1
+                        };
+                        
+                        payment.PaidAmount += model.Amount;
+                        payment.PaymentDetails.Add(paymentDetails);
+
+                        using (var transaction = _session.BeginTransaction())
+                        {
+                            try
+                            {
+                                await _paymentDao.EditAsync(payment);
+
+                                if (payment.PaidAmount == payment.TotalAmount)
+                                {
+                                    var tableName = Convert.ToString((OperationType)payment.OperationType);
+                                    var query = $"UPDATE {tableName} SET IsPaid = 1 WHERE Id = {payment.PurchaseId};";
+                                    await _paymentDao.ExecuteUpdateDeleteQuery(query);
+                                }
+
+                                transaction.Commit();
+                            }
+                            catch (Exception ex)
+                            {
+                                transaction.Rollback();
+                                throw ex;
+                            }
+                        }
                     }
                     else
                     {
-                        if (payment.TotalAmount == model.TotalAmount
-                            && model.Amount > 0
-                            && model.Amount <= payment.TotalAmount - payment.PaidAmount)
-                        {
-                            var bank = await _bankDao.GetByIdAsync(model.BankId);
-                            if (model.PaymentMethod == PaymentMethod.Bank && bank == null)
-                            {
-                                throw new CustomException("Bank not found");
-                            }
-
-                            var paymentDetails = new PaymentDetails
-                            {
-                                TransactionId = model.TransactionId,
-                                Amount = model.Amount,
-                                PaymentDate = _timeService.Now,
-                                PaymentMethod = (int)model.PaymentMethod,
-                                Payment = payment,
-                                Bank = bank,
-                                CreateBy = userId,
-                                CreationDate = _timeService.Now,
-                                Status = (int)Status.Active,
-                                Rank = await _paymentDao.GetMaxRank()
-                            };
-                            payment.PaidAmount += model.Amount;
-
-                            payment.PaymentDetails.Add(paymentDetails);
-                            await _paymentDao.EditAsync(payment);
-
-                            if (payment.PaidAmount == payment.TotalAmount)
-                            {
-                                var tableName = Convert.ToString((OperationType)payment.OperationType);
-                                var query = $"UPDATE {tableName} SET IsPaid = {true} WHERE Id = {payment.PurchaseId};";
-                                //query = query.Replace("TableName", tableName);
-
-                                await _paymentDao.ExecuteUpdateDeleteQuery(query);
-                            }
-
-                            transaction.Commit();
-                        }
-                        else
-                        {
-                            throw new CustomException("Modified payment information");
-                        }
-
+                        throw new CustomException("Modified payment information");
                     }
-
-                }
-                catch (Exception ex)
-                {
-                    _serviceLogger.Error(ex.Message, ex);
-                    transaction.Rollback();
-                    throw;
                 }
             }
+            catch (CustomException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                _serviceLogger.Error(ex.Message, ex);
+                throw;
+            }            
         }
         #endregion
 
-        #region Operational Function
+        #region Single Instance Loading Function
         public async Task<PaymentViewModel> GetPaymentByIdAsync(long paymentId)
         {
-            var payment = await Task.Run(() => _paymentDao.Get(x => x.Id == paymentId).FirstOrDefault());
-            if (payment == null)
+            try
             {
-                throw new CustomException("Invalid payment id");
-            }
-            var model = new PaymentViewModel
-            {
-                PaymentId = payment.Id,
-                TotalAmount = payment.TotalAmount,
-                DueAmount = payment.TotalAmount - payment.PaidAmount,
-                Amount = payment.TotalAmount - payment.PaidAmount
-            };
+                var payment = await Task.Run(() => _paymentDao.Get(x => x.Id == paymentId).FirstOrDefault());
+                if (payment == null)
+                {
+                    throw new CustomException("Invalid payment id");
+                }
+                var model = new PaymentViewModel
+                {
+                    PaymentId = payment.Id,
+                    TotalAmount = payment.TotalAmount,
+                    DueAmount = payment.TotalAmount - payment.PaidAmount,
+                    Amount = payment.TotalAmount - payment.PaidAmount
+                };
 
-            return model;
+                return model;
+            }
+            catch (CustomException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                _serviceLogger.Error($"{ex.Message}", ex);
+                throw ex;
+            }
         }
+
         public async Task<PaymentReportDto> GetPaymentDetailsAsync(long paymentId)
         {
-            var payment = await Task.Run(() => _paymentDao.Get(
-                x => x.Id == paymentId).FirstOrDefault());
-
-            var paymentDetails = new List<PaymentInformation>();
-
-            foreach (var item in payment.PaymentDetails)
+            try
             {
-                Bank bank = null;
-                if (item.Bank != null)
+                var payment = await Task.Run(() => _paymentDao.Get(
+                    x => x.Id == paymentId).FirstOrDefault());
+                
+                if (payment == null)
                 {
-                    bank = await _bankDao.GetByIdAsync(item.Bank.Id);
+                    throw new CustomException("Invalid payment id");
                 }
-                paymentDetails.Add(
-                    new PaymentInformation
+
+                var paymentDetails = new List<PaymentInformation>();
+
+                foreach (var item in payment.PaymentDetails)
+                {
+                    Bank bank = null;
+                    if (item.Bank != null)
                     {
-                        PaymentMethod = ((PaymentMethod)item.PaymentMethod).ToString(),
-                        Amount = item.Amount.ToString(),
-                        TransactionId = item.TransactionId,
-                        PaymentDate = item.PaymentDate.ToString(),
-                        Bank = bank?.Name
-                    });
+                        bank = await _bankDao.GetByIdAsync(item.Bank.Id);
+                    }
+                    paymentDetails.Add(
+                        new PaymentInformation
+                        {
+                            PaymentMethod = ((PaymentMethod)item.PaymentMethod).ToString(),
+                            Amount = item.Amount.ToString(),
+                            TransactionId = item.TransactionId,
+                            PaymentDate = item.PaymentDate.ToString(),
+                            Bank = bank?.Name
+                        });
+                }
+
+                var paymentDto = new PaymentReportDto
+                {
+                    OperationType = ((OperationType)payment.OperationType).ToString(),
+                    PaidAmount = payment.PaidAmount.ToString(),
+                    TotalAmount = payment.TotalAmount.ToString(),
+                    DueAmount = (payment.TotalAmount - payment.PaidAmount).ToString(),
+                    PaymentDetails = paymentDetails
+                };
+
+                return paymentDto;
             }
-
-            var paymentDto = new PaymentReportDto
+            catch (CustomException ex)
             {
-                OperationType = ((OperationType)payment.OperationType).ToString(),
-                PaidAmount = payment.PaidAmount.ToString(),
-                TotalAmount = payment.TotalAmount.ToString(),
-                DueAmount = (payment.TotalAmount - payment.PaidAmount).ToString(),
-                PaymentDetails = paymentDetails
-            };
-
-            return paymentDto;
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                _serviceLogger.Error(ex.Message, ex);
+                throw ex;
+            }
         }
 
         #endregion
@@ -206,12 +249,13 @@ namespace IMS.Services
         public (int total, int totalDisplay, IList<PaymentReportDto> records) LoadAllPayments(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
         {
             try
-            {
+            {                
                 Expression<Func<Payment, bool>> filter = null;
 
                 if (!string.IsNullOrWhiteSpace(searchBy))
                 {
-                    filter = x => x.Id == Convert.ToInt64(searchBy);
+                    searchBy = searchBy.Trim();
+                    filter = x => x.VoucherId.Contains(searchBy);
                 }
 
                 var result = _paymentDao.LoadAllPayments(filter, null, start, length, sortBy, sortDir);
@@ -228,6 +272,7 @@ namespace IMS.Services
                             PaidAmount = payment.PaidAmount.ToString(),
                             DueAmount = (payment.TotalAmount - payment.PaidAmount).ToString(),
                             Rank = payment.Rank.ToString(),
+                            VoucherId = payment.VoucherId
                         });
                 }
 

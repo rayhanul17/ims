@@ -20,6 +20,7 @@ namespace IMS.Dao
         Task EditAsync(TEntity entityToUpdate);
         Task<TEntity> GetByIdAsync(TKey id);
         Task<long> GetMaxRank();
+        Task<long> GetMaxRank(string tableName);
         IList<TEntity> Get(Expression<Func<TEntity, bool>> filter);
         IList<TEntity> LoadAll();
         int GetCount(Expression<Func<TEntity, bool>> filter = null);
@@ -168,10 +169,20 @@ namespace IMS.Dao
         {
             var sql = $"SELECT MAX([Rank]) Rank FROM {typeof(TEntity).Name}";
             var query = _session.CreateSQLQuery(sql);
-            var resut = Convert.ToInt64(await query.UniqueResultAsync());
+            var result = Convert.ToInt64(await query.UniqueResultAsync());
 
-            return resut;
+            return result;
         }
+
+        public async Task<long> GetMaxRank(string tableName)
+        {
+            var sql = $"SELECT MAX([Rank]) Rank FROM {tableName}";
+            var query = _session.CreateSQLQuery(sql);
+            var result = Convert.ToInt64(await query.UniqueResultAsync());
+
+            return result;
+        }
+
 
         public virtual IList<TEntity> Get(Expression<Func<TEntity, bool>> filter,
             int pageIndex = 1, int pageSize = 10)

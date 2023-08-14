@@ -1,6 +1,5 @@
 ﻿using IMS.BusinessModel.Dto;
 using IMS.BusinessModel.ViewModel;
-using IMS.BusinessRules.Enum;
 using IMS.BusinessRules.Exceptions;
 using IMS.Models;
 using IMS.Services;
@@ -99,13 +98,13 @@ namespace IMS.Controllers
                         return RedirectToAction("Create");
                     }
                     var userId = User.Identity.GetUserId<long>();
-                    await _purchaseService.AddAsync(model, grandTotal, supplierId, userId);                    
+                    await _purchaseService.AddAsync(model, grandTotal, supplierId, userId);
 
                     ViewResponse("Successfully purchase completed!", ResponseTypes.Success);
                 }
                 catch (CustomException ex)
                 {
-                    ViewResponse(ex.Message, ResponseTypes.Warning);                    
+                    ViewResponse(ex.Message, ResponseTypes.Warning);
                 }
                 catch (Exception ex)
                 {
@@ -130,7 +129,11 @@ namespace IMS.Controllers
             {
                 model = await _purchaseService.GetPurchaseDetailsAsync(id);
             }
-            catch(Exception ex)
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+            }
+            catch (Exception ex)
             {
                 _logger.Error(ex.Message, ex);
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
@@ -150,6 +153,11 @@ namespace IMS.Controllers
                 var products = _productService.LoadActiveProducts(categoryId, brandId).Select(x => new { value = x.Id, text = x.Name, qty = x.InStockQuantity, price = x.SellingPrice });
                 return Json(products);
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+                return default(JsonResult);
+            }
             catch (Exception ex)
             {
                 _logger.Error(ex.Message, ex);
@@ -165,7 +173,7 @@ namespace IMS.Controllers
             {
                 var model = new DataTablesAjaxRequestModel(Request);
                 var data = await _purchaseService.LoadAllPurchases(model.SearchText, model.Length, model.Start, model.SortColumn,
-                    model.SortDirection);               
+                    model.SortDirection);
 
                 return Json(new
                 {
@@ -176,6 +184,7 @@ namespace IMS.Controllers
                             select new string[]
                             {
                                 record.Rank,
+                                record.VoucherId,
                                 record.SupplierName,
                                 record.CreateBy,
                                 record.PurchaseDate.ToString(),
@@ -189,7 +198,7 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, ResponseTypes.Warning);                
+                ViewResponse(ex.Message, ResponseTypes.Warning);
             }
             catch (Exception ex)
             {

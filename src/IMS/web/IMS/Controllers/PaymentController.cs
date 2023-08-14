@@ -142,7 +142,7 @@ namespace IMS.Controllers
                             select new string[]
                             {
                                 record.Rank,
-                                record.OperationType,
+                                record.VoucherId,
                                 record.TotalAmount,
                                 record.PaidAmount,
                                 record.DueAmount,

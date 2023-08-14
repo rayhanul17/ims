@@ -24,7 +24,7 @@ namespace IMS.Dao.Mappings
     public class PaymentDetailsMapping : BaseMapping<PaymentDetails, long>
     {
         public PaymentDetailsMapping()
-        {          
+        {
             Map(x => x.PaymentMethod);
             Map(x => x.TransactionId);
             Map(x => x.Amount).Not.Nullable();

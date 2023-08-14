@@ -57,7 +57,7 @@ namespace IMS.Services
                         CreateBy = creatorId,
                         CreationDate = _timeService.Now,
                         Status = (int)Status.Active,
-                        Rank = await _userDao.GetMaxRank(typeof(ApplicationUser).Name) + 1,
+                        Rank = await _userDao.GetMaxRank() + 1,
                     };
 
                     await _userDao.AddAsync(user);
