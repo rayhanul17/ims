@@ -44,7 +44,8 @@ namespace IMS.Services
                 {
                     var payment = new Payment
                     {
-                        OperationId = operationId,
+                        PurchaseId = operationId,
+                        SaleId = operationId,
                         OperationType = (int)operationType,
                         TotalAmount = Amount,
                         PaidAmount = 0,
@@ -57,7 +58,7 @@ namespace IMS.Services
                     var paymentId = await _paymentDao.AddAsync(payment);
 
                     var tableName = Convert.ToString((OperationType)payment.OperationType);
-                    var query = $"UPDATE TableName SET PaymentId = {paymentId} WHERE Id = {payment.OperationId};";
+                    var query = $"UPDATE TableName SET PaymentId = {paymentId} WHERE Id = {payment.PurchaseId};";
                     query = query.Replace("TableName", tableName);
 
                     await _paymentDao.ExecuteUpdateDeleteQuery(query);
@@ -114,7 +115,7 @@ namespace IMS.Services
                             if (payment.PaidAmount == payment.TotalAmount)
                             {
                                 var tableName = Convert.ToString((OperationType)payment.OperationType);
-                                var query = $"UPDATE TableName SET IsPaid = 1 WHERE Id = {payment.OperationId};";
+                                var query = $"UPDATE TableName SET IsPaid = 1 WHERE Id = {payment.PurchaseId};";
                                 query = query.Replace("TableName", tableName);
 
                                 await _paymentDao.ExecuteUpdateDeleteQuery(query);
@@ -206,7 +207,7 @@ namespace IMS.Services
 
                 if (!string.IsNullOrWhiteSpace(searchBy))
                 {
-                    filter = x => x.Id == Convert.ToInt64(searchBy) || x.OperationId == Convert.ToInt64(searchBy);
+                    filter = x => x.Id == Convert.ToInt64(searchBy);
                 }
 
                 var result = _paymentDao.LoadAllPayments(filter, null, start, length, sortBy, sortDir);

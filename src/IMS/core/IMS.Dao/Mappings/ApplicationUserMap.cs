@@ -6,7 +6,6 @@ namespace IMS.Dao.Mappings
     {
         public ApplicationUserMap() : base()
         {
-            Table("ApplicationUser");
             Map(x => x.Name).Not.Nullable();
             Map(x => x.AspNetUsersId);
             Map(x => x.Email);

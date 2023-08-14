@@ -6,7 +6,6 @@ namespace IMS.Dao.Mappings
     {
         public ProductMapping() : base()
         {
-            Table("Product");
             Map(x => x.Name).Not.Nullable();
             Map(x => x.Description).Length(4001);
             Map(x => x.BuyingPrice);
@@ -15,6 +14,7 @@ namespace IMS.Dao.Mappings
             Map(x => x.ProfitMargin).Not.Nullable();
             Map(x => x.Image);
             Map(x => x.InStockQuantity);
+
             References(i => i.Category)
                 .Column("CategoryId").Not.Nullable();
             References(i => i.Brand)

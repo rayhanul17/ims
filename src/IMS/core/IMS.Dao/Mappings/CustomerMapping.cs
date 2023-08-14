@@ -6,7 +6,6 @@ namespace IMS.Dao.Mappings
     {
         public CustomerMapping()
         {
-            Table("Customer");
             Map(x => x.Name).Not.Nullable();
             Map(x => x.Address);
             Map(x => x.ContactNumber);

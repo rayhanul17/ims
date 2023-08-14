@@ -8,6 +8,7 @@ namespace IMS.Dao.Mappings
     {
         public BaseMapping()
         {
+            Table(typeof(TEntity).Name);
             Id(x => x.Id).Not.Nullable();
             Map(x => x.Status).Not.Nullable();
             Map(x => x.Rank).Nullable();

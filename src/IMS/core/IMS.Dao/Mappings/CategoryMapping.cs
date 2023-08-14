@@ -6,7 +6,6 @@ namespace IMS.Dao.Mappings
     {
         public CategoryMapping() : base()
         {
-            Table("Category");
             Map(x => x.Name).Not.Nullable();
             Map(x => x.Description).Length(4001);
 

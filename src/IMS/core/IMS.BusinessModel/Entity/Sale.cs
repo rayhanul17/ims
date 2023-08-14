@@ -5,6 +5,7 @@ namespace IMS.BusinessModel.Entity
 {
     public class Sale : BaseEntity<long>
     {
+        public virtual string VoucherId { get; set; }
         public virtual long CustomerId { get; set; }
         public virtual DateTime SaleDate { get; set; }
         public virtual decimal GrandTotalPrice { get; set; }

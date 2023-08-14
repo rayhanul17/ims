@@ -69,7 +69,8 @@ namespace IMS.Controllers
                 ValidateBankAddModel(model);
                 if (ModelState.IsValid)
                 {
-                    await _bankService.AddAsync(model, User.Identity.GetUserId<long>());
+                    var userId = User.Identity.GetUserId<long>();
+                    await _bankService.AddAsync(model, userId);
                     ViewResponse("Successfully added a new Bank.", ResponseTypes.Success);
                 }
                 else
@@ -104,6 +105,10 @@ namespace IMS.Controllers
 
                 var model = await _bankService.GetByIdAsync(id);
                 return View(model);
+            }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
             }
             catch (Exception ex)
             {

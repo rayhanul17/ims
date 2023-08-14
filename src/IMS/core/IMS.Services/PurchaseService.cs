@@ -40,7 +40,7 @@ namespace IMS.Services
 
         #region Operational Function
         public async Task<long> AddAsync(IList<PurchaseDetailsViewModel> model, decimal grandTotal, long supplierId, long userId)
-        {
+        {            
             using (var transaction = _session.BeginTransaction())
             {
                 try

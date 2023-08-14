@@ -8,7 +8,8 @@ namespace IMS.Dao.Mappings
         public PaymentMapping()
         {
             Table("Payment");
-            Map(x => x.OperationId);
+            Map(x => x.PurchaseId);
+            Map(x => x.SaleId);
             Map(x => x.OperationType);
             Map(x => x.TotalAmount).Not.Nullable();
             Map(x => x.PaidAmount);
@@ -19,12 +20,10 @@ namespace IMS.Dao.Mappings
         }
     }
 
-    public class PaymentDetailsMapping : ClassMap<PaymentDetails>
+    public class PaymentDetailsMapping : BaseMapping<PaymentDetails, long>
     {
         public PaymentDetailsMapping()
-        {
-            Table("PaymentDetails");
-            Id(x => x.Id).Not.Nullable();
+        {          
             Map(x => x.PaymentMethod);
             Map(x => x.TransactionId);
             Map(x => x.Amount).Not.Nullable();

@@ -1,5 +1,4 @@
-﻿using FluentNHibernate.Mapping;
-using IMS.BusinessModel.Entity;
+﻿using IMS.BusinessModel.Entity;
 
 namespace IMS.Dao.Mappings
 {
@@ -7,7 +6,7 @@ namespace IMS.Dao.Mappings
     {
         public PurchaseMapping()
         {
-            Table("Purchase");
+            Map(x => x.VoucherId);
             Map(x => x.SupplierId);
             Map(x => x.PurchaseDate);
             Map(x => x.GrandTotalPrice);
@@ -21,12 +20,11 @@ namespace IMS.Dao.Mappings
         }
     }
 
-    public class PurchaseDetailsMapping : ClassMap<PurchaseDetails>
+    public class PurchaseDetailsMapping : BaseMapping<PurchaseDetails, long>
     {
         public PurchaseDetailsMapping()
         {
-            Table("PurchaseDetails");
-            Id(x => x.Id);
+            Table(typeof(PurchaseDetails).Name);
             Map(x => x.ProductId);
             Map(x => x.Quantity);
             Map(x => x.TotalPrice);
