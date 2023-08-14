@@ -10,6 +10,7 @@ namespace IMS.Dao.Mappings
             Table("Payment");
             Map(x => x.PurchaseId);
             Map(x => x.SaleId);
+            Map(x => x.VoucherId);
             Map(x => x.OperationType);
             Map(x => x.TotalAmount).Not.Nullable();
             Map(x => x.PaidAmount);

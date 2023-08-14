@@ -16,8 +16,8 @@ namespace IMS.Services
     #region Interface
     public interface IPaymentService
     {
-        Task AddAsync(long operationId, OperationType operationType, decimal Amount, long userId);
-        Task MakePaymentAsync(PaymentViewModel model);
+        Task AddAsync(long operationId, OperationType operationType, decimal Amount, long userId, string voucherId);
+        Task MakePaymentAsync(PaymentViewModel model, long userId);
         (int total, int totalDisplay, IList<PaymentReportDto> records) LoadAllPayments(string searchBy, int length, int start, string sortBy, string sortDir);
         Task<PaymentViewModel> GetPaymentByIdAsync(long paymentId);
         Task<PaymentReportDto> GetPaymentDetailsAsync(long paymentId);
@@ -36,7 +36,7 @@ namespace IMS.Services
             _bankDao = new BankDao(session);
         }
 
-        public async Task AddAsync(long operationId, OperationType operationType, decimal Amount, long userId)
+        public async Task AddAsync(long operationId, OperationType operationType, decimal Amount, long userId, string voucherId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -46,6 +46,7 @@ namespace IMS.Services
                     {
                         PurchaseId = operationId,
                         SaleId = operationId,
+                        VoucherId = voucherId,
                         OperationType = (int)operationType,
                         TotalAmount = Amount,
                         PaidAmount = 0,
@@ -58,7 +59,7 @@ namespace IMS.Services
                     var paymentId = await _paymentDao.AddAsync(payment);
 
                     var tableName = Convert.ToString((OperationType)payment.OperationType);
-                    var query = $"UPDATE TableName SET PaymentId = {paymentId} WHERE Id = {payment.PurchaseId};";
+                    var query = $"UPDATE {tableName} SET PaymentId = {paymentId} WHERE Id = {payment.PurchaseId};";
                     query = query.Replace("TableName", tableName);
 
                     await _paymentDao.ExecuteUpdateDeleteQuery(query);
@@ -74,7 +75,7 @@ namespace IMS.Services
             }
         }
 
-        public async Task MakePaymentAsync(PaymentViewModel model)
+        public async Task MakePaymentAsync(PaymentViewModel model, long userId)
         {
             using (var transaction = _session.BeginTransaction())
             {
@@ -105,7 +106,10 @@ namespace IMS.Services
                                 PaymentMethod = (int)model.PaymentMethod,
                                 Payment = payment,
                                 Bank = bank,
-
+                                CreateBy = userId,
+                                CreationDate = _timeService.Now,
+                                Status = (int)Status.Active,
+                                Rank = await _paymentDao.GetMaxRank()
                             };
                             payment.PaidAmount += model.Amount;
 
@@ -115,8 +119,8 @@ namespace IMS.Services
                             if (payment.PaidAmount == payment.TotalAmount)
                             {
                                 var tableName = Convert.ToString((OperationType)payment.OperationType);
-                                var query = $"UPDATE TableName SET IsPaid = 1 WHERE Id = {payment.PurchaseId};";
-                                query = query.Replace("TableName", tableName);
+                                var query = $"UPDATE {tableName} SET IsPaid = {true} WHERE Id = {payment.PurchaseId};";
+                                //query = query.Replace("TableName", tableName);
 
                                 await _paymentDao.ExecuteUpdateDeleteQuery(query);
                             }

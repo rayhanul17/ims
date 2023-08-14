@@ -4,12 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace IMS.Dao
 {
     public interface IPaymentDao : IBaseDao<Payment, long>
     {
         //IList<Payment> GetPayments(Expression<Func<Payment, bool>> filter);
+        Task SetPaymentIdToPurchaseTable(long paymentId, long purchaseId);
+        Task SetPaymentIdToSaleTable(long paymentId, long saleId);
         #region List Loading Function
         (IList<Payment> data, int total, int totalDisplay) LoadAllPayments(Expression<Func<Payment, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
         #endregion
@@ -21,6 +24,22 @@ namespace IMS.Dao
         public PaymentDao(ISession session) : base(session)
         {
 
+        }
+        #endregion
+
+        #region Opperational Function
+        public async Task SetPaymentIdToPurchaseTable(long paymentId, long purchaseId)
+        {
+            var query = $"UPDATE Purchase SET PaymentId = {paymentId} WHERE Id = {purchaseId};";           
+
+            await ExecuteUpdateDeleteQuery(query);
+        }
+
+        public async Task SetPaymentIdToSaleTable(long paymentId, long saleId)
+        {
+            var query = $"UPDATE Sale SET PaymentId = {paymentId} WHERE Id = {saleId};";
+
+            await ExecuteUpdateDeleteQuery(query);
         }
         #endregion
 

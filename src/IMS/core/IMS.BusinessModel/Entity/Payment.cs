@@ -6,6 +6,7 @@ namespace IMS.BusinessModel.Entity
     {
         public virtual long? PurchaseId { get; set; }
         public virtual long? SaleId { get; set; }
+        public virtual string VoucherId { get; set; }
         public virtual int OperationType { get; set; }
         public virtual decimal TotalAmount { get; set; }
         public virtual decimal PaidAmount { get; set; }

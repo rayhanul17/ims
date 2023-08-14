@@ -5,6 +5,7 @@ using IMS.BusinessRules.Exceptions;
 using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -79,7 +80,8 @@ namespace IMS.Controllers
             {
                 try
                 {
-                    await _paymentService.MakePaymentAsync(model);
+                    var userId = User.Identity.GetUserId<long>();
+                    await _paymentService.MakePaymentAsync(model, userId);
                     ViewResponse("Successfully Payment completed!", ResponseTypes.Success);
 
                 }

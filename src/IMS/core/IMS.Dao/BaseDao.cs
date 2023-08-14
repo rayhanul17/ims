@@ -19,7 +19,7 @@ namespace IMS.Dao
         Task RemoveAsync(TEntity entityToDelete);
         Task EditAsync(TEntity entityToUpdate);
         Task<TEntity> GetByIdAsync(TKey id);
-        Task<long> GetMaxRank(string tableName);
+        Task<long> GetMaxRank();
         IList<TEntity> Get(Expression<Func<TEntity, bool>> filter);
         IList<TEntity> LoadAll();
         int GetCount(Expression<Func<TEntity, bool>> filter = null);
@@ -164,9 +164,9 @@ namespace IMS.Dao
             return result;
         }
 
-        public async Task<long> GetMaxRank(string tableName)
+        public async Task<long> GetMaxRank()
         {
-            var sql = $"SELECT MAX([Rank]) Rank FROM {tableName}";
+            var sql = $"SELECT MAX([Rank]) Rank FROM {typeof(TEntity).Name}";
             var query = _session.CreateSQLQuery(sql);
             var resut = Convert.ToInt64(await query.UniqueResultAsync());
 

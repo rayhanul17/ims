@@ -99,11 +99,9 @@ namespace IMS.Controllers
                         return RedirectToAction("Create");
                     }
                     var userId = User.Identity.GetUserId<long>();
-                    var id = await _purchaseService.AddAsync(model, grandTotal, supplierId, userId);
-                    await _paymentService.AddAsync(id, OperationType.Purchase, grandTotal, userId);
+                    await _purchaseService.AddAsync(model, grandTotal, supplierId, userId);                    
 
                     ViewResponse("Successfully purchase completed!", ResponseTypes.Success);
-
                 }
                 catch (CustomException ex)
                 {

@@ -98,7 +98,7 @@ namespace IMS.Controllers
                     }
                     var userId = User.Identity.GetUserId<long>();
                     var id = await _saleService.AddAsync(model, grandTotal, customerId, userId);
-                    await _paymentService.AddAsync(id, OperationType.Sale, grandTotal, userId);
+                    //await _paymentService.AddAsync(id, OperationType.Sale, grandTotal, userId);
 
                     ViewResponse("Successfully Sale completed!", ResponseTypes.Success);
 
