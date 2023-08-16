@@ -306,9 +306,6 @@ namespace IMS.Dao
 
             switch (sortBy)
             {
-                case "Name":
-                    query = sortDir == "asc" ? query.OrderBy(c => c.Name) : query.OrderByDescending(c => c.Name);
-                    break;
                 case "Creation Date":
                     query = sortDir == "asc" ? query.OrderBy(c => c.CreationDate) : query.OrderByDescending(c => c.CreationDate);
                     break;
