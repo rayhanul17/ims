@@ -1,4 +1,5 @@
 ﻿using IMS.BusinessModel.Dto;
+using IMS.BusinessRules.Enum;
 using NHibernate;
 using NHibernate.Transform;
 using System;
@@ -33,8 +34,8 @@ namespace IMS.Dao
         public async Task<ActiveInactiveDto> GetCountAsync(string tableName)
         {
             var sql = $"SELECT " +
-                $"SUM(CASE WHEN [Status] = 0 THEN 1 else 0 END) Inactive, " +
-                $"SUM(CASE WHEN [Status] = 1 THEN 1 else 0 END) Active " +
+                $"SUM(CASE WHEN [Status] = {(int)Status.Inactive} THEN 1 else 0 END) Inactive, " +
+                $"SUM(CASE WHEN [Status] = {(int)Status.Active} THEN 1 else 0 END) Active " +
                 $"FROM {tableName}";
 
             var query = _session.CreateSQLQuery(sql);

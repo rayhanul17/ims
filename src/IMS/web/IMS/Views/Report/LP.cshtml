@@ -51,70 +51,72 @@
                     <hr />
                     <div class="row">
                         <div class="col-md-6">
+                            <div class="text-center">
+                                <h3 class="rounded-pill bg-secondary">Purchase</h3>
+                            </div>
                             <table>
                                 <tr><td>Total Purchase</td><td>:</td><td>@Model.PurchasePaymentDetails.Count</td></tr>
                                 <tr><td>Total Amount(TK)</td><td>:</td><td id="totalPurchaseAmount">@Model.PurchasePaymentDetails.TotalAmount</td></tr>
                                 <tr><td>Total Paid(TK)</td><td>:</td><td>@Model.PurchasePaymentDetails.PaidAmount</td></tr>
                                 <tr><td>Total Due(TK)</td><td>:</td><td>@Model.PurchasePaymentDetails.DueAmount</td></tr>
                             </table>
-                            <div class="card-body">
-                                <table id="Ptable" class="table table-bordered table-hover" style="width:100%">
-                                    <thead>
+                            <table id="Ptable" class="table table-bordered table-hover" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Sl</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Total Price</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0, j = 1; i < Model.PurchaseProductList.Count; i++, j++)
+                                    {
                                         <tr>
-                                            <th>Sl</th>
-                                            <th>Product</th>
-                                            <th>Quantity</th>
-                                            <th>Total Price</th>
-                                            <th>Date</th>
+                                            <td>@j</td>
+                                            <td>@Model.PurchaseProductList[i].Name</td>
+                                            <td>@Model.PurchaseProductList[i].Quantity</td>
+                                            <td>@Model.PurchaseProductList[i].TotalPrice</td>
+                                            <td>@Model.PurchaseProductList[i].Date</td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @for (int i = 0, j = 1; i < Model.PurchaseProductList.Count; i++, j++)
-                                        {
-                                            <tr>
-                                                <td>@j</td>
-                                                <td>@Model.PurchaseProductList[i].Name</td>
-                                                <td>@Model.PurchaseProductList[i].Quantity</td>
-                                                <td>@Model.PurchaseProductList[i].TotalPrice</td>
-                                                <td>@Model.PurchaseProductList[i].Date</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                                    }
+                                </tbody>
+                            </table>
                         </div>
                         <div class="col-md-6">
+                            <div class="text-center">
+                                <h3 class="rounded-pill bg-secondary">Sale</h3>
+                            </div>
                             <table>
                                 <tr><td>Total Sale</td><td>:</td><td>@Model.SalePaymentDetails.Count</td></tr>
                                 <tr><td>Total Amount(TK)</td><td>:</td><td id="totalSaleAmount">@Model.SalePaymentDetails.TotalAmount</td></tr>
                                 <tr><td>Total Paid(TK)</td><td>:</td><td>@Model.SalePaymentDetails.PaidAmount</td></tr>
                                 <tr><td>Total Due(TK)</td><td>:</td><td>@Model.SalePaymentDetails.DueAmount</td></tr>
                             </table>
-                            <div class="card-body">
-                                <table id="Stable" class="table table-bordered table-hover" style="width:100%">
-                                    <thead>
+                            <table id="Stable" class="table table-bordered table-hover" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Sl</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Total Price</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0, j = 1; i < Model.SaleProductList.Count; i++, j++)
+                                    {
                                         <tr>
-                                            <th>Sl</th>
-                                            <th>Product</th>
-                                            <th>Quantity</th>
-                                            <th>Total Price</th>
-                                            <th>Date</th>
+                                            <td>@j</td>
+                                            <td>@Model.SaleProductList[i].Name</td>
+                                            <td>@Model.SaleProductList[i].Quantity</td>
+                                            <td>@Model.SaleProductList[i].TotalPrice</td>
+                                            <td>@Model.SaleProductList[i].Date</td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @for (int i = 0, j = 1; i < Model.SaleProductList.Count; i++, j++)
-                                        {
-                                            <tr>
-                                                <td>@j</td>
-                                                <td>@Model.SaleProductList[i].Name</td>
-                                                <td>@Model.SaleProductList[i].Quantity</td>
-                                                <td>@Model.SaleProductList[i].TotalPrice</td>
-                                                <td>@Model.SaleProductList[i].Date</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                                    }
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

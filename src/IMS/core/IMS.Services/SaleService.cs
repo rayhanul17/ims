@@ -170,8 +170,7 @@ namespace IMS.Services
                 SaleDate = sale.SaleDate,
                 GrandTotalPrice = Math.Round(sale.GrandTotalPrice, 2),
                 Products = saleProducts,
-                PaymentId = sale.PaymentId,
-                SaleId = sale.Id
+                VoucherId = sale.VoucherId,
             };
 
             return saleReport;

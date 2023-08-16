@@ -16,33 +16,6 @@
                 }
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fab fa-product-hunt"></i>
-                        <p>
-                            Product
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-
-                    <ul class="nav nav-treeview">
-                        @if (Roles.IsUserInRole("Manager") || Roles.IsUserInRole("SA"))
-                        {
-                            <li class="nav-item">
-                                <a href="/product/create" class="nav-link">
-                                    <i class="fas fa-plus nav-icon"></i>
-                                    <p>New Product</p>
-                                </a>
-                            </li>
-                        }
-                        <li class="nav-item">
-                            <a href="/product/index" class="nav-link">
-                                <i class="fas fa-list-alt nav-icon"></i>
-                                <p>All Products</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-bars"></i>
                         <p>
                             Category
@@ -89,6 +62,108 @@
                             <a href="/brand/index" class="nav-link">
                                 <i class="fas fa-list-alt nav-icon"></i>
                                 <p>All Brands</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fab fa-product-hunt"></i>
+                        <p>
+                            Product
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+
+                    <ul class="nav nav-treeview">
+                        @if (Roles.IsUserInRole("Manager") || Roles.IsUserInRole("SA"))
+                        {
+                            <li class="nav-item">
+                                <a href="/product/create" class="nav-link">
+                                    <i class="fas fa-plus nav-icon"></i>
+                                    <p>New Product</p>
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a href="/product/index" class="nav-link">
+                                <i class="fas fa-list-alt nav-icon"></i>
+                                <p>All Products</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                @if (Roles.IsUserInRole("Manager") || Roles.IsUserInRole("SA"))
+                {
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-user-circle"></i>
+                            <p>
+                                Customer
+                                <i class="fas fa-angle-left right"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="/customer/create" class="nav-link">
+                                    <i class="fas fa-plus nav-icon"></i>
+                                    <p>Add Customer</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/customer/index" class="nav-link">
+                                    <i class="fas fa-list nav-icon"></i>
+                                    <p>All Customers</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-user"></i>
+                            <p>
+                                Supplier
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="/supplier/create" class="nav-link">
+                                    <i class="fas fa-plus nav-icon"></i>
+                                    <p>Add Supplier</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/supplier/index" class="nav-link">
+                                    <i class="fas fa-list nav-icon"></i>
+                                    <p>All Suppliers</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-building"></i>
+                        <p>
+                            Bank
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        @if (Roles.IsUserInRole("Manager") || Roles.IsUserInRole("SA"))
+                        {
+                            <li class="nav-item">
+                                <a href="/bank/create" class="nav-link">
+                                    <i class="fas fa-plus nav-icon"></i>
+                                    <p>Add Bank</p>
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a href="/bank/index" class="nav-link">
+                                <i class="fas fa-list nav-icon"></i>
+                                <p>All Banks</p>
                             </a>
                         </li>
                     </ul>
@@ -145,89 +220,20 @@
                         </ul>
                     </li>
                 }
-                @if (Roles.IsUserInRole("Manager") || Roles.IsUserInRole("SA"))
-                {
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-user-circle"></i>
-                            <p>
-                                Customer
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="/customer/create" class="nav-link">
-                                    <i class="fas fa-plus nav-icon"></i>
-                                    <p>Add Customer</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/customer/index" class="nav-link">
-                                    <i class="fas fa-list nav-icon"></i>
-                                    <p>All Customers</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-user"></i>
-                            <p>
-                                Supplier
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="/supplier/create" class="nav-link">
-                                    <i class="fas fa-plus nav-icon"></i>
-                                    <p>Add Supplier</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/supplier/index" class="nav-link">
-                                    <i class="fas fa-list nav-icon"></i>
-                                    <p>All Suppliers</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                }
                 <li class="nav-item">
                     <a href="/payment/index" class="nav-link">
                         <i class="nav-icon fas fa-dollar-sign"></i>
                         <p>Payment</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-building"></i>
-                        <p>
-                            Bank
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        @if (Roles.IsUserInRole("Manager") || Roles.IsUserInRole("SA"))
-                        {
-                            <li class="nav-item">
-                                <a href="/bank/create" class="nav-link">
-                                    <i class="fas fa-plus nav-icon"></i>
-                                    <p>Add Bank</p>
-                                </a>
-                            </li>
-                        }
-                        <li class="nav-item">
-                            <a href="/bank/index" class="nav-link">
-                                <i class="fas fa-list nav-icon"></i>
-                                <p>All Banks</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
                 @if (Roles.IsUserInRole("Manager") || Roles.IsUserInRole("SA"))
                 {
+                    <li class="nav-item">
+                        <a href="/report/lp" class="nav-link">
+                            <i class="nav-icon fas fa-chart-pie"></i>
+                            <p>Loss or Profit Report</p>
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a href="#" class="nav-link">
                             <i class="nav-icon fas fa-user-shield"></i>
@@ -260,12 +266,7 @@
                             }
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a href="/report/lp" class="nav-link">
-                            <i class="nav-icon fas fa-chart-pie"></i>
-                            <p>Loss or Profit Report</p>
-                        </a>
-                    </li>
+
                 }
             </ul>
         </nav>

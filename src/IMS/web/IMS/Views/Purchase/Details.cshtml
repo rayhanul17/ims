@@ -4,15 +4,19 @@
 
 }
 
-<div class="row" id="section-to-print">
-    <div class="col-12">
+<div class="row">
+    <div class="col-12 ">
+        <button class="btn btn-outline-primary float-right" id="printBtn">Print This Page</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12" id="printDiv">
         <div class="card text-center">
             <div class="card-header">
-                <h3>Purchase Details</h3><hr />                
+                <h3>Purchase Details</h3><hr />
                 <h3>Supplier: @Model.SupplierName</h3>
                 <h5>Date Time: @Model.PurchaseDate</h5>
-                <h5>Purchase Id: @Model.PurchaseId</h5>
-                <h5>Payment Id: @Model.PaymentId</h5>  
+                <h5>Voucher Number: @Model.VoucherId</h5>
             </div>
             <!-- /.card-header -->
             <div class="card-body table-responsive p-0">
@@ -26,10 +30,10 @@
                             <th>Quantity</th>
                             <th>Total (Tk)</th>
                         </tr>
-                    </thead>                     
+                    </thead>
                     <tbody>
                         @{int count = 1;
-                            foreach(var i in @Model.Products)
+                            foreach (var i in @Model.Products)
                             {
                                 <tr>
                                     <td>@count</td>
@@ -37,7 +41,7 @@
                                     <td>@i.Description</td>
                                     <td>@i.UnitPrice</td>
                                     <td>@i.Quantity</td>
-                                    <td>@i.TotalPrice</td>                                    
+                                    <td>@i.TotalPrice</td>
                                 </tr>
                                 count++;
                             }
@@ -61,3 +65,20 @@
     </div>
 </div>
 
+@section Scripts{
+    <script src="~/Assets/js/printThis.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#printBtn').on('click', function () {
+                console.log("hi");
+                $(this).hide();
+                $('#printDiv').printThis({
+                    footer: ''
+                });
+                console.log('bye');
+                $(this).show();
+            })
+        });
+
+    </script>
+} 

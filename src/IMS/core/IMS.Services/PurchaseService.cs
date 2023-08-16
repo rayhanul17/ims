@@ -163,7 +163,7 @@ namespace IMS.Services
                         Description = product.Description,
                         UnitPrice = unitPrice,
                         Quantity = item.Quantity,
-                        TotalPrice = item.TotalPrice
+                        TotalPrice = item.TotalPrice                        
                     });
                 }
                 var purchaseReport = new PurchaseReportDto
@@ -173,8 +173,7 @@ namespace IMS.Services
                     PurchaseDate = purchase.PurchaseDate,
                     GrandTotalPrice = purchase.GrandTotalPrice,
                     Products = purchaseProducts,
-                    PaymentId = purchase.PaymentId,
-                    PurchaseId = purchase.Id
+                    VoucherId = purchase.VoucherId,
                 };
 
                 return purchaseReport;

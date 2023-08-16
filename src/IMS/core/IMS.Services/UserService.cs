@@ -91,7 +91,7 @@ namespace IMS.Services
                     Expression<Func<ApplicationUser, bool>> filter = null;
                     filter = x => x.AspNetUsersId.Equals(userId);
 
-                    var user = await Task.Run(() => _userDao.GetUser(filter));
+                    var user = (await Task.Run(() => _userDao.Get(filter))).FirstOrDefault();
                     if (user == null)
                     {
                         throw new CustomException("No user found with this id");
@@ -120,7 +120,7 @@ namespace IMS.Services
                     Expression<Func<ApplicationUser, bool>> filter = null;
                     filter = x => x.AspNetUsersId.Equals(aspid);
 
-                    var user = await Task.Run(() => _userDao.GetUser(filter));
+                    var user = (await Task.Run(() => _userDao.Get(filter))).FirstOrDefault();
                     user.Name = name;
                     user.Email = email;
                     user.ModificationDate = _timeService.Now;
@@ -145,7 +145,7 @@ namespace IMS.Services
             Expression<Func<ApplicationUser, bool>> filter = null;
             filter = x => x.Email.Equals(email) && x.Status == (int)Status.Active;
 
-            var user = await Task.Run(() => _userDao.GetUser(filter));
+            var user = (await Task.Run(() => _userDao.Get(filter))).FirstOrDefault();
 
             return user == null ? false : true;
         }
@@ -155,7 +155,7 @@ namespace IMS.Services
         public IList<(long, string)> LoadAllActiveUsers()
         {
             List<(long, string)> users = new List<(long, string)>();
-            var allUsers = _userDao.GetUsers(x => x.Status == (int)Status.Active);
+            var allUsers = _userDao.Get(x => x.Status == (int)Status.Active);
             foreach (var user in allUsers)
             {
                 users.Add((user.AspNetUsersId, user.Name));
@@ -173,7 +173,7 @@ namespace IMS.Services
                     filter = x => x.Email.Contains(searchBy) || x.Name.Contains(searchBy);
                 }
 
-                var result = _userDao.LoadAllUsers(filter, null, start, length, sortBy, sortDir);
+                var result = _userDao.GetDynamic(filter, null, start, length, sortBy, sortDir);
 
                 List<UserDto> users = new List<UserDto>();
                 foreach (ApplicationUser user in result.data)

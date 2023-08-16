@@ -11,6 +11,7 @@ namespace IMS.BusinessModel.Dto
         public decimal GrandTotalPrice { get; set; }
         public long PaymentId { get; set; }
         public long SaleId { get; set; }
+        public string VoucherId { get; set; }
         public IList<ProductInformation> Products { get; set; } = new List<ProductInformation>();
 
     }
