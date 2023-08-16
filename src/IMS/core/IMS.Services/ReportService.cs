@@ -1,4 +1,6 @@
 ﻿using IMS.BusinessModel.Dto;
+using IMS.BusinessModel.Entity;
+using IMS.BusinessRules.Enum;
 using IMS.Dao;
 using NHibernate;
 using System;
@@ -8,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace IMS.Services
 {
-    #region Interface
+
     public interface IReportService
     {
+        #region Operational Function
         Task<DashboardDto> GetDashboardDataAsync();
         Task<LoseProfitReportDto> GetLoseProfitReport(LoseProfitReportDto model);
-        Task<IEnumerable<MyModel>> ExecuteRawQueryAsync();
+        #endregion
     }
-    #endregion
 
     public class ReportService : BaseService, IReportService
     {
@@ -26,13 +28,6 @@ namespace IMS.Services
         {
             _reportDao = new ReportDao(session);
         }
-
-        public async Task<IEnumerable<MyModel>> ExecuteRawQueryAsync()
-        {
-            var result = await _reportDao.ExecuteQueryAsync<MyModel>("SELECT SupplierId, PurchaseDate, GrandTotalPrice FROM Purchase");
-            return result;
-        }
-
         #endregion
 
         #region Operational Function
@@ -41,26 +36,28 @@ namespace IMS.Services
             try
             {
                 var totalPurchaseSaleAmount = (await _reportDao.ExecuteQueryAsync<TotalPurchaseSaleAmountDto>($"SELECT " +
-                    $"SUM(CASE WHEN [OperationType] = 0 THEN Payment.TotalAmount else 0 END) TotalPurchaseAmount, " +
-                    $"SUM(CASE WHEN [OperationType] = 0 THEN Payment.PaidAmount else 0 END) TotalPurchasePaidAmount, " +
-                    $"SUM(CASE WHEN [OperationType] = 1 THEN Payment.TotalAmount else 0 END) TotalSaleAmount, " +
-                    $"SUM(CASE WHEN [OperationType] = 1 THEN Payment.PaidAmount else 0 END) TotalSalePaidAmount " +
+                    $"SUM(CASE WHEN [{typeof(OperationType).Name}] = {(int)OperationType.Purchase} THEN Payment.TotalAmount ELSE 0 END) TotalPurchaseAmount, " +
+                    $"SUM(CASE WHEN [{typeof(OperationType).Name}] = {(int)OperationType.Purchase} THEN Payment.PaidAmount ELSE 0 END) TotalPurchasePaidAmount, " +
+                    $"SUM(CASE WHEN [{typeof(OperationType).Name}] = {(int)OperationType.Sale} THEN Payment.TotalAmount ELSE 0 END) TotalSaleAmount, " +
+                    $"SUM(CASE WHEN [{typeof(OperationType).Name}] = {(int)OperationType.Sale} THEN Payment.PaidAmount ELSE 0 END) TotalSalePaidAmount " +
                     $"FROM Payment")).FirstOrDefault();
 
-                var totalCustomer = await _reportDao.GetCountAsync("Customer");
-                var totalSupplier = await _reportDao.GetCountAsync("Supplier");
+                var totalCustomer = await _reportDao.GetCountAsync(typeof(Customer).Name);
+                var totalSupplier = await _reportDao.GetCountAsync(typeof(Supplier).Name);
 
-                var dashboard = new DashboardDto();
-                dashboard.ToatlPurchaseAmount = totalPurchaseSaleAmount.TotalPurchaseAmount;
-                dashboard.ToatlPurchasePaidAmount = totalPurchaseSaleAmount.TotalPurchasePaidAmount;
-                dashboard.ToatlPurchaseDueAmount = totalPurchaseSaleAmount.TotalPurchaseAmount - totalPurchaseSaleAmount.TotalPurchasePaidAmount;
-                dashboard.TotalSaleAmount = totalPurchaseSaleAmount.TotalSaleAmount;
-                dashboard.TotalSalePaidAmount = totalPurchaseSaleAmount.TotalSalePaidAmount;
-                dashboard.TotalSaleDueAmount = totalPurchaseSaleAmount.TotalSaleAmount - totalPurchaseSaleAmount.TotalSalePaidAmount;
-                dashboard.TotalActiveCustomer = totalCustomer.Active;
-                dashboard.TotalInActiveCustomer = totalCustomer.Inactive;
-                dashboard.TotalActiveSupplier = totalSupplier.Active;
-                dashboard.TotalInActiveSupplier = totalSupplier.Inactive;
+                var dashboard = new DashboardDto
+                {
+                    ToatlPurchaseAmount = totalPurchaseSaleAmount.TotalPurchaseAmount,
+                    ToatlPurchasePaidAmount = totalPurchaseSaleAmount.TotalPurchasePaidAmount,
+                    ToatlPurchaseDueAmount = totalPurchaseSaleAmount.TotalPurchaseAmount - totalPurchaseSaleAmount.TotalPurchasePaidAmount,
+                    TotalSaleAmount = totalPurchaseSaleAmount.TotalSaleAmount,
+                    TotalSalePaidAmount = totalPurchaseSaleAmount.TotalSalePaidAmount,
+                    TotalSaleDueAmount = totalPurchaseSaleAmount.TotalSaleAmount - totalPurchaseSaleAmount.TotalSalePaidAmount,
+                    TotalActiveCustomer = totalCustomer.Active,
+                    TotalInActiveCustomer = totalCustomer.Inactive,
+                    TotalActiveSupplier = totalSupplier.Active,
+                    TotalInActiveSupplier = totalSupplier.Inactive,
+                };
 
                 return dashboard;
             }
@@ -75,10 +72,10 @@ namespace IMS.Services
         {
             var dates = model.DateRange.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
 
-            /* === If Timservice provide Utc time ===
-             * var startDate = DateTime.Parse(dates[0]).ToUniversalTime().ToString();
-             * var endDate = DateTime.Parse(dates[1]).ToUniversalTime().ToString();
-            */
+            #region If Timservice provide Utc time
+            //var startDate = DateTime.Parse(dates[0]).ToUniversalTime().ToString();
+            //var endDate = DateTime.Parse(dates[1]).ToUniversalTime().ToString();
+            #endregion
 
             var startDate = DateTime.Parse(dates[0]).ToString();
             var endDate = DateTime.Parse(dates[1]).ToString();
@@ -88,8 +85,8 @@ namespace IMS.Services
                 $"SUM(s.GrandTotalPrice) AS TotalAmount, " +
                 $"SUM(pm.PaidAmount) AS PaidAmount, " +
                 $"SUM(TotalAmount - PaidAmount) AS DueAmount" +
-                $" FROM Sale s " +
-                $"JOIN Payment pm ON pm.Id = s.PaymentId " +
+                $" FROM {typeof(Sale).Name} s " +
+                $"JOIN {typeof(Payment).Name} pm ON pm.Id = s.PaymentId " +
                 $"WHERE s.SaleDate BETWEEN '{startDate}' AND '{endDate}'")).FirstOrDefault();
 
             var purchaseInfo = (await _reportDao.ExecuteQueryAsync<PaymentDetailsDto>($"SELECT " +
@@ -97,8 +94,8 @@ namespace IMS.Services
                 $"SUM(p.GrandTotalPrice) AS TotalAmount, " +
                 $"SUM(pm.PaidAmount) AS PaidAmount, " +
                 $"SUM(TotalAmount - PaidAmount) AS DueAmount" +
-                $" FROM Purchase p " +
-                $"JOIN Payment pm ON pm.Id = p.PaymentId " +
+                $" FROM {typeof(Purchase).Name} p " +
+                $"JOIN {typeof(Payment).Name} pm ON pm.Id = p.PaymentId " +
                 $"WHERE p.PurchaseDate BETWEEN '{startDate}' AND '{endDate}'")).FirstOrDefault();
 
             var saleProductList = await _reportDao.ExecuteQueryAsync<ProductListDto>($"SELECT " +
@@ -106,9 +103,9 @@ namespace IMS.Services
                 $"sd.Quantity, " +
                 $"sd.TotalPrice, " +
                 $"p.Name " +
-                $"FROM Sale s " +
-                $"JOIN SaleDetails sd ON s.Id = sd.SaleId " +
-                $"LEFT JOIN Product p ON p.id = sd.ProductId " +
+                $"FROM {typeof(Sale).Name} s " +
+                $"JOIN {typeof(SaleDetails).Name} sd ON s.Id = sd.SaleId " +
+                $"LEFT JOIN {typeof(Product).Name} p ON p.id = sd.ProductId " +
                 $"WHERE s.SaleDate BETWEEN '{startDate}' AND '{endDate}'");
 
             var purchaseProductList = await _reportDao.ExecuteQueryAsync<ProductListDto>($"SELECT " +
@@ -116,9 +113,9 @@ namespace IMS.Services
                 $"prd.Quantity, " +
                 $"prd.TotalPrice, " +
                 $"p.Name " +
-                $"FROM Purchase pr " +
-                $"JOIN PurchaseDetails prd ON pr.Id = prd.PurchaseId " +
-                $"LEFT JOIN Product p ON p.id = prd.ProductId " +
+                $"FROM {typeof(Purchase).Name} pr " +
+                $"JOIN {typeof(PurchaseDetails).Name} prd ON pr.Id = prd.PurchaseId " +
+                $"LEFT JOIN {typeof(Product).Name} p ON p.id = prd.ProductId " +
                 $"WHERE pr.PurchaseDate BETWEEN '{startDate} ' AND ' {endDate}'");
 
             var loseProfitReportDto = new LoseProfitReportDto
@@ -130,10 +127,8 @@ namespace IMS.Services
                 SaleProductList = saleProductList
             };
 
-
             return loseProfitReportDto;
         }
-
         #endregion
     }
 }

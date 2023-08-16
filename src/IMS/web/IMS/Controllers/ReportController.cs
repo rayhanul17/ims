@@ -61,8 +61,7 @@ namespace IMS.Controllers
         public async Task<ActionResult> Dashboard()
         {
             try
-            {
-                await _reportService.ExecuteRawQueryAsync();
+            {               
                 var model = await _reportService.GetDashboardDataAsync();
                 return View(model);
             }
