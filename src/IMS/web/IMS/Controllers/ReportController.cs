@@ -1,8 +1,11 @@
 ﻿using IMS.BusinessModel.Dto;
+using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules.Exceptions;
+using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -13,16 +16,92 @@ namespace IMS.Controllers
     {
         #region Initialization
         private readonly IReportService _reportService;
+        private readonly ICategoryService _categoryService;
+        private readonly IBrandService _brandService;
+        private readonly ISupplierService _supplierService;
+        private readonly ICustomerService _customerService;
 
         public ReportController()
         {
             var session = new MsSqlSessionFactory().OpenSession();
             _reportService = new ReportService(session);
+            _categoryService = new CategoryService(session);
+            _brandService = new BrandService(session);
+            _supplierService = new SupplierService(session);
+            _customerService = new CustomerService(session);
         }
 
         #endregion
 
         #region Operational Function
+        [HttpGet]
+        [Authorize(Roles = "SA, Manager")]
+        public ActionResult BS()
+        {
+            try
+            {
+                var categoryList = _categoryService.LoadAllActiveCategories();
+                ViewBag.CategoryList = categoryList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
+
+                var brandList = _brandService.LoadAllActiveBrands();
+                ViewBag.BrandList = brandList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
+
+                var supplierList = _supplierService.LoadAllActiveSuppliers();
+                ViewBag.SupplierList = supplierList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
+
+                var CustomerList = _customerService.LoadAllActiveCustomers();
+                ViewBag.CustomerList = CustomerList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+                ViewResponse("Failed to load metadata", ResponseTypes.Danger);
+            }
+            var model = new ProductBuyingSellingQueryRequestViewModel();
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SA, Manager")]
+        public async Task<ActionResult> BS(ProductBuyingSellingQueryRequestViewModel model)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(model.DateRange))
+                {
+                    throw new CustomException("Empty DateTime Range Found");
+                }
+
+                //model = await _reportService.GetLoseProfitReport(model);
+
+
+            }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, Models.ResponseTypes.Warning);
+
+            }
+
+            return RedirectToAction("BS");
+        }
+
         [HttpGet]
         [Authorize(Roles = "SA, Manager")]
         public ActionResult LP()

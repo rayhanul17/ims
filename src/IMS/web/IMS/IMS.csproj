@@ -2605,6 +2605,7 @@
     <Content Include="Views\User\Edit.cshtml" />
     <Content Include="Views\Shared\_RankModalPartial.cshtml" />
     <Content Include="Views\Shared\NotFound.cshtml" />
+    <Content Include="Views\Report\BS.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

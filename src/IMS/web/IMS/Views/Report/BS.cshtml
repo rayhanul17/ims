@@ -1,0 +1,247 @@
+﻿@model IMS.BusinessModel.ViewModel.ProductBuyingSellingQueryRequestViewModel
+@{
+    ViewBag.Title = "Lose Profit Report";
+}
+@section Styles{
+    <link rel="stylesheet" href="~/Assets/plugins/daterangepicker/daterangepicker.css">
+    <link rel="stylesheet" href="~/Assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/Assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/Assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            @using (Html.BeginForm("BS", "Report", FormMethod.Post, htmlAttributes: new { @class = "nav-link card card-outline card-primary collapsed-card", @id = "myform" }))
+            {
+                @Html.AntiForgeryToken()
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-search mr-1"></i>Search Courses</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-2 form-group">
+                                <label>Category</label>
+                                @Html.DropDownListFor(m => m.CategoryId, (IEnumerable<SelectListItem>)ViewBag.CategoryList, "All Category", new { @class = "form-control loadProduct", @id = "categorySelectBox" })
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label>Brand</label>
+                                @Html.DropDownListFor(m => m.BrandId, (IEnumerable<SelectListItem>)ViewBag.BrandList, "All Brand", new { @class = "form-control loadProduct", @id = "brandSelectBox" })
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label>Product</label>
+                                @Html.DropDownListFor(m => m.ProductId, new List<SelectListItem>() { }, "All Product", new { @class = "form-control", @id = "productSelectBox" })
+                            </div>
+                            <div class="col-md-4">
+                                <label>Date and time range</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="far fa-clock"></i></span>
+                                    </div>
+                                    @Html.TextBoxFor(m => m.DateRange, new { @class = "form-control float-right", @id = "reservationtime" })
+                                    @*<input type="text" name="DateRange" class="form-control float-right" id="reservationtime">*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 form-group">
+                                <label>Supplier</label>
+                                @Html.DropDownListFor(m => m.SupplierId, (IEnumerable<SelectListItem>)ViewBag.SupplierList, "All Supplier", new { @class = "form-control loadProduct", @id = "supplierSelectBox" })
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label>Customer</label>
+                                @Html.DropDownListFor(m => m.CustomerId, (IEnumerable<SelectListItem>)ViewBag.CustomerList, "All Customer", new { @class = "form-control loadProduct", @id = "customerSelectBox" })
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Generate</label>
+                                <input id="searchButton" type="submit" class="btn btn-primary float-right form-control" value="Submit" />
+                            </div>
+                        </div>
+                    </div>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">@ViewBag.Title</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="text-center">
+                                <h3 class="rounded-pill bg-secondary">Purchase</h3>
+                            </div>
+                            @*<table>
+                                <tr><td>Total Purchase</td><td>:</td><td>@Model.PurchasePaymentDetails.Count</td></tr>
+                                <tr><td>Total Amount(TK)</td><td>:</td><td id="totalPurchaseAmount">@Model.PurchasePaymentDetails.TotalAmount</td></tr>
+                                <tr><td>Total Paid(TK)</td><td>:</td><td>@Model.PurchasePaymentDetails.PaidAmount</td></tr>
+                                <tr><td>Total Due(TK)</td><td>:</td><td>@Model.PurchasePaymentDetails.DueAmount</td></tr>
+                            </table>*@
+                            <table id="Ptable" class="table table-bordered table-hover" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Sl</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Total Price</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @*@for (int i = 0, j = 1; i < Model.PurchaseProductList.Count; i++, j++)
+                                    {
+                                        <tr>
+                                            <td>@j</td>
+                                            <td>@Model.PurchaseProductList[i].Name</td>
+                                            <td>@Model.PurchaseProductList[i].Quantity</td>
+                                            <td>@Model.PurchaseProductList[i].TotalPrice</td>
+                                            <td>@Model.PurchaseProductList[i].Date</td>
+                                        </tr>
+                                    }*@
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-center">
+                                <h3 class="rounded-pill bg-secondary">Sale</h3>
+                            </div>
+                            <table>
+                                @*<tr><td>Total Sale</td><td>:</td><td>@Model.SalePaymentDetails.Count</td></tr>
+                                <tr><td>Total Amount(TK)</td><td>:</td><td id="totalSaleAmount">@Model.SalePaymentDetails.TotalAmount</td></tr>
+                                <tr><td>Total Paid(TK)</td><td>:</td><td>@Model.SalePaymentDetails.PaidAmount</td></tr>
+                                <tr><td>Total Due(TK)</td><td>:</td><td>@Model.SalePaymentDetails.DueAmount</td></tr>*@
+                            </table>
+                            <table id="Stable" class="table table-bordered table-hover" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Sl</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Total Price</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @*@for (int i = 0, j = 1; i < Model.SaleProductList.Count; i++, j++)
+                                    {
+                                        <tr>
+                                            <td>@j</td>
+                                            <td>@Model.SaleProductList[i].Name</td>
+                                            <td>@Model.SaleProductList[i].Quantity</td>
+                                            <td>@Model.SaleProductList[i].TotalPrice</td>
+                                            <td>@Model.SaleProductList[i].Date</td>
+                                        </tr>
+                                    }*@
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/assets/plugins/moment/moment.min.js"></script>
+    <script src="~/assets/plugins/daterangepicker/daterangepicker.js"></script>
+    <script src="~/Assets/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/Assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/Assets/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/Assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/Assets/plugins/jszip/jszip.min.js"></script>
+    <script src="~/Assets/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/Assets/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/Assets/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/Assets/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/Assets/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <script>
+        $(function () {
+            $("#Ptable").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "searching": true
+                //"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            }).buttons().container().appendTo('#Ptable_wrapper .col-md-6:eq(0)');
+
+            $("#Stable").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "searching": true
+                //"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            }).buttons().container().appendTo('#Stable_wrapper .col-md-6:eq(0)');
+
+            $('#reservationtime').daterangepicker({
+                timePicker: true,
+                timePickerIncrement: 30,
+                locale: {
+                    format: 'DD/MM/YYYY hh:mm A'
+                }
+            });
+
+            let purchase = parseFloat($('#totalPurchaseAmount').text());
+            let sale = parseFloat($('#totalSaleAmount').text());
+            let v = sale - purchase;
+            console.log(v);
+            if (v > 0) {
+                $('#lp').append(`<span class="badge bg-success"><span class="h6">Profit amount is: ${v} Tk</span></span>`);
+            }
+            else if (v == 0) {
+                $('#lp').append(`<span class="badge bg-warning"><span class="h6">You have no profit or lose</span></span>`);
+            }
+            else {
+                $('#lp').append(`<span class="badge bg-danger"><span class="h6">Lose amount is: ${Math.abs(v)} Tk</span></span>`);
+            }
+        });
+    </script>
+    <script>
+        function genReport() {
+            let v = $('#reservationtime').val();
+            window.location.href = '/report/lp/' + v;
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('.loadProduct').change(function () {
+                let cid = $('#categorySelectBox').val();
+                let bid = $('#brandSelectBox').val();
+                if (bid != null && cid != null) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Sale/UpdateProductList',
+                        data: { categoryId: cid, brandId: bid },
+                        success: function (data) {
+                            console.log(data);
+                            var s = '<option value="">All Product</option>';
+                            for (var i = 0; i < data.length; i++) {
+                                s += '<option value="' + data[i].value + '">' + data[i].text + '</option>';
+                            }
+                            $("#productSelectBox").html(s);
+                        }
+                    });
+                }
+            });
+
+            $('#productSelectBox').change(function () {
+                let id = $(this).val();
+                console.log(id);
+                if (id != null) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Product/GetProductSellingPriceAndQuantiy',
+                        data: { productId: id },
+                        success: function (data) {
+                            console.log(data);                                                    
+                        }
+                    });
+                }
+            });           
+
+        });
+    </script>
+}
