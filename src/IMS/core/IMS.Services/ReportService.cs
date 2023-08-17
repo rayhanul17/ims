@@ -142,52 +142,78 @@ namespace IMS.Services
                 var endDate = DateTime.Parse(dates[1]).ToString();
 
 
-                var sql = $"SELECT s.SaleDate AS Date, p.Name, sd.Quantity, sd.TotalPrice " +
-                    $"FROM {typeof(Sale).Name} s " +
-                        $"JOIN {typeof(Customer).Name} c ON c.Id = s.CustomerId " +
-                        $"JOIN {typeof(SaleDetails).Name} sd ON s.id = sd.SaleId " +
-                        $"JOIN {typeof(Product).Name} p ON sd.ProductId = p.Id " +
-                        $"WHERE s.SaleDate BETWEEN '{startDate}' AND '{endDate}' ";
-                            
-                if(model.CustomerId != null)
+                var saleSql = $"SELECT s.SaleDate AS Date, p.Name, sd.Quantity, sd.TotalPrice " +
+                                    $"FROM {typeof(Sale).Name} s " +
+                                        $"JOIN {typeof(Customer).Name} c ON c.Id = s.CustomerId " +
+                                        $"JOIN {typeof(SaleDetails).Name} sd ON s.id = sd.SaleId " +
+                                        $"JOIN {typeof(Product).Name} p ON sd.ProductId = p.Id " +
+                                        $"WHERE s.SaleDate BETWEEN '{startDate}' AND '{endDate}' ";
+
+                var purchaseSql = $"SELECT pur.PurchaseDate AS Date, p.Name, purd.Quantity, purd.TotalPrice " +
+                                $"FROM {typeof(Purchase).Name} pur " +
+                                    $"JOIN {typeof(Supplier).Name} s ON s.Id = pur.SupplierId " +
+                                    $"JOIN {typeof(PurchaseDetails).Name} purd ON pur.id = purd.PurchaseId " +
+                                    $"JOIN {typeof(Product).Name} p ON purd.ProductId = p.Id " +
+                                    $"WHERE pur.PurchaseDate BETWEEN '{startDate}' AND '{endDate}' ";
+
+                if (model.CustomerId != null)
                 {
-                    sql+= $"AND c.Id = :customerId ";
+                    saleSql += $"AND c.Id = :customerId ";
                     parameterDictionary.Add("customerId", model.CustomerId);
                 }
-                if(model.ProductId == null)
+                if (model.SupplierId != null)
+                {
+                    purchaseSql += $"AND s.Id = :supplierId ";                    
+                }
+                if (model.ProductId == null)
                 {
                     string sq = $"SELECT p.Id WHERE ";
                     if(model.CategoryId != null)
                     {
-                        sq += $"CategoryId = :categoryId ";
+                        sq += $"CategoryId = :categoryId AND ";
                         parameterDictionary.Add("categoryId", model.CategoryId);
                     }
                     else
                     {
-                        sq += "1=1 ";
+                        sq += "1=1 AND ";
                     }
                     if(model.BrandId != null)
                     {
-                        sq += $"AND BrandId = :brandId";
+                        sq += $"BrandId = :brandId";
                         parameterDictionary.Add("brandId", model.BrandId);
                     }
                     else
                     {
                         sq += "1=1";
                     }
-                    sql += $"AND p.Id IN ({sq})";
+                    saleSql += $"AND p.Id IN ({sq})";
+                    purchaseSql += $"AND p.Id IN ({sq})";
                 }
                 else
                 {
-                    sql += $"AND p.Id = :productId";
+                    saleSql += $"AND p.Id = :productId";
+                    purchaseSql += $"AND p.Id = :productId";
                     parameterDictionary.Add("productId", model.ProductId);
                 }
 
-                var saleProductList = await _reportDao.ExecuteParametrizedQueryAsync<ProductListDto>(sql, parameterDictionary);
+                var saleProductList = await _reportDao.ExecuteParametrizedQueryAsync<ProductListDto>(saleSql, parameterDictionary);
+                
+                parameterDictionary.Remove("customerId");
+                if(model.SupplierId != null)
+                {
+                    parameterDictionary.Add("supplierId", model.SupplierId);
+                }
 
+                var purchaseProductList = await _reportDao.ExecuteParametrizedQueryAsync<ProductListDto>(purchaseSql, parameterDictionary);
+
+                var purchaseAmount = purchaseProductList.Sum(x => x.TotalPrice);
+                var saleAmount = saleProductList.Sum(x => x.TotalPrice);
                 var buyingSellingReportDto = new BuyingSellingReportDto
                 {
+                    SaleAmount = saleAmount,
+                    PuchaseAmount = purchaseAmount,
                     SaleProductList = saleProductList,
+                    PurchaseProductList = purchaseProductList,
                 };
 
                 return buyingSellingReportDto;

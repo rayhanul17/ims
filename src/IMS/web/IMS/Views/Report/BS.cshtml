@@ -1,6 +1,6 @@
 ﻿@model IMS.BusinessModel.Dto.BuyingSellingReportDto
 @{
-    ViewBag.Title = "Lose Profit Report";
+    ViewBag.Title = "Product Buying & Selling Report";
 }
 @section Styles{
     <link rel="stylesheet" href="~/Assets/plugins/daterangepicker/daterangepicker.css">
@@ -67,7 +67,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <div class="card card-primary">
+            <div class="card card-secondary">
                 <div class="card-header">
                     <h3 class="card-title">@ViewBag.Title</h3>
                 </div>
@@ -77,12 +77,9 @@
                             <div class="text-center">
                                 <h3 class="rounded-pill bg-secondary">Purchase</h3>
                             </div>
-                            @*<table>
-                                <tr><td>Total Purchase</td><td>:</td><td>@Model.PurchasePaymentDetails.Count</td></tr>
-                                <tr><td>Total Amount(TK)</td><td>:</td><td id="totalPurchaseAmount">@Model.PurchasePaymentDetails.TotalAmount</td></tr>
-                                <tr><td>Total Paid(TK)</td><td>:</td><td>@Model.PurchasePaymentDetails.PaidAmount</td></tr>
-                                <tr><td>Total Due(TK)</td><td>:</td><td>@Model.PurchasePaymentDetails.DueAmount</td></tr>
-                            </table>*@
+                            <table style="font-size: x-large">
+                                <tr><td>Total Amount(Tk)</td><td>:</td><td>@Model.PuchaseAmount</td></tr>                   
+                            </table>
                             <table id="Ptable" class="table table-bordered table-hover" style="width:100%">
                                 <thead>
                                     <tr>
@@ -94,7 +91,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @*@for (int i = 0, j = 1; i < Model.PurchaseProductList.Count; i++, j++)
+                                    @for (int i = 0, j = 1; i < Model.PurchaseProductList.Count; i++, j++)
                                     {
                                         <tr>
                                             <td>@j</td>
@@ -103,7 +100,7 @@
                                             <td>@Model.PurchaseProductList[i].TotalPrice</td>
                                             <td>@Model.PurchaseProductList[i].Date</td>
                                         </tr>
-                                    }*@
+                                    }
                                 </tbody>
                             </table>
                         </div>
@@ -111,11 +108,8 @@
                             <div class="text-center">
                                 <h3 class="rounded-pill bg-secondary">Sale</h3>
                             </div>
-                            <table>
-                                @*<tr><td>Total Sale</td><td>:</td><td>@Model.SalePaymentDetails.Count</td></tr>
-                                <tr><td>Total Amount(TK)</td><td>:</td><td id="totalSaleAmount">@Model.SalePaymentDetails.TotalAmount</td></tr>
-                                <tr><td>Total Paid(TK)</td><td>:</td><td>@Model.SalePaymentDetails.PaidAmount</td></tr>
-                                <tr><td>Total Due(TK)</td><td>:</td><td>@Model.SalePaymentDetails.DueAmount</td></tr>*@
+                            <table style="font-size: x-large">
+                                <tr><td>Total Amount(Tk)</td><td>:</td><td>@Model.SaleAmount</td></tr>
                             </table>
                             <table id="Stable" class="table table-bordered table-hover" style="width:100%">
                                 <thead>

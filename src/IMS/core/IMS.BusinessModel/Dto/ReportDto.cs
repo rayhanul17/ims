@@ -20,6 +20,8 @@ namespace IMS.BusinessModel.Dto
         public long? SupplierId { get; set; }
         public long? CustomerId { get; set; }
         public string DateRange { get; set; }
+        public decimal? PuchaseAmount { get; set; }
+        public decimal? SaleAmount { get; set; }
         public IList<ProductListDto> PurchaseProductList { get; set; } = new List<ProductListDto>();
         public IList<ProductListDto> SaleProductList { get; set; } = new List<ProductListDto>();
     }
