@@ -16,6 +16,7 @@ namespace IMS.Services
         #region Operational Function
         Task<DashboardDto> GetDashboardDataAsync();
         Task<LoseProfitReportDto> GetLoseProfitReport(LoseProfitReportDto model);
+        Task<BuyingSellingReportDto> GetBuyingSellingReport(BuyingSellingReportDto model);
         #endregion
     }
 
@@ -72,13 +73,13 @@ namespace IMS.Services
         {
             var dates = model.DateRange.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
 
+            var startDate = DateTime.Parse(dates[0]).ToString();
+            var endDate = DateTime.Parse(dates[1]).ToString();
+
             #region If Timservice provide Utc time
             //var startDate = DateTime.Parse(dates[0]).ToUniversalTime().ToString();
             //var endDate = DateTime.Parse(dates[1]).ToUniversalTime().ToString();
             #endregion
-
-            var startDate = DateTime.Parse(dates[0]).ToString();
-            var endDate = DateTime.Parse(dates[1]).ToString();
 
             var saleInfo = (await _reportDao.ExecuteQueryAsync<PaymentDetailsDto>($"SELECT " +
                 $"COUNT(s.Id) AS Count, " +
@@ -128,6 +129,74 @@ namespace IMS.Services
             };
 
             return loseProfitReportDto;
+        }
+
+        public async Task<BuyingSellingReportDto> GetBuyingSellingReport(BuyingSellingReportDto model)
+        {
+            try
+            {
+                var parameterDictionary = new Dictionary<string, object>();
+                var dates = model.DateRange.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+
+                var startDate = DateTime.Parse(dates[0]).ToString();
+                var endDate = DateTime.Parse(dates[1]).ToString();
+
+
+                var sql = $"SELECT s.SaleDate AS Date, p.Name, sd.Quantity, sd.TotalPrice " +
+                    $"FROM {typeof(Sale).Name} s " +
+                        $"JOIN {typeof(Customer).Name} c ON c.Id = s.CustomerId " +
+                        $"JOIN {typeof(SaleDetails).Name} sd ON s.id = sd.SaleId " +
+                        $"JOIN {typeof(Product).Name} p ON sd.ProductId = p.Id " +
+                        $"WHERE s.SaleDate BETWEEN '{startDate}' AND '{endDate}' ";
+                            
+                if(model.CustomerId != null)
+                {
+                    sql+= $"AND c.Id = :customerId ";
+                    parameterDictionary.Add("customerId", model.CustomerId);
+                }
+                if(model.ProductId == null)
+                {
+                    string sq = $"SELECT p.Id WHERE ";
+                    if(model.CategoryId != null)
+                    {
+                        sq += $"CategoryId = :categoryId ";
+                        parameterDictionary.Add("categoryId", model.CategoryId);
+                    }
+                    else
+                    {
+                        sq += "1=1 ";
+                    }
+                    if(model.BrandId != null)
+                    {
+                        sq += $"AND BrandId = :brandId";
+                        parameterDictionary.Add("brandId", model.BrandId);
+                    }
+                    else
+                    {
+                        sq += "1=1";
+                    }
+                    sql += $"AND p.Id IN ({sq})";
+                }
+                else
+                {
+                    sql += $"AND p.Id = :productId";
+                    parameterDictionary.Add("productId", model.ProductId);
+                }
+
+                var saleProductList = await _reportDao.ExecuteParametrizedQueryAsync<ProductListDto>(sql, parameterDictionary);
+
+                var buyingSellingReportDto = new BuyingSellingReportDto
+                {
+                    SaleProductList = saleProductList,
+                };
+
+                return buyingSellingReportDto;
+            }
+            catch (Exception ex)
+            {
+                _serviceLogger.Error(ex.Message, ex);
+                throw ex;
+            }            
         }
         #endregion
     }

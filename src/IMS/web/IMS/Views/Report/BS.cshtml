@@ -1,4 +1,4 @@
-﻿@model IMS.BusinessModel.ViewModel.ProductBuyingSellingQueryRequestViewModel
+﻿@model IMS.BusinessModel.Dto.BuyingSellingReportDto
 @{
     ViewBag.Title = "Lose Profit Report";
 }
@@ -15,7 +15,7 @@
             {
                 @Html.AntiForgeryToken()
                     <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-search mr-1"></i>Search Courses</h3>
+                        <h3 class="card-title"><i class="fas fa-search mr-1"></i>Product Buying & Selling Report Query</h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                 <i class="fas fa-plus"></i>
@@ -50,11 +50,11 @@
                         <div class="row">
                             <div class="col-md-3 form-group">
                                 <label>Supplier</label>
-                                @Html.DropDownListFor(m => m.SupplierId, (IEnumerable<SelectListItem>)ViewBag.SupplierList, "All Supplier", new { @class = "form-control loadProduct", @id = "supplierSelectBox" })
+                                @Html.DropDownListFor(m => m.SupplierId, (IEnumerable<SelectListItem>)ViewBag.SupplierList, "All Supplier", new { @class = "form-control", @id = "supplierSelectBox" })
                             </div>
                             <div class="col-md-3 form-group">
                                 <label>Customer</label>
-                                @Html.DropDownListFor(m => m.CustomerId, (IEnumerable<SelectListItem>)ViewBag.CustomerList, "All Customer", new { @class = "form-control loadProduct", @id = "customerSelectBox" })
+                                @Html.DropDownListFor(m => m.CustomerId, (IEnumerable<SelectListItem>)ViewBag.CustomerList, "All Customer", new { @class = "form-control", @id = "customerSelectBox" })
                             </div>
                             <div class="col-md-6 form-group">
                                 <label>Generate</label>
@@ -128,7 +128,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @*@for (int i = 0, j = 1; i < Model.SaleProductList.Count; i++, j++)
+                                    @for (int i = 0, j = 1; i < Model.SaleProductList.Count; i++, j++)
                                     {
                                         <tr>
                                             <td>@j</td>
@@ -137,7 +137,7 @@
                                             <td>@Model.SaleProductList[i].TotalPrice</td>
                                             <td>@Model.SaleProductList[i].Date</td>
                                         </tr>
-                                    }*@
+                                    }
                                 </tbody>
                             </table>
                         </div>

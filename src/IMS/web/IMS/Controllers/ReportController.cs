@@ -68,35 +68,66 @@ namespace IMS.Controllers
                     Value = x.Item1.ToString()
                 }).ToList();
             }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+            }
             catch (Exception ex)
             {
                 _logger.Error(ex.Message, ex);
                 ViewResponse("Failed to load metadata", ResponseTypes.Danger);
             }
-            var model = new ProductBuyingSellingQueryRequestViewModel();
+            var model = new BuyingSellingReportDto();
             return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "SA, Manager")]
-        public async Task<ActionResult> BS(ProductBuyingSellingQueryRequestViewModel model)
+        public async Task<ActionResult> BS(BuyingSellingReportDto model)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(model.DateRange))
+                var categoryList = _categoryService.LoadAllActiveCategories();
+                ViewBag.CategoryList = categoryList.Select(x => new SelectListItem
                 {
-                    throw new CustomException("Empty DateTime Range Found");
-                }
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
 
-                //model = await _reportService.GetLoseProfitReport(model);
+                var brandList = _brandService.LoadAllActiveBrands();
+                ViewBag.BrandList = brandList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
 
+                var supplierList = _supplierService.LoadAllActiveSuppliers();
+                ViewBag.SupplierList = supplierList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
+
+                var CustomerList = _customerService.LoadAllActiveCustomers();
+                ViewBag.CustomerList = CustomerList.Select(x => new SelectListItem
+                {
+                    Text = x.Item2,
+                    Value = x.Item1.ToString()
+                }).ToList();
+
+                model = await _reportService.GetBuyingSellingReport(model);
+                return View(model);
 
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, Models.ResponseTypes.Warning);
-
+                ViewResponse(ex.Message, ResponseTypes.Warning);
+            }
+            catch(Exception ex)
+            {
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
+                _logger.Error(ex.Message, ex);
             }
 
             return RedirectToAction("BS");

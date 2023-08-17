@@ -11,6 +11,7 @@ namespace IMS.Dao
     public interface IReportDao
     {
         Task<IList<T>> ExecuteQueryAsync<T>(string query);
+        Task<IList<T>> ExecuteParametrizedQueryAsync<T>(string rawQuery, Dictionary<string, object> dictionary);
         Task<ActiveInactiveDto> GetCountAsync(string tableName);
         Task<decimal> GetSingleColumnTatal(string columnName, string tableName);
         Task<int> GetTotalCount(string columnName, string tableName, string expression = "1=1");
@@ -27,6 +28,18 @@ namespace IMS.Dao
         public async Task<IList<T>> ExecuteQueryAsync<T>(string rawQuery)
         {
             var query = _session.CreateSQLQuery(rawQuery);
+            var result = await query.SetResultTransformer(Transformers.AliasToBean<T>()).ListAsync<T>();
+
+            return result;
+        }
+
+        public async Task<IList<T>> ExecuteParametrizedQueryAsync<T>(string rawQuery, Dictionary<string, object> dictionary)
+        {
+            var query = _session.CreateSQLQuery(rawQuery);
+            foreach (var kvp in dictionary)
+            {
+                query.SetParameter(kvp.Key, kvp.Value);
+            }
             var result = await query.SetResultTransformer(Transformers.AliasToBean<T>()).ListAsync<T>();
 
             return result;
