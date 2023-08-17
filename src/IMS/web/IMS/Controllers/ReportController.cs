@@ -1,5 +1,4 @@
 ﻿using IMS.BusinessModel.Dto;
-using IMS.BusinessModel.ViewModel;
 using IMS.BusinessRules.Exceptions;
 using IMS.Models;
 using IMS.Services;
@@ -68,10 +67,6 @@ namespace IMS.Controllers
                     Value = x.Item1.ToString()
                 }).ToList();
             }
-            catch (CustomException ex)
-            {
-                ViewResponse(ex.Message, ResponseTypes.Warning);
-            }
             catch (Exception ex)
             {
                 _logger.Error(ex.Message, ex);
@@ -124,7 +119,7 @@ namespace IMS.Controllers
             {
                 ViewResponse(ex.Message, ResponseTypes.Warning);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
@@ -160,30 +155,37 @@ namespace IMS.Controllers
             }
             catch (CustomException ex)
             {
-                ViewResponse(ex.Message, Models.ResponseTypes.Warning);
-                return View(model);
+                ViewResponse(ex.Message, ResponseTypes.Warning);                
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+                ViewResponse("Something went wrong", ResponseTypes.Danger);
             }
 
-
+            return RedirectToAction("LP");
         }
 
         [HttpGet]
         public async Task<ActionResult> Dashboard()
         {
+            var model = new DashboardDto();
             try
-            {               
-                var model = await _reportService.GetDashboardDataAsync();
+            {
+                model = await _reportService.GetDashboardDataAsync();
                 return View(model);
+            }
+            catch (CustomException ex)
+            {
+                ViewResponse(ex.Message, ResponseTypes.Warning);
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message, ex);
-                var model = new DashboardDto();
-
-                return View(model);
+                _logger.Error(ex.Message, ex);                
             }
-        }
 
+            return View(model);
+        }
         #endregion
     }
 }
