@@ -54,6 +54,20 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label>Check Roles</label>
+                                    <div class="col-sm-6">
+                                        @for (int i = 0; i < Model.Roles.Count; i++)
+                                        {
+                                            <div class="form-check">
+                                                @Html.CheckBoxFor(m => Model.Roles[i].IsChecked, new { @class = "form-check-input" })
+                                                @Model.Roles[i].Text
+                                                @Html.HiddenFor(m => Model.Roles[i].Value)
+                                                @Html.HiddenFor(m => Model.Roles[i].Text)
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-12">
                                         <input type="submit" value="Register" class="btn btn-primary btn-block" />

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using IMS.BusinessModel.ViewModel;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace IMS.Models
@@ -92,6 +93,12 @@ namespace IMS.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+        public List<Role> Roles { get; set; } = new List<Role>()
+        {
+            new Role {Text="SA",Value="SA",IsChecked=false },
+            new Role {Text="Manager",Value="Manager",IsChecked=false },
+            new Role {Text="Seller",Value="Seller",IsChecked=false }
+        };
     }
 
     public class UserEditViewModel

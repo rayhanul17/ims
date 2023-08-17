@@ -1,4 +1,5 @@
-﻿using IMS.Models;
+﻿using IMS.BusinessRules.Exceptions;
+using IMS.Models;
 using IMS.Services;
 using IMS.Services.SessionFactories;
 using Microsoft.AspNet.Identity;
@@ -159,7 +160,8 @@ namespace IMS.Controllers
         [Authorize(Roles = "SA")]
         public ActionResult Register()
         {
-            return View();
+            var model = new RegisterViewModel();
+            return View(model);
         }
 
         //
@@ -174,8 +176,7 @@ namespace IMS.Controllers
                 var user = new ApplicationUser { UserName = model.Name, Email = model.Email };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
-                {
-                    await UserManager.AddToRoleAsync(user.Id, "Seller");
+                {                    
                     //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
 
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
@@ -185,12 +186,25 @@ namespace IMS.Controllers
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
                     try
                     {
+                        var roles = model.Roles.Where(x => x.IsChecked).Select(x => x.Text).ToArray();
+                        var r = await UserManager.AddToRolesAsync(user.Id, roles);
+                        if (r.Errors.Count() > 0)
+                        {                            
+                            throw new CustomException("Failed to assign Roles");
+                        }
                         await _userService.CreateUserAsync(model.Name, model.Email, user.Id, User.Identity.GetUserId<long>());
+                        return RedirectToAction("Index", "User");
+                    }
+                    catch (CustomException ex)
+                    {
+                        var assignedRoles = (await UserManager.GetRolesAsync(user.Id)).ToArray();
+                        await UserManager.RemoveFromRolesAsync(user.Id, assignedRoles);
+                        ViewResponse(ex.Message, ResponseTypes.Warning);
                     }
                     catch (Exception ex)
                     {
                         try
-                        {
+                        {                            
                             result = await UserManager.DeleteAsync(user);
                         }
                         catch (Exception ex2)

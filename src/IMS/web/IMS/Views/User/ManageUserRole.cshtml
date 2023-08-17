@@ -3,9 +3,8 @@
     ViewBag.Title = "ManageUserRole";
 }
 <div class="container-fluid">
-    <div class="row">
-        <!-- left column -->
-        <div class="col-md-6 ">
+    <div class="row d-flex justify-content-center">
+        <div class="col-6">
             <div class="card card-primary">
                 <div class="card-header">
                     <h3 class="card-title">User Management</h3>
@@ -20,8 +19,8 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Select a user</label>
-                                        <div class="form-group">                                            
-                                            @Html.DropDownListFor(m => m.UserId, (IEnumerable<SelectListItem>)ViewBag.UserList, new { @class = "form-control" })                                           
+                                        <div class="form-group">
+                                            @Html.DropDownListFor(m => m.UserId, (IEnumerable<SelectListItem>)ViewBag.UserList, new { @class = "form-control" })
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -38,10 +37,9 @@
                                             }
                                         </div>
                                     </div>
-                                    
-                                            <div class="form-group">
-                                                <button type="submit" class="btn btn-primary">Update</button>
-                                            </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
                                 </div>
                             </div>
                         }
