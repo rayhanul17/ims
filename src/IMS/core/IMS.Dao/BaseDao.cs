@@ -24,6 +24,7 @@ namespace IMS.Dao
         IList<TEntity> Get(Expression<Func<TEntity, bool>> filter);
         IList<TEntity> LoadAll();
         int GetCount(Expression<Func<TEntity, bool>> filter = null);
+        Task<object> GetScallerValueAsync(string sql);
         Task<int> ExecuteUpdateDeleteQuery(string query);
         Task<T> GetRankByIdAsync<T>(long id, string tableName);
         Task<long> RankUpAsync(long rankFrom, long rankTo, string tableName);
@@ -61,6 +62,14 @@ namespace IMS.Dao
         {
             await _session.SaveAsync(entity);
             return entity.Id;
+        }
+
+        public virtual async Task<object> GetScallerValueAsync(string sql)
+        {
+            var query = _session.CreateSQLQuery(sql);
+            var result = await query.UniqueResultAsync();
+
+            return result;
         }
 
         public virtual async Task<TEntity> GetByIdAsync(TKey id)
@@ -167,7 +176,7 @@ namespace IMS.Dao
 
         public async Task<long> GetMaxRank()
         {
-            var sql = $"SELECT MAX([Rank]) Rank FROM {typeof(TEntity).Name}";
+            var sql = $"SELECT MAX([Rank]) Rank FROM {typeof(TEntity).Name} WHERE [Status] != {(int)Status.Delete}";
             var query = _session.CreateSQLQuery(sql);
             var result = Convert.ToInt64(await query.UniqueResultAsync());
 
@@ -176,7 +185,7 @@ namespace IMS.Dao
 
         public async Task<long> GetMaxRank(string tableName)
         {
-            var sql = $"SELECT MAX([Rank]) Rank FROM {tableName}";
+            var sql = $"SELECT MAX([Rank]) Rank FROM {tableName} WHERE [Status] != {(int)Status.Delete}";
             var query = _session.CreateSQLQuery(sql);
             var result = Convert.ToInt64(await query.UniqueResultAsync());
 

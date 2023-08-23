@@ -8,60 +8,61 @@
     <link rel="stylesheet" href="~/Assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css" />
     <link rel="stylesheet" href="~/Assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 }
+@*collapsed-card*@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            @using (Html.BeginForm("BS", "Report", FormMethod.Post, htmlAttributes: new { @class = "nav-link card card-outline card-primary collapsed-card", @id = "myform" }))
+            @using (Html.BeginForm("BS", "Report", FormMethod.Post, htmlAttributes: new { @class = "nav-link card card-outline card-primary", @id = "myform" }))
             {
                 @Html.AntiForgeryToken()
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-search mr-1"></i>Product Buying & Selling Report Query</h3>
-                        <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        </div>
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-search mr-1"></i>Product Buying & Selling Report Query</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-plus"></i>
+                        </button>
                     </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-2 form-group">
-                                <label>Category</label>
-                                @Html.DropDownListFor(m => m.CategoryId, (IEnumerable<SelectListItem>)ViewBag.CategoryList, "All Category", new { @class = "form-control loadProduct", @id = "categorySelectBox" })
-                            </div>
-                            <div class="col-md-3 form-group">
-                                <label>Brand</label>
-                                @Html.DropDownListFor(m => m.BrandId, (IEnumerable<SelectListItem>)ViewBag.BrandList, "All Brand", new { @class = "form-control loadProduct", @id = "brandSelectBox" })
-                            </div>
-                            <div class="col-md-3 form-group">
-                                <label>Product</label>
-                                @Html.DropDownListFor(m => m.ProductId, new List<SelectListItem>() { }, "All Product", new { @class = "form-control", @id = "productSelectBox" })
-                            </div>
-                            <div class="col-md-4">
-                                <label>Date and time range</label>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="far fa-clock"></i></span>
-                                    </div>
-                                    @Html.TextBoxFor(m => m.DateRange, new { @class = "form-control float-right", @id = "reservationtime" })
-                                    @*<input type="text" name="DateRange" class="form-control float-right" id="reservationtime">*@
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2 form-group">
+                            <label>Category</label>
+                            @Html.DropDownListFor(m => m.CategoryId, (IEnumerable<SelectListItem>)ViewBag.CategoryList, "All Category", new { @class = "form-control loadProduct", @id = "categorySelectBox" })
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label>Brand</label>
+                            @Html.DropDownListFor(m => m.BrandId, (IEnumerable<SelectListItem>)ViewBag.BrandList, "All Brand", new { @class = "form-control loadProduct", @id = "brandSelectBox" })
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label>Product</label>
+                            @Html.DropDownListFor(m => m.ProductId, new List<SelectListItem>() { }, "All Product", new { @class = "form-control", @id = "productSelectBox" })
+                        </div>
+                        <div class="col-md-4">
+                            <label>Date and time range</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="far fa-clock"></i></span>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-3 form-group">
-                                <label>Supplier</label>
-                                @Html.DropDownListFor(m => m.SupplierId, (IEnumerable<SelectListItem>)ViewBag.SupplierList, "All Supplier", new { @class = "form-control", @id = "supplierSelectBox" })
-                            </div>
-                            <div class="col-md-3 form-group">
-                                <label>Customer</label>
-                                @Html.DropDownListFor(m => m.CustomerId, (IEnumerable<SelectListItem>)ViewBag.CustomerList, "All Customer", new { @class = "form-control", @id = "customerSelectBox" })
-                            </div>
-                            <div class="col-md-6 form-group">
-                                <label>Generate</label>
-                                <input id="searchButton" type="submit" class="btn btn-primary float-right form-control" value="Submit" />
+                                @Html.TextBoxFor(m => m.DateRange, new { @class = "form-control float-right", @id = "reservationtime" })
+                                @*<input type="text" name="DateRange" class="form-control float-right" id="reservationtime">*@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-3 form-group">
+                            <label>Supplier</label>
+                            @Html.DropDownListFor(m => m.SupplierId, (IEnumerable<SelectListItem>)ViewBag.SupplierList, "All Supplier", new { @class = "form-control", @id = "supplierSelectBox" })
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label>Customer</label>
+                            @Html.DropDownListFor(m => m.CustomerId, (IEnumerable<SelectListItem>)ViewBag.CustomerList, "All Customer", new { @class = "form-control", @id = "customerSelectBox" })
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Generate</label>
+                            <input id="searchButton" type="submit" class="btn btn-primary float-right form-control" value="Submit" />
+                        </div>
+                    </div>
+                </div>
             }
         </div>
     </div>
@@ -78,7 +79,7 @@
                                 <h3 class="rounded-pill bg-secondary">Purchase</h3>
                             </div>
                             <table style="font-size: x-large">
-                                <tr><td>Total Amount(Tk)</td><td>:</td><td>@Model.PuchaseAmount</td></tr>                   
+                                <tr><td>Total Amount(Tk)</td><td>:</td><td>@Model.PuchaseAmount</td></tr>
                             </table>
                             <table id="Ptable" class="table table-bordered table-hover" style="width:100%">
                                 <thead>
@@ -230,11 +231,11 @@
                         url: '/Product/GetProductSellingPriceAndQuantiy',
                         data: { productId: id },
                         success: function (data) {
-                            console.log(data);                                                    
+                            console.log(data);
                         }
                     });
                 }
-            });           
+            });
 
         });
     </script>

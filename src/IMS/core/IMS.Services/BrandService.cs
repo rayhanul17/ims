@@ -35,10 +35,12 @@ namespace IMS.Services
     {
         #region Initializtion
         private readonly IBrandDao _brandDao;
+        private readonly IProductDao _productDao;
 
         public BrandService(ISession session) : base(session)
         {
             _brandDao = new BrandDao(session);
+            _productDao = new ProductDao(session);
         }
         #endregion
 
@@ -47,8 +49,11 @@ namespace IMS.Services
         {
             try
             {
-                var count = _brandDao.GetCount(x => x.Name == model.Name);
-
+                if (model == null)
+                {
+                    throw new CustomException("Null model found");
+                }
+                var count = _brandDao.GetCount(x => x.Name == model.Name && x.Status != (int)Status.Delete);
                 if (count > 0)
                 {
                     throw new CustomException("Found another Brand with this name");
@@ -91,17 +96,21 @@ namespace IMS.Services
 
         public async Task UpdateAsync(BrandEditViewModel model, long userId)
         {
-
             try
             {
+                if (model == null)
+                {
+                    throw new CustomException("Null model found");
+                }
+
+                var nameCount = _brandDao.GetCount(x => x.Name == model.Name && x.Status != (int)Status.Delete);
                 var brand = await _brandDao.GetByIdAsync(model.Id);
-                var namecount = _brandDao.GetCount(x => x.Name == model.Name);
 
                 if (brand == null)
                 {
                     throw new CustomException("No record found with this id!");
                 }
-                if (namecount > 1)
+                if (nameCount > 1)
                 {
                     throw new CustomException("Already exist brand with this name");
                 }
@@ -142,9 +151,14 @@ namespace IMS.Services
             try
             {
                 var brand = await _brandDao.GetByIdAsync(id);
+                var result = _productDao.GetCount(x => x.Brand.Id == id && x.Status != (int)Status.Delete);
                 if (brand == null)
                 {
                     throw new CustomException("No object found with this id");
+                }
+                if (result > 0)
+                {
+                    throw new CustomException("Found product under this brand");
                 }
                 brand.Status = (int)Status.Delete;
                 brand.ModifyBy = userId;

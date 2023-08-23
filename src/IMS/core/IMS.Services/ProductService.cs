@@ -57,7 +57,11 @@ namespace IMS.Services
         {
             try
             {
-                var count = _productDao.GetCount(x => x.Name == model.Name);
+                if (model == null)
+                {
+                    throw new CustomException("Null model found");
+                }
+                var count = _productDao.GetCount(x => x.Name == model.Name && x.Status != (int)Status.Delete);
                 if (count > 0)
                 {
                     throw new CustomException("Found another Product with this name");
@@ -107,8 +111,12 @@ namespace IMS.Services
         {
             try
             {
+                if (model == null)
+                {
+                    throw new CustomException("Null model found");
+                }
                 var product = await _productDao.GetByIdAsync(model.Id);
-                var namecount = _productDao.GetCount(x => x.Name == model.Name);
+                var namecount = _productDao.GetCount(x => x.Name == model.Name && x.Status != (int)Status.Delete);
 
                 if (product == null)
                 {
@@ -168,6 +176,11 @@ namespace IMS.Services
                 if (product.InStockQuantity > 0)
                 {
                     throw new CustomException("Product can't be delete due to quantity level");
+                }
+                var result = await _productDao.IsProductInPurchaseOrSale(id);
+                if (result)
+                {
+                    throw new CustomException("Already purchased or sold this product");
                 }
                 product.Status = (int)Status.Delete;
                 product.ModifyBy = userId;
@@ -339,7 +352,7 @@ namespace IMS.Services
                 Expression<Func<Product, bool>> filter = null;
                 if (searchBy != null)
                 {
-                    filter = x => x.Name.Contains(searchBy) && x.Status != (int)Status.Delete;
+                    filter = x => x.Name.Contains(searchBy) || x.Description.Contains(searchBy) && x.Status != (int)Status.Delete;
                 }
 
                 var result = _productDao.GetDynamic(filter, null, start, length, sortBy, sortDir);

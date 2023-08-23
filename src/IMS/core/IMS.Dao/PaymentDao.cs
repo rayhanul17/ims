@@ -13,6 +13,7 @@ namespace IMS.Dao
         #region Opperational Function
         Task SetPaymentIdToPurchaseTable(long paymentId, long purchaseId);
         Task SetPaymentIdToSaleTable(long paymentId, long saleId);
+        Task<bool> IsBankExistInAnyPayment(long bankId);
         #endregion
 
         #region List Loading Function
@@ -42,6 +43,14 @@ namespace IMS.Dao
             var query = $"UPDATE Sale SET PaymentId = {paymentId} WHERE Id = {saleId};";
 
             await ExecuteUpdateDeleteQuery(query);
+        }
+
+        public async Task<bool> IsBankExistInAnyPayment(long bankId)
+        {
+            var query = $"SELECT COUNT(1) FROM {typeof(PaymentDetails).Name} WHERE [BankId] = {bankId}";
+            var count = Convert.ToInt32(await GetScallerValueAsync(query));
+
+            return count > 0;
         }
         #endregion
 

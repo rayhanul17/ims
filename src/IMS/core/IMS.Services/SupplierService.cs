@@ -35,10 +35,12 @@ namespace IMS.Services
     {
         #region Initializtion
         private readonly ISupplierDao _supplierDao;
+        private readonly IPurchaseDao _purchaseDao;
 
         public SupplierService(ISession session) : base(session)
         {
             _supplierDao = new SupplierDao(session);
+            _purchaseDao = new PurchaseDao(session);
         }
         #endregion
 
@@ -47,11 +49,15 @@ namespace IMS.Services
         {
             try
             {
-                var count = _supplierDao.GetCount(x => x.Email == model.Email && x.ContactNumber == model.ContactNumber);
+                if (model == null)
+                {
+                    throw new CustomException("Null model found");
+                }
+                var count = _supplierDao.GetCount(x => x.Email == model.Email && x.ContactNumber == x.ContactNumber && x.Status != (int)Status.Delete);
 
                 if (count > 0)
                 {
-                    throw new CustomException("Found another supplier with this name");
+                    throw new CustomException("Already exist customer with this email and contact number");
                 }
 
                 var supplier = new Supplier()
@@ -95,16 +101,20 @@ namespace IMS.Services
         {
             try
             {
+                if (model == null)
+                {
+                    throw new CustomException("Null model found");
+                }
+                var nameCount = _supplierDao.GetCount(x => x.Email == model.Email && x.ContactNumber == x.ContactNumber && x.Status != (int)Status.Delete);
                 var supplier = await _supplierDao.GetByIdAsync(model.Id);
-                var namecount = _supplierDao.GetCount(x => x.Name == model.Name);
 
                 if (supplier == null)
                 {
                     throw new CustomException("No record found with this id!");
                 }
-                if (namecount > 1)
+                if (nameCount > 1)
                 {
-                    throw new CustomException("Already exist supplier with this name");
+                    throw new CustomException("Already exist customer with this email and contact number");
                 }
 
                 supplier.Name = model.Name;
@@ -145,9 +155,14 @@ namespace IMS.Services
             try
             {
                 var supplier = await _supplierDao.GetByIdAsync(id);
+                var count = _purchaseDao.GetCount(x => x.SupplierId == id);
                 if (supplier == null)
                 {
                     throw new CustomException("No object with this id");
+                }
+                if (count > 0)
+                {
+                    throw new CustomException("There was a purchase with this supplier");
                 }
                 supplier.Status = (int)Status.Delete;
                 supplier.ModifyBy = userId;

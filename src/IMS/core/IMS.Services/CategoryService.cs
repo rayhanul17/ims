@@ -49,7 +49,11 @@ namespace IMS.Services
         {
             try
             {
-                var count = _categoryDao.GetCount(x => x.Name == model.Name);
+                if (model == null)
+                {
+                    throw new CustomException("Null model found");
+                }
+                var count = _categoryDao.GetCount(x => x.Name == model.Name && x.Status != (int)Status.Delete);
                 if (count > 0)
                 {
                     throw new CustomException("Found another category with this name");
@@ -94,14 +98,19 @@ namespace IMS.Services
         {
             try
             {
+                if (model == null)
+                {
+                    throw new CustomException("Null model found");
+                }
+
+                var nameCount = _categoryDao.GetCount(x => x.Name == model.Name && x.Status != (int)Status.Delete);
                 var category = await _categoryDao.GetByIdAsync(model.Id);
-                var namecount = _categoryDao.GetCount(x => x.Name == model.Name);
 
                 if (category == null)
                 {
                     throw new CustomException("No record found with this id!");
                 }
-                if (namecount > 1)
+                if (nameCount > 1)
                 {
                     throw new CustomException("Already exist category with this name");
                 }
@@ -142,12 +151,17 @@ namespace IMS.Services
             try
             {
                 var count = _productDao.GetCount(x => x.Category.Id == id && x.Status != (int)Status.Delete);
+                var category = await _categoryDao.GetByIdAsync(id);
+
+                if (category == null)
+                {
+                    throw new CustomException("No record found with this id!");
+                }
                 if (count > 0)
                 {
                     throw new CustomException("Found product under this category");
                 }
 
-                var category = await _categoryDao.GetByIdAsync(id);
                 category.Status = (int)Status.Delete;
                 category.ModifyBy = userId;
                 category.ModificationDate = _timeService.Now;

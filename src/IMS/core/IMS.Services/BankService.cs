@@ -35,10 +35,12 @@ namespace IMS.Services
     {
         #region Initializtion
         private readonly IBankDao _bankDao;
+        private readonly IPaymentDao _paymentDao;
 
         public BankService(ISession session) : base(session)
         {
             _bankDao = new BankDao(session);
+            _paymentDao = new PaymentDao(session);
         }
         #endregion
 
@@ -47,7 +49,11 @@ namespace IMS.Services
         {
             try
             {
-                var count = _bankDao.GetCount(x => x.Name == model.Name);
+                if (model == null)
+                {
+                    throw new CustomException("Null model found");
+                }
+                var count = _bankDao.GetCount(x => x.Name == model.Name && x.Status != (int)Status.Delete);
                 if (count > 0)
                 {
                     throw new CustomException("Found another Bank with this name");
@@ -92,8 +98,13 @@ namespace IMS.Services
         {
             try
             {
+                if (model == null)
+                {
+                    throw new CustomException("Null model found");
+                }
+
+                var nameCount = _bankDao.GetCount(x => x.Name == model.Name && x.Status != (int)Status.Delete);
                 var bank = await _bankDao.GetByIdAsync(model.Id);
-                var nameCount = _bankDao.GetCount(x => x.Name == model.Name);
 
                 if (bank == null)
                 {
@@ -140,6 +151,15 @@ namespace IMS.Services
             try
             {
                 var bank = await _bankDao.GetByIdAsync(id);
+                var result = await _paymentDao.IsBankExistInAnyPayment(id);
+                if (bank == null)
+                {
+                    throw new CustomException("No bank found with this id");
+                }
+                if(result)
+                {
+                    throw new CustomException("One or more payment found with this bank");
+                } 
                 bank.Status = (int)Status.Delete;
                 bank.ModifyBy = userId;
                 bank.ModificationDate = _timeService.Now;
@@ -165,7 +185,7 @@ namespace IMS.Services
             catch (Exception ex)
             {
                 _serviceLogger.Error(ex);
-                throw;
+                throw ex;
             }
         }
         #endregion

@@ -35,10 +35,12 @@ namespace IMS.Services
     {
         #region Initializtion
         private readonly ICustomerDao _customerDao;
+        private readonly ISaleDao _saleDao;
 
         public CustomerService(ISession session) : base(session)
         {
             _customerDao = new CustomerDao(session);
+            _saleDao = new SaleDao(session);
         }
         #endregion
 
@@ -47,10 +49,14 @@ namespace IMS.Services
         {
             try
             {
-                var count = _customerDao.GetCount(x => x.Email == model.Email && x.ContactNumber == model.ContactNumber);
+                if (model == null)
+                {
+                    throw new CustomException("Null model found");
+                }
+                var count = _customerDao.GetCount(x => x.Email == model.Email && x.ContactNumber == model.ContactNumber && x.Status != (int)Status.Delete);
                 if (count > 0)
                 {
-                    throw new CustomException("Found another customer with this name");
+                    throw new CustomException("Found another customer with this email and contact number");
                 }
 
                 var customer = new Customer()
@@ -94,16 +100,20 @@ namespace IMS.Services
         {
             try
             {
+                if (model == null)
+                {
+                    throw new CustomException("Null model found");
+                }
+                var nameCount = _customerDao.GetCount(x => x.Email == model.Email && x.ContactNumber == x.ContactNumber && x.Status != (int)Status.Delete);
                 var customer = await _customerDao.GetByIdAsync(model.Id);
-                var namecount = _customerDao.GetCount(x => x.Name == model.Name);
 
                 if (customer == null)
                 {
                     throw new CustomException("No record found with this id!");
                 }
-                if (namecount > 1)
+                if (nameCount > 1)
                 {
-                    throw new CustomException("Already exist customer with this name");
+                    throw new CustomException("Already exist customer with this email and contact number");
                 }
 
                 customer.Name = model.Name;
@@ -144,9 +154,14 @@ namespace IMS.Services
             try
             {
                 var customer = await _customerDao.GetByIdAsync(id);
+                var count = _saleDao.GetCount(x => x.CustomerId == id);
                 if (customer == null)
                 {
                     throw new CustomException("No object with this id");
+                }
+                if(count > 0)
+                {
+                    throw new CustomException("There was a sale with this customer");
                 }
                 customer.Status = (int)Status.Delete;
                 customer.ModifyBy = userId;
