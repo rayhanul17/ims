@@ -11,53 +11,44 @@ using System.Threading.Tasks;
 
 namespace IMS.Dao
 {
-    #region Interfaces
     public interface IBaseDao<TEntity, TKey> where TEntity : BaseEntity<TKey>
     {
+        #region Opperationa Function
         Task<TKey> AddAsync(TEntity entity);
-        Task RemoveByIdAsync(TKey id);
-        Task RemoveAsync(TEntity entityToDelete);
         Task EditAsync(TEntity entityToUpdate);
         Task<TEntity> GetByIdAsync(TKey id);
+        Task RemoveByIdAsync(TKey id);
+        Task RemoveAsync(TEntity entityToDelete);
+        int GetCount(Expression<Func<TEntity, bool>> filter = null);
         Task<long> GetMaxRank();
         Task<long> GetMaxRank(string tableName);
-        IList<TEntity> Get(Expression<Func<TEntity, bool>> filter);
-        IList<TEntity> LoadAll();
-        int GetCount(Expression<Func<TEntity, bool>> filter = null);
         Task<object> GetScallerValueAsync(string sql);
         Task<int> ExecuteUpdateDeleteQuery(string query);
         Task<T> GetRankByIdAsync<T>(long id, string tableName);
         Task<long> RankUpAsync(long rankFrom, long rankTo, string tableName);
         Task<long> RankDownAsync(long rankFrom, long rankTo, string tableName);
+        #endregion
 
-        IList<TEntity> Get(Expression<Func<TEntity, bool>> filter, int pageIndex = 1,
-            int pageSize = 10);
-
-        IList<TEntity> Get(Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>,
-                IOrderedQueryable<TEntity>> orderBy = null, int pageIndex = 1, int pageSize = 10);
-
-        IList<TEntity> Get(Expression<Func<TEntity, bool>> filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null);
-
-        IList<TEntity> GetDynamic(Expression<Func<TEntity, bool>> filter = null,
-            string orderBy = null);
-
+        #region List Loading Function
+        IList<TEntity> Get(Expression<Func<TEntity, bool>> filter);
         (IList<TEntity> data, int total, int totalDisplay) GetDynamic(Expression<Func<TEntity, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null);
+        #endregion
     }
-    #endregion
 
-    #region Implementations
     public abstract class BaseDao<TEntity, TKey>
         : IBaseDao<TEntity, TKey>
         where TEntity : BaseEntity<TKey>
     {
+        #region Initialization
         protected ISession _session;
 
         public BaseDao(ISession session)
         {
             _session = session;
         }
+        #endregion
 
+        #region Opperational Function
         public virtual async Task<TKey> AddAsync(TEntity entity)
         {
             await _session.SaveAsync(entity);
@@ -81,7 +72,6 @@ namespace IMS.Dao
         {
             return _session.Query<TEntity>().ToList();
         }
-
 
         public virtual async Task RemoveByIdAsync(TKey id)
         {
@@ -111,18 +101,6 @@ namespace IMS.Dao
 
             count = query.Count();
             return count;
-        }
-
-        public virtual IList<TEntity> Get(Expression<Func<TEntity, bool>> filter)
-        {
-            IQueryable<TEntity> query = _session.Query<TEntity>();
-
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            return query.ToList();
         }
 
         public async Task<int> ExecuteUpdateDeleteQuery(string query)
@@ -191,10 +169,10 @@ namespace IMS.Dao
 
             return result;
         }
+        #endregion
 
-
-        public virtual IList<TEntity> Get(Expression<Func<TEntity, bool>> filter,
-            int pageIndex = 1, int pageSize = 10)
+        #region List Loading Function
+        public virtual IList<TEntity> Get(Expression<Func<TEntity, bool>> filter)
         {
             IQueryable<TEntity> query = _session.Query<TEntity>();
 
@@ -203,100 +181,8 @@ namespace IMS.Dao
                 query = query.Where(filter);
             }
 
-            var result = query.OrderByDescending(s => s.Id).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-
-            return result;
+            return query.ToList();
         }
-
-        public virtual IList<TEntity> Get(Expression<Func<TEntity, bool>> filter,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-            int pageIndex = 1, int pageSize = 10)
-        {
-            IQueryable<TEntity> query = _session.Query<TEntity>();
-
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            if (orderBy != null)
-            {
-                return orderBy(query).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-            }
-            else
-            {
-                return query.OrderByDescending(s => s.Id).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-            }
-        }
-
-        public virtual (IList<TEntity> data, int total, int totalDisplay) GetDynamic(
-            Expression<Func<TEntity, bool>> filter = null,
-            string orderBy = null, int pageIndex = 1, int pageSize = 10)
-        {
-            IQueryable<TEntity> query = _session.Query<TEntity>();
-            var total = query.Count();
-            var totalDisplay = query.Count();
-
-            if (filter != null)
-            {
-                query = query.Where(filter);
-                totalDisplay = query.Count();
-            }
-
-            if (orderBy != null)
-            {
-                var result = query.OrderBy(orderBy).Skip((pageIndex - 1) * pageSize).Take(pageSize);
-                return (result.ToList(), total, totalDisplay);
-            }
-            else
-            {
-                var result = query.Skip((pageIndex - 1) * pageSize).Take(pageSize);
-                return (result.ToList(), total, totalDisplay);
-            }
-        }
-
-        public virtual IList<TEntity> Get(Expression<Func<TEntity, bool>> filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null)
-        {
-            IQueryable<TEntity> query = _session.Query<TEntity>();
-
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            if (orderBy != null)
-            {
-                var result = orderBy(query);
-                return result.ToList();
-            }
-            else
-            {
-                return query.ToList();
-            }
-        }
-
-        public virtual IList<TEntity> GetDynamic(Expression<Func<TEntity, bool>> filter = null,
-            string orderBy = null)
-        {
-            IQueryable<TEntity> query = _session.Query<TEntity>();
-
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            if (orderBy != null)
-            {
-                var result = query.OrderBy(orderBy);
-                return result.ToList();
-            }
-            else
-            {
-                return query.ToList();
-            }
-        }
-
         //For BaseEntity
         public (IList<TEntity> data, int total, int totalDisplay) GetDynamic(Expression<Func<TEntity, bool>> filter = null, string orderBy = null, int pageIndex = 1, int pageSize = 10, string sortBy = null, string sortDir = null)
         {
@@ -327,7 +213,6 @@ namespace IMS.Dao
 
             return (result.ToList(), total, totalDisplay);
         }
+        #endregion
     }
-    #endregion
-
 }

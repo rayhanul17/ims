@@ -11,6 +11,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
+
+
 namespace IMS.Services
 {
     #region Interface
@@ -45,49 +47,62 @@ namespace IMS.Services
         #region Operational Function
         public async Task CreateUserAsync(string name, string email, long id, long creatorId)
         {
-            using (var transaction = _session.BeginTransaction())
+            try
             {
-                try
+                var user = new ApplicationUser()
                 {
-                    var user = new ApplicationUser()
+                    AspNetUsersId = id,
+                    Name = name,
+                    Email = email,
+                    CreateBy = creatorId,
+                    CreationDate = _timeService.Now,
+                    Status = (int)Status.Active,
+                    Rank = await _userDao.GetMaxRank() + 1,
+                };
+                using (var transaction = _session.BeginTransaction())
+                {
+                    try
                     {
-                        AspNetUsersId = id,
-                        Name = name,
-                        Email = email,
-                        CreateBy = creatorId,
-                        CreationDate = _timeService.Now,
-                        Status = (int)Status.Active,
-                        Rank = await _userDao.GetMaxRank() + 1,
-                    };
-
-                    await _userDao.AddAsync(user);
-                    transaction.Commit();
-
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    _serviceLogger.Error(ex.Message, ex);
+                        await _userDao.AddAsync(user);
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();                        
+                        throw ex;
+                    }
                 }
             }
-        }
+            catch (Exception ex)
+            {                
+                _serviceLogger.Error(ex.Message, ex);
+                throw ex;
+            }
+        }    
 
         public async Task<string> GetUserNameAsync(long userId)
         {
-            Expression<Func<ApplicationUser, bool>> filter = null;
-            filter = x => x.AspNetUsersId.Equals(userId);
+            try
+            {
+                Expression<Func<ApplicationUser, bool>> filter = null;
+                filter = x => x.AspNetUsersId.Equals(userId);
 
-            var user = await Task.Run( () => _userDao.Get(filter).FirstOrDefault());
+                var user = await Task.Run(() => _userDao.Get(filter).FirstOrDefault());
 
-            return user?.Name;
+                return user?.Name;
+            }
+            catch (Exception ex)
+            {
+                _serviceLogger.Error($"{ex.Message}", ex);
+                throw ex;
+            }
         }
 
         public async Task BlockAsync(long userId)
         {
             try
             {
-                using (var transaction = _session.BeginTransaction())
-                {
+               
                     Expression<Func<ApplicationUser, bool>> filter = null;
                     filter = x => x.AspNetUsersId.Equals(userId);
 
@@ -98,10 +113,23 @@ namespace IMS.Services
                     }
 
                     user.Status = (int)Status.Delete;
-                    await _userDao.EditAsync(user);
-
-                    transaction.Commit();
+                using (var transaction = _session.BeginTransaction())
+                {
+                    try
+                    {
+                        await _userDao.EditAsync(user);
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();                        
+                        throw ex;
+                    }
                 }
+            }
+            catch (CustomException ex)
+            {
+                throw ex;
             }
             catch (Exception ex)
             {
@@ -112,55 +140,75 @@ namespace IMS.Services
 
         public async Task UpdateUserAsync(string name, string email, long aspid, long creatorId)
         {
-            using (var transaction = _session.BeginTransaction())
+            try
             {
-                try
+                Expression<Func<ApplicationUser, bool>> filter = null;
+                filter = x => x.AspNetUsersId.Equals(aspid);
+
+                var user = (await Task.Run(() => _userDao.Get(filter))).FirstOrDefault();
+                user.Name = name;
+                user.Email = email;
+                user.ModificationDate = _timeService.Now;
+                user.ModifyBy = creatorId;
+                using (var transaction = _session.BeginTransaction())
                 {
-
-                    Expression<Func<ApplicationUser, bool>> filter = null;
-                    filter = x => x.AspNetUsersId.Equals(aspid);
-
-                    var user = (await Task.Run(() => _userDao.Get(filter))).FirstOrDefault();
-                    user.Name = name;
-                    user.Email = email;
-                    user.ModificationDate = _timeService.Now;
-                    user.ModifyBy = creatorId;
-
-                    await _userDao.EditAsync(user);
-
-                    transaction.Commit();
-                }
-
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    _serviceLogger.Error($"{ex.Message}", ex);
-                    throw new CustomException("User information failed to update");
+                    try
+                    {
+                        await _userDao.EditAsync(user);
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw ex;
+                    }
                 }
             }
+
+            catch (Exception ex)
+            {
+                _serviceLogger.Error($"{ex.Message}", ex);
+                throw ex;
+            }            
         }
 
         public async Task<bool> IsActiveUserAsync(string email)
         {
-            Expression<Func<ApplicationUser, bool>> filter = null;
-            filter = x => x.Email.Equals(email) && x.Status == (int)Status.Active;
+            try
+            {
+                Expression<Func<ApplicationUser, bool>> filter = null;
+                filter = x => x.Email.Equals(email) && x.Status == (int)Status.Active;
 
-            var user = (await Task.Run(() => _userDao.Get(filter))).FirstOrDefault();
+                var user = (await Task.Run(() => _userDao.Get(filter))).FirstOrDefault();
 
-            return user == null ? false : true;
+                return user == null ? false : true;
+            }
+            catch (Exception ex)
+            {
+                _serviceLogger.Error(ex.Message, ex);
+                throw ex;
+            }
         }
         #endregion
 
         #region List Loading Function
         public IList<(long, string)> LoadAllActiveUsers()
         {
-            List<(long, string)> users = new List<(long, string)>();
-            var allUsers = _userDao.Get(x => x.Status == (int)Status.Active);
-            foreach (var user in allUsers)
+            try
             {
-                users.Add((user.AspNetUsersId, user.Name));
+                List<(long, string)> users = new List<(long, string)>();
+                var allUsers = _userDao.Get(x => x.Status == (int)Status.Active);
+                foreach (var user in allUsers)
+                {
+                    users.Add((user.AspNetUsersId, user.Name));
+                }
+                return users;
             }
-            return users;
+            catch (Exception ex)
+            {
+                _serviceLogger.Error(ex.Message, ex);
+                throw ex;
+            }
         }
 
         public async Task<(int total, int totalDisplay, IList<UserDto> records)> LoadAllUsers(string searchBy = null, int length = 10, int start = 1, string sortBy = null, string sortDir = null)
