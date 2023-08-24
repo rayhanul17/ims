@@ -203,6 +203,7 @@
     <Compile Include="Controllers\AllBaseController.cs" />
     <Compile Include="Controllers\BrandController.cs" />
     <Compile Include="Controllers\BankController.cs" />
+    <Compile Include="Controllers\CkEditorController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
@@ -2611,6 +2612,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Assets\css\alt\" />
     <Folder Include="Views\AllBase\" />
+    <Folder Include="Views\CkEditor\" />
     <Folder Include="Views\Error\" />
   </ItemGroup>
   <ItemGroup>

@@ -7,8 +7,11 @@ using IMS.Services.SessionFactories;
 using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 
 namespace IMS.Controllers
@@ -18,6 +21,7 @@ namespace IMS.Controllers
     {
         #region Initialization
         private readonly IBankService _bankService;
+        private readonly string _imagePath = "/UploadedFiles";
 
         public BankController()
         {
@@ -242,5 +246,83 @@ namespace IMS.Controllers
             }
         }
         #endregion
+
+
+        [ValidateInput(false)]
+        public ActionResult File()
+        {
+            var funcNum = 0;
+            int.TryParse(Request["CKEditorFuncNum"], out funcNum);
+
+            if (Request.Files == null || Request.Files.Count < 1)
+            {
+                var response = new
+                {
+                    uploaded = 0,
+                    error = new { message = "File not saved" }
+                };
+
+                return Json(response, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                string fileName = string.Empty;
+                SaveAttatchedFile(_imagePath, Request, ref fileName);
+                var url = _imagePath + "/" + fileName;
+
+                var response = new
+                {
+                    uploaded = Request.Files.Count,
+                    fileName = fileName,
+                    url = url
+                };
+
+                return Json(response, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpGet]
+        [ValidateInput(false)]
+        public ActionResult FileExplorer()
+        {
+            var path = Path.Combine(Server.MapPath("\\UploadedFiles\\"));
+
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            var files = Directory.GetFiles(path);
+
+            var fileNames = new List<string>();
+
+            foreach (var file in files)
+            {
+                fileNames.Add(Path.GetFileName(file));
+            }
+
+            ViewBag.FileInfo = fileNames;
+            ViewBag.Path = _imagePath;
+
+            return View();
+        }
+
+        private void SaveAttatchedFile(string filepath, HttpRequestBase Request, ref string fileName)
+        {
+            for (int i = 0; i < Request.Files.Count; i++)
+            {
+                var file = Request.Files[i];
+                if (file != null && file.ContentLength > 0)
+                {
+                    var extension = Path.GetExtension(file.FileName);
+                    string targetPath = Server.MapPath(filepath);
+                    if (!Directory.Exists(targetPath))
+                    {
+                        Directory.CreateDirectory(targetPath);
+                    }
+                    fileName = Guid.NewGuid() + extension;
+                    string fileSavePath = Path.Combine(targetPath, fileName);
+                    file.SaveAs(fileSavePath);
+                }
+            }
+        }
     }
 }

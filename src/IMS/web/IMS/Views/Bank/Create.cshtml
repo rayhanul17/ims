@@ -33,7 +33,10 @@
                             @Html.LabelFor(m => m.Description)
                             @Html.TextAreaFor(m => m.Description, new { @id = "Description", @class = "form-control", @placeholder = "Description" })
                             <script>
-                                CKEDITOR.replace("Description");
+                                CKEDITOR.replace("Description", {
+                                    filebrowserBrowseUrl: '/bank/FileExplorer',
+                                    filebrowserUploadUrl: '/bank/File'
+                                });
                             </script>
                         </div>
                         <div class="form-group">

@@ -32,9 +32,6 @@
                         <div class="form-group">
                             @Html.DisplayNameFor(m => m.Description)
                             @Html.TextAreaFor(m => m.Description, new { @id = "Description", @class = "form-control", @placeholder = "Description" })
-                            <script>
-                                CKEDITOR.replace("Description");
-                            </script>
                         </div>
                         <div class="form-group">
                             <label> @Html.LabelFor(m => m.Status)</label>
@@ -58,6 +55,12 @@
     <script src="~/Assets/js/validation/additional-methods.min.js"></script>
     <script>
         $(document).ready(function () {
+            $(function () {
+                CKEDITOR.replace("Description", {
+                    filebrowserBrowseUrl: '/bank/FileExplorer',
+                    filebrowserUploadUrl: '/bank/File'
+                });
+            });
             console.log("hello");
             $("#myform").validate({
 
