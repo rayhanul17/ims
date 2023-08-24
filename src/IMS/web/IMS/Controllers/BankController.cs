@@ -21,11 +21,13 @@ namespace IMS.Controllers
     {
         #region Initialization
         private readonly IBankService _bankService;
+        private readonly IImageService _imageService;
         private readonly string _imagePath = "/UploadedFiles";
 
         public BankController()
         {
             var session = new MsSqlSessionFactory().OpenSession();
+            _imageService = new ImageService();
             _bankService = new BankService(session);
         }
 
@@ -249,7 +251,7 @@ namespace IMS.Controllers
 
 
         [ValidateInput(false)]
-        public ActionResult File()
+        public async Task<ActionResult> File()
         {
             var funcNum = 0;
             int.TryParse(Request["CKEditorFuncNum"], out funcNum);
@@ -266,8 +268,7 @@ namespace IMS.Controllers
             }
             else
             {
-                string fileName = string.Empty;
-                SaveAttatchedFile(_imagePath, Request, ref fileName);
+                string fileName = await SaveAttatchedFile(_imagePath, Request);
                 var url = _imagePath + "/" + fileName;
 
                 var response = new
@@ -305,24 +306,20 @@ namespace IMS.Controllers
             return View();
         }
 
-        private void SaveAttatchedFile(string filepath, HttpRequestBase Request, ref string fileName)
+        private async Task<string> SaveAttatchedFile(string filepath, HttpRequestBase Request)
         {
+            string fileName = string.Empty;
             for (int i = 0; i < Request.Files.Count; i++)
             {
-                var file = Request.Files[i];
-                if (file != null && file.ContentLength > 0)
+                var image = Request.Files[i];
+                if (image != null && image.ContentLength > 0)
                 {
-                    var extension = Path.GetExtension(file.FileName);
-                    string targetPath = Server.MapPath(filepath);
-                    if (!Directory.Exists(targetPath))
-                    {
-                        Directory.CreateDirectory(targetPath);
-                    }
-                    fileName = Guid.NewGuid() + extension;
-                    string fileSavePath = Path.Combine(targetPath, fileName);
-                    file.SaveAs(fileSavePath);
+                    string path = Server.MapPath("~/UploadedFiles/");
+
+                    fileName = await _imageService.SaveImage(image, path);
                 }
             }
+            return fileName;
         }
     }
 }
