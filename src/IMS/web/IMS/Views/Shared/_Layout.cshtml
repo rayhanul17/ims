@@ -169,6 +169,11 @@
             $('ul .nav-treeview a').filter(function () {
                 return this.href == url;
             }).parentsUntil(".sidebar-menu > .treeview-menu").addClass('active');
+
+            // for my custom response
+            $(".alert-dismissible").fadeTo(5000, 500).slideUp(500, function () {
+                $(".alert-dismissible").alert('close');
+            });
         });        
     </script>
 
