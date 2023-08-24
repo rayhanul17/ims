@@ -1,7 +1,10 @@
 ﻿@{
     ViewBag.Title = "Add New Purchase";
 }
-
+@section Styles
+{
+    <link rel="stylesheet" href="~/Assets/plugins/toastr/toastr.min.css"/>
+}
 <div class="container-fluid">
     <div class="row bg-body-secondary">
         <div class="col-12">
@@ -130,6 +133,14 @@
 </div>
 
 @section Scripts{
+    <script src="~/Assets/plugins/toastr/toastr.min.js"></script>
+    <script>
+        function ShowError(message) {
+            $(function () {
+                toastr.error(message)
+            });
+        };
+    </script>
     <script>
         var rowNum = 0;
         var delNum = 0;
@@ -176,18 +187,18 @@
                 let quantity = $("#quantity").val();
                 let unitPrice = $("#unitPrice").val();
 
-                               
+
                 if (productId > 0 && quantity > 0 && unitPrice > -1) {
 
                     if ($(`.prd_r${productId}`).length > 0 && $(`.prd_b${productId}`).val() == 'false') {
-                        alert('Already exist');
+                        ShowError('Already exist');
                     }
                     else {
                         if ($(`.prd_r${productId}`).length > 0 && $(`.prd_b${productId}`).length > 0) {
-                            alert('Already exist but deleted');
+                            ShowError('Already exist but deleted');
                             $(`.prd_r${productId}`).removeClass(`prd_r${productId}`);
                             $(`.prd_b${productId}`).removeClass(`prd_b${productId}`);
-                            
+
                         }
                         let total = quantity * unitPrice;
 
@@ -195,12 +206,12 @@
 
 
                         var row = `<tr id='rowNum${rowNum}' class='prd_r${productId}'>
-                                <td id="item[${rowNum}].price"><input hidden type='text' name='model[${rowNum}].ProductId' value= '${productId}'>${productName}</td>
-                                <td id="item[${rowNum}].unitPrice"><input hidden type='text' name='model[${rowNum}].UnitPrice' value= '${unitPrice}'>${unitPrice}</td>
-                                <td id="item[${rowNum}].quantiy"><input hidden type='text' name='model[${rowNum}].Quantity' value= '${quantity}'>${quantity}</td>
-                                <td id="item[${rowNum}].total"><input hidden type='text' name='model[${rowNum}].Total' id='total${rowNum}' value= '${total}'>${total}</td>
-                                <td id="item[${rowNum}].button"><input class="btn btn-danger" type="button" value="X" onclick="removeRow(${rowNum})"/>
-                                <input id='model${rowNum}' hidden name='model[${rowNum}].IsDeleted' class='prd_b${productId}' value= ${false}></td></tr>`;
+                                        <td id="item[${rowNum}].price"><input hidden type='text' name='model[${rowNum}].ProductId' value= '${productId}'>${productName}</td>
+                                        <td id="item[${rowNum}].unitPrice"><input hidden type='text' name='model[${rowNum}].UnitPrice' value= '${unitPrice}'>${unitPrice}</td>
+                                        <td id="item[${rowNum}].quantiy"><input hidden type='text' name='model[${rowNum}].Quantity' value= '${quantity}'>${quantity}</td>
+                                        <td id="item[${rowNum}].total"><input hidden type='text' name='model[${rowNum}].Total' id='total${rowNum}' value= '${total}'>${total}</td>
+                                        <td id="item[${rowNum}].button"><input class="btn btn-danger" type="button" value="X" onclick="removeRow(${rowNum})"/>
+                                        <input id='model${rowNum}' hidden name='model[${rowNum}].IsDeleted' class='prd_b${productId}' value= ${false}></td></tr>`;
 
                         $('#itemRows').append(row);
                         let v = parseFloat($('#grandTotal').val()) + total;
@@ -211,7 +222,7 @@
                     }
                 }
                 else {
-                    alert("Give information properly");
+                    ShowError("Give information properly");
                 }
             });
 
@@ -219,7 +230,7 @@
         function removeRow(rnum) {
             delNum++;
             console.log($(`#rowNum${rnum}`));
-            $(`#model${rnum}`).val(true);            
+            $(`#model${rnum}`).val(true);
             $('#grandTotal').val(parseFloat($('#grandTotal').val()) - $(`#total${rnum}`).val());
             $(`#rowNum${rnum}`).hide();
 
@@ -227,8 +238,5 @@
                 $('#purchaseButton').prop('disabled', true);
             }
         }
-
     </script>
-
-
 }
