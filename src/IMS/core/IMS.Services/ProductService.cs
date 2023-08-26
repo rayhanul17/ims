@@ -57,6 +57,7 @@ namespace IMS.Services
         {
             try
             {
+                model.Name = model.Name.Trim();
                 if (model == null)
                 {
                     throw new CustomException("Null model found");
@@ -111,18 +112,19 @@ namespace IMS.Services
         {
             try
             {
+                model.Name = model.Name.Trim();
                 if (model == null)
                 {
                     throw new CustomException("Null model found");
                 }
                 var product = await _productDao.GetByIdAsync(model.Id);
-                var namecount = _productDao.GetCount(x => x.Name == model.Name && x.Status != (int)Status.Delete);
+                var namecount = _productDao.GetCount(x => x.Name == model.Name && x.Status != (int)Status.Delete && x.Id != model.Id);
 
                 if (product == null)
                 {
                     throw new CustomException("No record found with this id!");
                 }
-                if (namecount > 1)
+                if (namecount > 0)
                 {
                     throw new CustomException("Already exist Product with this name");
                 }

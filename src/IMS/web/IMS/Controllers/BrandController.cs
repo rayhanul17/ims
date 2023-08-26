@@ -69,6 +69,7 @@ namespace IMS.Controllers
                 {
                     await _brandService.AddAsync(model, User.Identity.GetUserId<long>());
                     ViewResponse("Successfully added a new Brand.", ResponseTypes.Success);
+                    return RedirectToAction("Index", "Brand");
                 }
                 else
                 {
@@ -84,7 +85,13 @@ namespace IMS.Controllers
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex.Message, ex);
             }
-            return RedirectToAction("Index", "Brand");
+
+            var selectList = Enum.GetValues(typeof(Status))
+               .Cast<Status>()
+               .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
+            ViewBag.StatusList = new SelectList(selectList, "Key", "Value");
+            
+            return View(model);
         }
 
         [HttpGet]
@@ -129,6 +136,7 @@ namespace IMS.Controllers
                     var userId = User.Identity.GetUserId<long>();
                     await _brandService.UpdateAsync(model, userId);
                     ViewResponse("Updated successfully", ResponseTypes.Success);
+                    return RedirectToAction("Index", "Brand");
                 }
                 else
                 {
@@ -145,7 +153,12 @@ namespace IMS.Controllers
                 _logger.Error(ex.Message, ex);
             }
 
-            return RedirectToAction("Index", "Brand");
+            var selectList = Enum.GetValues(typeof(Status))
+                      .Cast<Status>()
+                      .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
+            ViewBag.StatusList = new SelectList(selectList, "Key", "Value");
+
+            return View();
         }
 
         [HttpPost]

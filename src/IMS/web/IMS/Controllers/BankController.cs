@@ -78,6 +78,7 @@ namespace IMS.Controllers
                     var userId = User.Identity.GetUserId<long>();
                     await _bankService.AddAsync(model, userId);
                     ViewResponse("Successfully added a new Bank.", ResponseTypes.Success);
+                    return RedirectToAction("Index", "Bank");
                 }
                 else
                 {
@@ -93,7 +94,12 @@ namespace IMS.Controllers
                 ViewResponse("Something went wrong", ResponseTypes.Danger);
                 _logger.Error(ex);
             }
-            return RedirectToAction("Index", "Bank");
+
+            var selectList = Enum.GetValues(typeof(Status))
+                       .Cast<Status>()
+                       .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
+            ViewBag.StatusList = new SelectList(selectList, "Key", "Value");
+            return View();
         }
 
         [HttpGet]        
@@ -138,6 +144,7 @@ namespace IMS.Controllers
                     var userId = User.Identity.GetUserId<long>();
                     await _bankService.UpdateAsync(model, userId);
                     ViewResponse("Bank updated sucessfully", ResponseTypes.Success);
+                    return RedirectToAction("Index", "Bank");
                 }
                 else
                 {
@@ -154,7 +161,11 @@ namespace IMS.Controllers
                 _logger.Error(ex);
             }
 
-            return RedirectToAction("Index", "Bank");
+            var selectList = Enum.GetValues(typeof(Status))
+                       .Cast<Status>()
+                       .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
+            ViewBag.StatusList = new SelectList(selectList, "Key", "Value");
+            return View(model);
         }
 
         [HttpPost]

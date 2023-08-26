@@ -47,30 +47,7 @@ namespace IMS.Controllers
         public ActionResult Create()
         {
             var model = new ProductAddViewModel();
-
-            #region Dropdown box loading
-
-            var enumList = Enum.GetValues(typeof(Status))
-                       .Cast<Status>()
-                       .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
-            ViewBag.StatusList = new SelectList(enumList, "Key", "Value", Status.Active);
-
-            var categoryList = _categoryService.LoadAllActiveCategories();
-            ViewBag.CategoryList = categoryList.Select(x => new SelectListItem
-            {
-                Text = x.Item2,
-                Value = x.Item1.ToString()
-            }).ToList();
-
-            var brandList = _brandService.LoadAllActiveBrands();
-            ViewBag.BrandList = brandList.Select(x => new SelectListItem
-            {
-                Text = x.Item2,
-                Value = x.Item1.ToString()
-            }).ToList();
-
-            #endregion
-
+            LoadSelectBox();
 
             return View(model);
         }
@@ -93,6 +70,7 @@ namespace IMS.Controllers
 
                     await _productService.AddAsync(model, User.Identity.GetUserId<long>());
                     ViewResponse("Successfully added a new Product.", ResponseTypes.Success);
+                    return RedirectToAction("Index", "Product");
                 }
                 else
                 {
@@ -109,7 +87,8 @@ namespace IMS.Controllers
                 _logger.Error(ex.Message, ex);
             }
 
-            return RedirectToAction("Index", "Product");
+            LoadSelectBox();
+            return View(model);
         }
 
         [HttpGet]
@@ -120,26 +99,7 @@ namespace IMS.Controllers
                 return View();
             try
             {
-                #region Dropdown box loading
-                var selectList = Enum.GetValues(typeof(Status))
-                       .Cast<Status>()
-                       .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
-                ViewBag.StatusList = new SelectList(selectList, "Key", "Value");
-
-                var categoryList = _categoryService.LoadAllCategories();
-                ViewBag.CategoryList = categoryList.Select(x => new SelectListItem
-                {
-                    Text = x.Item2,
-                    Value = x.Item1.ToString()
-                }).ToList();
-
-                var brandList = _brandService.LoadAllBrands();
-                ViewBag.BrandList = brandList.Select(x => new SelectListItem
-                {
-                    Text = x.Item2,
-                    Value = x.Item1.ToString()
-                }).ToList();
-                #endregion
+                LoadSelectBox();
 
                 var model = await _productService.GetByIdAsync(id);
                 string path = Server.MapPath("~/UploadedFiles/");
@@ -178,6 +138,7 @@ namespace IMS.Controllers
                     await _productService.UpdateAsync(model, userId);
 
                     ViewResponse("Successfully updated!", ResponseTypes.Success);
+                    return RedirectToAction("Index", "Product");
                 }
                 else
                 {
@@ -194,7 +155,8 @@ namespace IMS.Controllers
                 _logger.Error(ex.Message, ex);
             }
 
-            return RedirectToAction("Index", "Product");
+            LoadSelectBox();
+            return View(model);
         }
 
         [HttpPost]
@@ -344,6 +306,28 @@ namespace IMS.Controllers
         #endregion
 
         #region Helper Function
+
+        private void LoadSelectBox()
+        {
+            var enumList = Enum.GetValues(typeof(Status))
+                       .Cast<Status>()
+                       .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
+            ViewBag.StatusList = new SelectList(enumList, "Key", "Value", Status.Active);
+
+            var categoryList = _categoryService.LoadAllActiveCategories();
+            ViewBag.CategoryList = categoryList.Select(x => new SelectListItem
+            {
+                Text = x.Item2,
+                Value = x.Item1.ToString()
+            }).ToList();
+
+            var brandList = _brandService.LoadAllActiveBrands();
+            ViewBag.BrandList = brandList.Select(x => new SelectListItem
+            {
+                Text = x.Item2,
+                Value = x.Item1.ToString()
+            }).ToList();
+        }
         private void ValidateProductAddModel(ProductAddViewModel model)
         {
             if (model.Name.IsNullOrWhiteSpace() || model.Name.Length < 3 || model.Name.Length > 255)

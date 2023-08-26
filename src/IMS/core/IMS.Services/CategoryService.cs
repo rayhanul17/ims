@@ -49,6 +49,7 @@ namespace IMS.Services
         {
             try
             {
+                model.Name = model.Name.Trim();
                 if (model == null)
                 {
                     throw new CustomException("Null model found");
@@ -98,19 +99,20 @@ namespace IMS.Services
         {
             try
             {
+                model.Name = model.Name.Trim();
                 if (model == null)
                 {
                     throw new CustomException("Null model found");
                 }
 
-                var nameCount = _categoryDao.GetCount(x => x.Name == model.Name && x.Status != (int)Status.Delete);
+                var nameCount = _categoryDao.GetCount(x => x.Name == model.Name && x.Status != (int)Status.Delete && x.Id != model.Id);
                 var category = await _categoryDao.GetByIdAsync(model.Id);
 
                 if (category == null)
                 {
                     throw new CustomException("No record found with this id!");
                 }
-                if (nameCount > 1)
+                if (nameCount > 0)
                 {
                     throw new CustomException("Already exist category with this name");
                 }

@@ -71,6 +71,7 @@ namespace IMS.Controllers
                 {
                     await _categoryService.AddAsync(model, User.Identity.GetUserId<long>());
                     ViewResponse("Successfully added a new category.", ResponseTypes.Success);
+                    return RedirectToAction("Index", "Category");
                 }
                 else
                 {
@@ -87,7 +88,12 @@ namespace IMS.Controllers
                 _logger.Error(ex);
             }
 
-            return RedirectToAction("Index", "Category");
+            var selectList = Enum.GetValues(typeof(Status))
+                           .Cast<Status>()
+                           .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
+            ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
+            return View(model);
+            
         }
 
         [HttpGet]
@@ -133,6 +139,7 @@ namespace IMS.Controllers
                     var userId = User.Identity.GetUserId<long>();
                     await _categoryService.UpdateAsync(model, userId);
                     ViewResponse("Updated successfully", ResponseTypes.Success);
+                    return RedirectToAction("Index", "Category");
                 }
                 else
                 {
@@ -149,7 +156,12 @@ namespace IMS.Controllers
                 _logger.Error(ex.Message, ex);
             }
 
-            return RedirectToAction("Index", "Category");
+            var selectList = Enum.GetValues(typeof(Status))
+                          .Cast<Status>()
+                          .Where(e => e != Status.Delete).ToDictionary(key => (int)key);
+            ViewBag.StatusList = new SelectList(selectList, "Key", "Value", (int)Status.Active);
+            return View(model);
+            
         }
 
         [HttpPost]

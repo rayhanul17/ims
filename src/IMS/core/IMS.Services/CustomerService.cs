@@ -49,6 +49,7 @@ namespace IMS.Services
         {
             try
             {
+                model.Name = model.Name.Trim();
                 if (model == null)
                 {
                     throw new CustomException("Null model found");
@@ -100,18 +101,19 @@ namespace IMS.Services
         {
             try
             {
+                model.Name = model.Name.Trim();
                 if (model == null)
                 {
                     throw new CustomException("Null model found");
                 }
-                var nameCount = _customerDao.GetCount(x => x.Email == model.Email && x.ContactNumber == x.ContactNumber && x.Status != (int)Status.Delete);
+                var nameCount = _customerDao.GetCount(x => x.Email == model.Email && x.ContactNumber == x.ContactNumber && x.Status != (int)Status.Delete && x.Id != model.Id);
                 var customer = await _customerDao.GetByIdAsync(model.Id);
 
                 if (customer == null)
                 {
                     throw new CustomException("No record found with this id!");
                 }
-                if (nameCount > 1)
+                if (nameCount > 0)
                 {
                     throw new CustomException("Already exist customer with this email and contact number");
                 }
