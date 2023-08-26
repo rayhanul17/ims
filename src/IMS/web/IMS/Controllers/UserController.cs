@@ -151,7 +151,7 @@ namespace IMS.Controllers
         {
             var model = new UserRolesViewModel();
             try
-            {
+            {                
                 var userList = _userService.LoadAllActiveUsers();
                 ViewBag.UserList = userList.Select(x => new SelectListItem
                 {
@@ -161,9 +161,9 @@ namespace IMS.Controllers
 
                 List<Role> roles = new List<Role>()
                    {
-                       new Role {Text="SA",Value="SA",IsChecked=false },
-                       new Role {Text="Manager",Value="Manager",IsChecked=false },
-                       new Role {Text="Seller",Value="Seller",IsChecked=false },
+                       new Role {Text="SA", Value="SA", IsChecked = false },
+                       new Role {Text="Manager", Value="Manager", IsChecked = false },
+                       new Role {Text="Seller", Value="Seller", IsChecked = false },
 
                    };
                 model.Roles = roles;
@@ -216,6 +216,13 @@ namespace IMS.Controllers
         #endregion
 
         #region Ajax call
+        public JsonResult GetRoles(long userId)
+        {
+            var roles = UserManager.GetRoles(userId).ToArray();
+
+            return Json(roles, JsonRequestBehavior.AllowGet);
+        }
+
         public async Task<JsonResult> GetUsers()
         {
             try

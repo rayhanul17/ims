@@ -20,7 +20,7 @@
                                     <div class="form-group">
                                         <label>Select a user</label>
                                         <div class="form-group">
-                                            @Html.DropDownListFor(m => m.UserId, (IEnumerable<SelectListItem>)ViewBag.UserList, new { @class = "form-control" })
+                                            @Html.DropDownListFor(m => m.UserId, (IEnumerable<SelectListItem>)ViewBag.UserList, "--Select User--", new { @class = "form-control userListBox" })
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -28,8 +28,8 @@
                                         <div class="col-sm-6">
                                             @for (int i = 0; i < Model.Roles.Count; i++)
                                             {
-                                                <div class="form-check">
-                                                    @Html.CheckBoxFor(m => Model.Roles[i].IsChecked, new { @class = "form-check-input" })
+                                                <div class="form-check rolesBox">
+                                                    @Html.CheckBoxFor(m => Model.Roles[i].IsChecked, new { @class = "form-check-input", @id = $"roleBox_{i}" })
                                                     @Model.Roles[i].Text
                                                     @Html.HiddenFor(m => Model.Roles[i].Value)
                                                     @Html.HiddenFor(m => Model.Roles[i].Text)
@@ -38,7 +38,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <button type="submit" class="btn btn-primary">Update</button>
+                                        <button type="submit" class="btn btn-primary submitButton">Update</button>
                                     </div>
                                 </div>
                             </div>
@@ -49,4 +49,38 @@
         </div>
     </div>
 </div>
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $('.userListBox').change(function loadRoles() {                
+                let uId = $('.userListBox').val();
+                let rolesBox = $('.rolesBox');
+                if (uId == '') {
+                    $('.submitButton').prop('disabled', true);
+                }
+                else {
+                    $('.submitButton').prop('disabled', false);
+                }
+                if (uId != null) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/User/GetRoles',
+                        data: { userId: uId },
+                        success: function (data) {
+                            for (let i = 0; i < rolesBox.length; i++) {
+                                if (data.includes($(`#Roles_${i}__Text`).val())) {
+                                    $(`#roleBox_${i}`).prop("checked", true);                                    
+                                }
+                                else {
+                                    $(`#roleBox_${i}`).prop("checked", false); 
+                                }
+                            }
+                        }
+                    });
+                }
+            });
 
+        });
+    </script>
+}
