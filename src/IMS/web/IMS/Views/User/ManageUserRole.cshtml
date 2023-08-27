@@ -38,7 +38,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <button type="submit" class="btn btn-primary submitButton">Update</button>
+                                        <button disabled type="submit" class="btn btn-primary submitButton">Update</button>
                                     </div>
                                 </div>
                             </div>
@@ -58,9 +58,10 @@
                 let rolesBox = $('.rolesBox');
                 if (uId == '') {
                     $('.submitButton').prop('disabled', true);
+                    $('.form-check-input').prop('checked', false);
                 }
                 else {
-                    $('.submitButton').prop('disabled', false);
+                    $('.submitButton').prop('disabled', false);                   
                 }
                 if (uId != null) {
                     $.ajax({
@@ -70,10 +71,10 @@
                         success: function (data) {
                             for (let i = 0; i < rolesBox.length; i++) {
                                 if (data.includes($(`#Roles_${i}__Text`).val())) {
-                                    $(`#roleBox_${i}`).prop("checked", true);                                    
+                                    $(`#roleBox_${i}`).prop("checked", true);
                                 }
                                 else {
-                                    $(`#roleBox_${i}`).prop("checked", false); 
+                                    $(`#roleBox_${i}`).prop("checked", false);
                                 }
                             }
                         }
