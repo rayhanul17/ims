@@ -31,13 +31,7 @@
                         </div>
                         <div class="form-group">
                             @Html.LabelFor(m => m.Description)
-                            @Html.TextAreaFor(m => m.Description, new { @id = "Description", @class = "form-control", @placeholder = "Description" })
-                            <script>
-                                CKEDITOR.replace("Description", {
-                                    filebrowserBrowseUrl: '/bank/FileExplorer',
-                                    filebrowserUploadUrl: '/bank/File'
-                                });
-                            </script>
+                            @Html.TextAreaFor(m => m.Description, new { @id = "Description", @class = "form-control", @placeholder = "Description" })                            
                         </div>
                         <div class="form-group">
                             <label> @Html.LabelFor(m => m.Status)</label>
@@ -78,6 +72,10 @@
                         maxlength: "At most 30 characters valid",
                     }
                 }
+            });
+            CKEDITOR.replace("Description", {
+                filebrowserBrowseUrl: '/CkEditor/FileExplorer',
+                filebrowserUploadUrl: '/CkEditor/File'
             });
         });
     </script>

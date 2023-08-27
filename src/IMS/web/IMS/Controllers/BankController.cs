@@ -20,14 +20,11 @@ namespace IMS.Controllers
     public class BankController : AllBaseController
     {
         #region Initialization
-        private readonly IBankService _bankService;
-        private readonly IImageService _imageService;
-        private readonly string _imagePath = "/UploadedFiles";
+        private readonly IBankService _bankService;       
 
         public BankController()
         {
             var session = new MsSqlSessionFactory().OpenSession();
-            _imageService = new ImageService();
             _bankService = new BankService(session);
         }
 
@@ -257,80 +254,7 @@ namespace IMS.Controllers
             {
                 ModelState.AddModelError("Status", "Status must active or inactive");
             }
-        }
+        }     
         #endregion
-
-
-        [ValidateInput(false)]
-        public async Task<ActionResult> File()
-        {
-            var funcNum = 0;
-            int.TryParse(Request["CKEditorFuncNum"], out funcNum);
-
-            if (Request.Files == null || Request.Files.Count < 1)
-            {
-                var response = new
-                {
-                    uploaded = 0,
-                    error = new { message = "File not saved" }
-                };
-
-                return Json(response, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                string fileName = await SaveAttatchedFile(_imagePath, Request);
-                var url = _imagePath + "/" + fileName;
-
-                var response = new
-                {
-                    uploaded = Request.Files.Count,
-                    fileName = fileName,
-                    url = url
-                };
-
-                return Json(response, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        [HttpGet]
-        [ValidateInput(false)]
-        public ActionResult FileExplorer()
-        {
-            var path = Path.Combine(Server.MapPath("\\UploadedFiles\\"));
-
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            var files = Directory.GetFiles(path);
-
-            var fileNames = new List<string>();
-
-            foreach (var file in files)
-            {
-                fileNames.Add(Path.GetFileName(file));
-            }
-
-            ViewBag.FileInfo = fileNames;
-            ViewBag.Path = _imagePath;
-
-            return View();
-        }
-
-        private async Task<string> SaveAttatchedFile(string filepath, HttpRequestBase Request)
-        {
-            string fileName = string.Empty;
-            for (int i = 0; i < Request.Files.Count; i++)
-            {
-                var image = Request.Files[i];
-                if (image != null && image.ContentLength > 0)
-                {
-                    string path = Server.MapPath("~/UploadedFiles/");
-
-                    fileName = await _imageService.SaveImage(image, path);
-                }
-            }
-            return fileName;
-        }
     }
 }

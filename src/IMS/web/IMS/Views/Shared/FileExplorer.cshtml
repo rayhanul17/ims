@@ -1,0 +1,25 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>FileExplorer</title>
+</head>
+<body>
+    <div> 
+        @{
+            foreach (var item in ViewBag.FileInfo)
+            {
+                var image = ViewBag.Path +"/"+ item;
+                <img src= "@Url.Content(image)" style="height:200px; width:200px; border: 1px dashed red"/>
+            }
+        }
+
+    </div>
+</body>
+</html>

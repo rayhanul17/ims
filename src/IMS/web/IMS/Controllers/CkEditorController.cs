@@ -1,17 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using IMS.Services;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Web;
-using System;
 using System.Web.Mvc;
 
 namespace IMS.Controllers
 {
     public class CkEditorController : Controller
     {
-        private readonly string _imagePath = "~/UploadedFiles/";
+        protected readonly IImageService _imageService;
+        private readonly string _imagePath = "/UploadedFiles";
 
-        [ValidateInput(false)]
-        public ActionResult File()
+        public CkEditorController()
+        {
+            _imageService = new ImageService();
+        }
+        public async Task<ActionResult> File()
         {
             var funcNum = 0;
             int.TryParse(Request["CKEditorFuncNum"], out funcNum);
@@ -28,8 +33,7 @@ namespace IMS.Controllers
             }
             else
             {
-                string fileName = string.Empty;
-                SaveAttatchedFile(_imagePath, Request, ref fileName);
+                string fileName = await SaveAttatchedFile(_imagePath, Request);
                 var url = _imagePath + "/" + fileName;
 
                 var response = new
@@ -43,11 +47,9 @@ namespace IMS.Controllers
             }
         }
 
-        [HttpGet]
-        [ValidateInput(false)]
         public ActionResult FileExplorer()
         {
-            var path = Path.Combine(Server.MapPath(_imagePath));
+            var path = Path.Combine(Server.MapPath("\\UploadedFiles\\"));
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -67,24 +69,20 @@ namespace IMS.Controllers
             return View();
         }
 
-        private void SaveAttatchedFile(string filepath, HttpRequestBase Request, ref string fileName)
+        private async Task<string> SaveAttatchedFile(string filepath, HttpRequestBase Request)
         {
+            string fileName = string.Empty;
             for (int i = 0; i < Request.Files.Count; i++)
             {
-                var file = Request.Files[i];
-                if (file != null && file.ContentLength > 0)
+                var image = Request.Files[i];
+                if (image != null && image.ContentLength > 0)
                 {
-                    fileName = Path.GetFileName(file.FileName);
-                    string targetPath = Server.MapPath(filepath);
-                    if (!Directory.Exists(targetPath))
-                    {
-                        Directory.CreateDirectory(targetPath);
-                    }
-                    fileName = Guid.NewGuid() + fileName;
-                    string fileSavePath = Path.Combine(targetPath, fileName);
-                    file.SaveAs(fileSavePath);
+                    string path = Server.MapPath("~/UploadedFiles/");
+
+                    fileName = await _imageService.SaveImage(image, path);
                 }
             }
+            return fileName;
         }
     }
 }
